@@ -77,6 +77,14 @@
             }) %>
             <%- include("../components/button/button.ejs", {
               props: {
+                label: "Modal Testing",
+                variant: "secondary",
+                type: "button",
+                action: "open-modal-testing"
+              }
+            }) %>
+            <%- include("../components/button/button.ejs", {
+              props: {
                 label: "Submit",
                 variant: "primary",
                 type: "submit"
@@ -87,6 +95,34 @@
         </form>
       </section>
     </main>
+
+    <!-- modal -->
+    <%- include("../components/modal/modal.ejs", {
+      props: {
+        id: "shared-modal",
+        title: "Test Message Modal",
+        mode: "custom",
+        message: "Test message.",
+        closeText: "Close",
+        cancelText: "Cancel",
+        confirmText: "OK",
+        confirmVariant: "primary",
+        bodyHtml: `
+          <div class="ui-field">
+            <label for="modal-username">Username</label>
+            <input id="modal-username" type="text" placeholder="Enter username" />
+          </div>
+          <div class="ui-field">
+            <label for="modal-password">Password</label>
+            <input id="modal-password" type="password" placeholder="Enter password" />
+          </div>
+        `,
+        buttons: [
+          { label: "Cancel", variant: "secondary", close: true },
+          { label: "Save", variant: "primary", close: true }
+        ]
+      }
+    }) %>
 
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -1,27 +1,17 @@
 <%
-  const calendarProps = typeof props === "object" && props ? props : {};
-  const calendarLabel = typeof calendarProps.label === "string" ? calendarProps.label : "Calendar";
-  const calendarName = typeof calendarProps.name === "string" && calendarProps.name
-    ? calendarProps.name
-    : "date";
-  const calendarSingleLabel = typeof calendarProps.singleLabel === "string"
-    ? calendarProps.singleLabel
-    : calendarLabel;
-  const calendarStartLabel = typeof calendarProps.startLabel === "string"
-    ? calendarProps.startLabel
-    : "Start Date";
-  const calendarEndLabel = typeof calendarProps.endLabel === "string"
-    ? calendarProps.endLabel
-    : "End Date";
-  const calendarStartName = typeof calendarProps.startName === "string" && calendarProps.startName
-    ? calendarProps.startName
-    : "startDate";
-  const calendarEndName = typeof calendarProps.endName === "string" && calendarProps.endName
-    ? calendarProps.endName
-    : "endDate";
-  const calendarStartValue = typeof calendarProps.startValue === "string" ? calendarProps.startValue : "";
-  const calendarEndValue = typeof calendarProps.endValue === "string" ? calendarProps.endValue : "";
-  const calendarHelper = typeof calendarProps.helper === "string" ? calendarProps.helper : "";
+  const calendarProps = props && typeof props === "object" ? props : {};
+  const textOr = (value, fallback, requireValue = false) =>
+    typeof value === "string" && (!requireValue || value) ? value : fallback;
+  const calendarLabel = textOr(calendarProps.label, "Calendar");
+  const calendarName = textOr(calendarProps.name, "date", true);
+  const calendarSingleLabel = textOr(calendarProps.singleLabel, calendarLabel);
+  const calendarStartLabel = textOr(calendarProps.startLabel, "Start Date");
+  const calendarEndLabel = textOr(calendarProps.endLabel, "End Date");
+  const calendarStartName = textOr(calendarProps.startName, "startDate", true);
+  const calendarEndName = textOr(calendarProps.endName, "endDate", true);
+  const calendarStartValue = textOr(calendarProps.startValue, "");
+  const calendarEndValue = textOr(calendarProps.endValue, "");
+  const calendarHelper = textOr(calendarProps.helper, "");
   const calendarMode = calendarProps.mode === "range" ? "range" : "single";
   const calendarShowLabel = calendarProps.showLabel !== false;
   const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;

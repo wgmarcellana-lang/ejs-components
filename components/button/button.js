@@ -1,8 +1,7 @@
 function applyButtonConfig(button) {
-  const variant = button.dataset.variant || "primary";
-  const size = button.dataset.size || "md";
-  const type = button.dataset.type || button.getAttribute("type") || "button";
-  const label = button.dataset.label || button.textContent.trim() || "Button";
+  const { variant = "primary", size = "md", type: dataType, label: dataLabel } = button.dataset;
+  const type = dataType || button.getAttribute("type") || "button";
+  const label = dataLabel || button.textContent.trim() || "Button";
 
   button.type = type;
   button.textContent = label;

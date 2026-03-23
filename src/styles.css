@@ -2,6 +2,7 @@
 @import "../components/text-input/text-input.css";
 @import "../components/dropdown/dropdown.css";
 @import "../components/calendar/calendar.css";
+@import "../components/modal/modal.css";
 
 :root {
   --page-bg: #4b1d6b;

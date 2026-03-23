@@ -1,14 +1,5 @@
-function toBoolean(value) {
-  return value === "true";
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+function getMode(value) {
+  return value === "range" ? "range" : "single";
 }
 
 export function initCalendars(root = document) {
@@ -18,7 +9,7 @@ export function initCalendars(root = document) {
     }
 
     const config = {
-      mode: element.dataset.mode === "range" ? "range" : "single",
+      mode: getMode(element.dataset.mode),
       singleLabel: element.dataset.singleLabel || "Date",
       startLabel: element.dataset.startLabel || "Start Date"
     };
@@ -53,7 +44,7 @@ export function initCalendars(root = document) {
     });
 
     element.resetComponent = () => {
-      config.mode = element.dataset.mode === "range" ? "range" : "single";
+      config.mode = getMode(element.dataset.mode);
       modeInputs.forEach((input) => {
         input.checked = input.value === config.mode;
       });

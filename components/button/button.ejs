@@ -1,18 +1,12 @@
 <%
-  const buttonProps = typeof props === "object" && props ? props : {};
-  const buttonLabel = typeof buttonProps.label === "string" && buttonProps.label
-    ? buttonProps.label
-    : "Button";
-  const buttonVariant = typeof buttonProps.variant === "string" && buttonProps.variant
-    ? buttonProps.variant
-    : "primary";
-  const buttonSize = typeof buttonProps.size === "string" && buttonProps.size
-    ? buttonProps.size
-    : "md";
-  const buttonType = typeof buttonProps.type === "string" && buttonProps.type
-    ? buttonProps.type
-    : "button";
-  const buttonAction = typeof buttonProps.action === "string" ? buttonProps.action : "";
+  const buttonProps = props && typeof props === "object" ? props : {};
+  const textOr = (value, fallback, requireValue = false) =>
+    typeof value === "string" && (!requireValue || value) ? value : fallback;
+  const buttonLabel = textOr(buttonProps.label, "Button", true);
+  const buttonVariant = textOr(buttonProps.variant, "primary", true);
+  const buttonSize = textOr(buttonProps.size, "md", true);
+  const buttonType = textOr(buttonProps.type, "button", true);
+  const buttonAction = textOr(buttonProps.action, "");
 %>
 
 <button
@@ -21,7 +15,7 @@
   data-component="button"
   data-variant="<%= buttonVariant %>"
   data-size="<%= buttonSize %>"
-  <%= buttonAction ? `data-action="${buttonAction}"` : "" %>
+  <%- buttonAction ? `data-action="${buttonAction}"` : "" %>
 >
   <%= buttonLabel %>
 </button>

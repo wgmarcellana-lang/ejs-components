@@ -121,6 +121,8 @@ function renderDropdown(element) {
     return;
   }
 
+  const options = parseJsonScript(element, "[data-dropdown-options]");
+  const initialSelected = parseJsonScript(element, "[data-dropdown-selected]");
   const config = {
     name: element.dataset.name || "dropdown",
     groupName: `${element.dataset.name || "dropdown"}-selection`,
@@ -129,14 +131,11 @@ function renderDropdown(element) {
     showLabel: element.dataset.showLabel !== "false",
     mode: element.dataset.mode === "multiple" ? "multiple" : "single",
     searchable: toBoolean(element.dataset.searchable),
-    options: parseJsonScript(element, "[data-dropdown-options]")
+    options
   };
 
   const state = {
-    selectedValues:
-      config.mode === "multiple"
-        ? parseJsonScript(element, "[data-dropdown-selected]")
-        : parseJsonScript(element, "[data-dropdown-selected]").slice(0, 1)
+    selectedValues: config.mode === "multiple" ? initialSelected : initialSelected.slice(0, 1)
   };
   const trigger = element.querySelector("[data-dropdown-trigger]");
   const panel = element.querySelector("[data-dropdown-panel]");

@@ -1,17 +1,13 @@
 <%
-  const inputProps = typeof props === "object" && props ? props : {};
-  const inputLabel = typeof inputProps.label === "string" ? inputProps.label : "Text Input";
-  const inputName = typeof inputProps.name === "string" && inputProps.name
-    ? inputProps.name
-    : "textInput";
-  const inputPlaceholder = typeof inputProps.placeholder === "string"
-    ? inputProps.placeholder
-    : "";
-  const inputHelper = typeof inputProps.helper === "string" ? inputProps.helper : "";
-  const inputType = typeof inputProps.type === "string" && inputProps.type
-    ? inputProps.type
-    : "text";
-  const inputValue = typeof inputProps.value === "string" ? inputProps.value : "";
+  const inputProps = props && typeof props === "object" ? props : {};
+  const textOr = (value, fallback, requireValue = false) =>
+    typeof value === "string" && (!requireValue || value) ? value : fallback;
+  const inputLabel = textOr(inputProps.label, "Text Input");
+  const inputName = textOr(inputProps.name, "textInput", true);
+  const inputPlaceholder = textOr(inputProps.placeholder, "");
+  const inputHelper = textOr(inputProps.helper, "");
+  const inputType = textOr(inputProps.type, "text", true);
+  const inputValue = textOr(inputProps.value, "");
   const inputRequired = inputProps.required === true;
   const inputShowLabel = inputProps.showLabel !== false;
 %>

@@ -1,7 +1,3 @@
-function toBoolean(value) {
-  return value === "true";
-}
-
 export function initTextInputs(root = document) {
   root.querySelectorAll("[data-component='text-input']").forEach((element) => {
     const control = element.querySelector(".ui-text-input__control");
@@ -10,7 +6,7 @@ export function initTextInputs(root = document) {
       return;
     }
 
-    if (toBoolean(element.dataset.disabled)) {
+    if (element.dataset.disabled === "true") {
       control.disabled = true;
     }
   });
