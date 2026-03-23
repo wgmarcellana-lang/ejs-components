@@ -3,7 +3,7 @@
   const inputProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
-  const inputLabel = textOr(inputProps.label, "Text Input");
+  const inputLabel = textOr(inputProps.label, "Text Input"); //here if no label
   const inputName = textOr(inputProps.name, "textInput", true);
   const inputPlaceholder = textOr(inputProps.placeholder, "");
   const inputHelper = textOr(inputProps.helper, "");

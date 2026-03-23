@@ -2,6 +2,7 @@ function toBoolean(value) {
   return value === "true";
 }
 
+// security?? 
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -26,6 +27,7 @@ function parseJsonScript(element, selector) {
   }
 }
 
+// placeholder
 function getSummary(config, selectedOptions) {
   if (!selectedOptions.length) {
     return config.placeholder;
@@ -38,6 +40,7 @@ function getSummary(config, selectedOptions) {
   return selectedOptions[0].label;
 }
 
+// cute tags
 function renderTags(container, selectedOptions) {
   if (!container) {
     return;
@@ -72,6 +75,7 @@ function renderHiddenInputs(container, config, selectedOptions) {
     .join("");
 }
 
+// dropdown 
 function renderOptions(list, searchValue, state, config) {
   if (!list) {
     return;
@@ -81,7 +85,7 @@ function renderOptions(list, searchValue, state, config) {
   const normalizedQuery = searchValue.trim().toLowerCase();
 
   const filtered = config.options.filter((option) =>
-    option.label.toLowerCase().includes(normalizedQuery)
+    option.label.toLowerCase().includes(normalizedQuery)  //search
   );
 
   list.innerHTML = filtered.length
@@ -116,6 +120,7 @@ function renderOptions(list, searchValue, state, config) {
     : `<div class="ui-dropdown__empty">${escapeHtml(config.emptyText)}</div>`;
 }
 
+// main function
 function renderDropdown(element) {
   if (element.dataset.dropdownInitialized === "true") {
     return;

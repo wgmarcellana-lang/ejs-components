@@ -3,7 +3,7 @@
   const dropdownProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
-  const dropdownLabel = textOr(dropdownProps.label, "Dropdown");
+  const dropdownLabel = textOr(dropdownProps.label, "Dropdown"); //here if no label
   const dropdownName = textOr(dropdownProps.name, "dropdown", true);
   const dropdownPlaceholder = textOr(dropdownProps.placeholder, "Select an option");
   const dropdownSearchPlaceholder = textOr(dropdownProps.searchPlaceholder, "Search options");

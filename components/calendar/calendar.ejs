@@ -4,7 +4,7 @@
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
 
-  const calendarLabel = textOr(calendarProps.label, "Calendar");
+  const calendarLabel = textOr(calendarProps.label, "Calendar"); //here if no label
   const calendarName = textOr(calendarProps.name, "date", true);
   
   const calendarSingleLabel = textOr(calendarProps.singleLabel, calendarLabel);

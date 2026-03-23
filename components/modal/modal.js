@@ -7,6 +7,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+// do i need to have a button for all?
 function defaultButtons() {
   return [{ label: "Close", variant: "secondary", close: true }];
 }
@@ -88,6 +89,7 @@ function createCustomConfig(options = {}) {
   };
 }
 
+// mode switcher
 function createConfiguredModalState(config = {}) {
   if (config.mode === "confirmation") {
     return createConfirmationConfig(config);
@@ -100,6 +102,7 @@ function createConfiguredModalState(config = {}) {
   return createMessageConfig(config);
 }
 
+// body
 function renderBody(body, config) {
   if (!body) {
     return;
@@ -118,6 +121,7 @@ function renderBody(body, config) {
   body.innerHTML = "";
 }
 
+// footer
 function renderFooter(modal, footer, buttons) {
   if (!footer) {
     return;
@@ -157,6 +161,7 @@ function renderFooter(modal, footer, buttons) {
   });
 }
 
+// controller
 function createModalController(modal) {
   const title = modal.querySelector("[data-modal-title]");
   const body = modal.querySelector("[data-modal-body]");
@@ -216,12 +221,14 @@ function createModalController(modal) {
     });
   });
 
+  // close if backdrop clicked
   modal.addEventListener("click", (event) => {
     if (event.target === modal.querySelector(".ui-modal__backdrop")) {
       close();
     }
   });
 
+  // close if esc
   modal.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       close();
