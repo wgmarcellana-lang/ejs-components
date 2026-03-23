@@ -8,81 +8,19 @@ function serializeForm(form) {
   const formData = new FormData(form);
   const payload = {};
 
-  for (const [key, value] of formData.entries()) {
-    if (Object.prototype.hasOwnProperty.call(payload, key)) {
-      payload[key] = Array.isArray(payload[key])
-        ? [...payload[key], value]
-        : [payload[key], value];
-      continue;
+  formData.forEach((value, key) => {
+    if (payload[key]) {
+      payload[key] = [].concat(payload[key], value);
+    } else {
+      payload[key] = value;
     }
-
-    payload[key] = value;
-  }
+  });
 
   return payload;
 }
 
-function parseJsonScript(element, selector, fallback) {
-  const script = element.querySelector(selector);
-
-  if (!script) {
-    return fallback;
-  }
-
-  try {
-    return JSON.parse(script.textContent || "");
-  } catch (_error) {
-    return fallback;
-  }
-}
-
 function openConfiguredModal() {
-  if (!window.uiModal) {
-    return;
-  }
-
-  const modal = document.querySelector("#shared-modal");
-
-  if (!modal) {
-    return;
-  }
-
-  const config = parseJsonScript(modal, "[data-modal-config]", {});
-  const mode = config.mode || "message";
-  const target = "#shared-modal";
-  const title = config.title || "Modal";
-  const message = config.message || "";
-  const bodyHtml = config.bodyHtml || "";
-  const buttons = Array.isArray(config.buttons) ? config.buttons : [];
-
-  if (mode === "confirmation") {
-    window.uiModal.confirmation({
-      target,
-      title,
-      message,
-      cancelText: config.cancelText || "Cancel",
-      confirmText: config.confirmText || "OK",
-      confirmVariant: config.confirmVariant || "primary"
-    });
-    return;
-  }
-
-  if (mode === "custom") {
-    window.uiModal.custom({
-      target,
-      title,
-      bodyHtml,
-      buttons
-    });
-    return;
-  }
-
-  window.uiModal.message({
-    target,
-    title,
-    message,
-    closeText: config.closeText || "Close"
-  });
+  window.uiModal?.openConfigured("#generic-modal");
 }
 
 function setupDemoForm() {

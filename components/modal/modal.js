@@ -11,17 +11,93 @@ function defaultButtons() {
   return [{ label: "Close", variant: "secondary", close: true }];
 }
 
+function parseJsonScript(element, selector, fallback = {}) {
+  const script = element.querySelector(selector);
+
+  if (!script) {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(script.textContent || "");
+  } catch (_error) {
+    return fallback;
+  }
+}
+
 function normalizeButtons(buttons) {
   return Array.isArray(buttons) && buttons.length ? buttons : defaultButtons();
 }
 
+function textOr(value, fallback) {
+  return typeof value === "string" && value ? value : fallback;
+}
+
 function normalizeModalConfig(config = {}) {
   return {
-    title: typeof config.title === "string" && config.title ? config.title : "Modal",
+    title: textOr(config.title, "Modal"),
     message: typeof config.message === "string" ? config.message : "",
     bodyHtml: typeof config.bodyHtml === "string" ? config.bodyHtml : "",
     buttons: normalizeButtons(config.buttons)
   };
+}
+
+function createMessageConfig(options = {}) {
+  // message
+  return {
+    title: textOr(options.title, "Message"),
+    message: typeof options.message === "string" ? options.message : "",
+    buttons: [
+      {
+        label: textOr(options.closeText, "Close"),
+        variant: textOr(options.variant, "secondary"),
+        close: true
+      }
+    ]
+  };
+}
+
+function createConfirmationConfig(options = {}) {
+  // confirmation
+  return {
+    title: textOr(options.title, "Confirmation"),
+    message: typeof options.message === "string" ? options.message : "",
+    buttons: [
+      {
+        label: textOr(options.cancelText, "Cancel"),
+        variant: "secondary",
+        close: true,
+        onClick: options.onCancel
+      },
+      {
+        label: textOr(options.confirmText, "OK"),
+        variant: textOr(options.confirmVariant, "primary"),
+        close: options.closeOnConfirm !== false,
+        onClick: options.onConfirm
+      }
+    ]
+  };
+}
+
+function createCustomConfig(options = {}) {
+  // custom
+  return {
+    title: textOr(options.title, "Custom Modal"),
+    bodyHtml: typeof options.bodyHtml === "string" ? options.bodyHtml : "",
+    buttons: options.buttons
+  };
+}
+
+function createConfiguredModalState(config = {}) {
+  if (config.mode === "confirmation") {
+    return createConfirmationConfig(config);
+  }
+
+  if (config.mode === "custom") {
+    return createCustomConfig(config);
+  }
+
+  return createMessageConfig(config);
 }
 
 function renderBody(body, config) {
@@ -125,8 +201,14 @@ function createModalController(modal) {
     previousActiveElement?.focus?.();
   }
 
+  function openConfigured() {
+    const config = parseJsonScript(modal, "[data-modal-config]", {});
+    open(createConfiguredModalState(config));
+  }
+
   modal.openModal = open;
   modal.closeModal = close;
+  modal.openConfiguredModal = openConfigured;
 
   modal.querySelectorAll("[data-modal-close]").forEach((trigger) => {
     trigger.addEventListener("click", () => {
@@ -170,56 +252,24 @@ export function initModals(root = document) {
   });
 
   window.uiModal = {
+    openConfigured(target) {
+      const modal = resolveModal(target);
+      modal?.openConfiguredModal?.();
+    },
+
     message(options = {}) {
       const modal = resolveModal(options.target);
-
-      modal?.openModal({
-        title: options.title || "Message",
-        message: options.message || "",
-        bodyHtml: options.bodyHtml || "",
-        buttons: normalizeButtons(options.buttons || [
-          {
-            label: options.closeText || "Close",
-            variant: options.variant || "secondary",
-            close: true
-          }
-        ])
-      });
+      modal?.openModal(createMessageConfig(options));
     },
 
     confirmation(options = {}) {
       const modal = resolveModal(options.target);
-
-      modal?.openModal({
-        title: options.title || "Confirmation",
-        message: options.message || "",
-        bodyHtml: options.bodyHtml || "",
-        buttons: [
-          {
-            label: options.cancelText || "Cancel",
-            variant: "secondary",
-            close: true,
-            onClick: options.onCancel
-          },
-          {
-            label: options.confirmText || "OK",
-            variant: options.confirmVariant || "primary",
-            close: options.closeOnConfirm !== false,
-            onClick: options.onConfirm
-          }
-        ]
-      });
+      modal?.openModal(createConfirmationConfig(options));
     },
 
     custom(options = {}) {
       const modal = resolveModal(options.target);
-
-      modal?.openModal({
-        title: options.title || "Custom Modal",
-        message: options.message || "",
-        bodyHtml: options.bodyHtml || "",
-        buttons: options.buttons
-      });
+      modal?.openModal(createCustomConfig(options));
     }
   };
 }

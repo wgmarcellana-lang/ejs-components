@@ -1,4 +1,5 @@
 <%
+  // Prepare all dropdown settings up front so the markup below stays easier to follow.
   const dropdownProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
@@ -31,6 +32,7 @@
   data-name="<%= dropdownName %>"
   data-mode="<%= dropdownMode %>"
   data-placeholder="<%= dropdownPlaceholder %>"
+  data-show-label="<%= String(dropdownShowLabel) %>"
   data-searchable="<%= String(dropdownSearchable) %>"
   data-empty-text="<%= dropdownEmptyText %>"
 >
@@ -49,6 +51,7 @@
 
     <div class="ui-dropdown__panel" data-dropdown-panel hidden>
       <% if (dropdownSearchable) { %>
+        <!-- search -->
         <div class="ui-dropdown__search-wrap">
           <input
             type="search"
@@ -60,6 +63,7 @@
       <% } %>
 
       <% if (dropdownMode === "multiple") { %>
+        <!-- multiple -->
         <div class="ui-dropdown__tags" data-dropdown-tags></div>
       <% } %>
 

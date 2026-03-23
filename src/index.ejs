@@ -38,8 +38,8 @@
                 placeholder: "Select options",
                 searchPlaceholder: "Search options",
                 emptyText: "No options found.",
-                mode: "single",
-                searchable: false,
+                mode: "multiple",
+                searchable: true,
                 options: [
                   { label: "Option 1", value: "option1" },
                   { label: "Option 2", value: "option2" },
@@ -59,7 +59,7 @@
                 endLabel: "End Date",
                 startName: "testStart",
                 endName: "testEnd",
-                mode: "range",
+                mode: "range",   <!-- /single -->
                 allowModeSwitch: true,
               }
             }) %>
@@ -99,10 +99,10 @@
     <!-- modal -->
     <%- include("../components/modal/modal.ejs", {
       props: {
-        id: "shared-modal",
+        id: "generic-modal",
         title: "Test Message Modal",
-        mode: "custom",
-        message: "Test message.",
+        mode: "confirmation",
+        message: "Are you sure?",
         closeText: "Close",
         cancelText: "Cancel",
         confirmText: "OK",

@@ -1,21 +1,28 @@
 <%
+  // Read the incoming props first so this button can be reused anywhere.
   const buttonProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
-  const buttonLabel = textOr(buttonProps.label, "Button", true);
+    
+  const buttonLabel = textOr(buttonProps.label, "Button", true); 
   const buttonVariant = textOr(buttonProps.variant, "primary", true);
   const buttonSize = textOr(buttonProps.size, "md", true);
   const buttonType = textOr(buttonProps.type, "button", true);
   const buttonAction = textOr(buttonProps.action, "");
+  const buttonDisabled = buttonProps.disabled === true;
 %>
 
 <button
   type="<%= buttonType %>"
   class="ui-button ui-button--<%= buttonVariant %> ui-button--<%= buttonSize %>"
   data-component="button"
+  data-label="<%= buttonLabel %>"
+  data-type="<%= buttonType %>"
   data-variant="<%= buttonVariant %>"
   data-size="<%= buttonSize %>"
+  data-disabled="<%= String(buttonDisabled) %>"
   <%- buttonAction ? `data-action="${buttonAction}"` : "" %>
+  <%= buttonDisabled ? "disabled" : "" %>
 >
   <%= buttonLabel %>
 </button>

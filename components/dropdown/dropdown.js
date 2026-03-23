@@ -216,7 +216,8 @@ function renderDropdown(element) {
   });
 
   element.resetComponent = () => {
-    state.selectedValues = [];
+    state.selectedValues =
+      config.mode === "multiple" ? [...initialSelected] : initialSelected.slice(0, 1);
 
     if (searchInput) {
       searchInput.value = "";

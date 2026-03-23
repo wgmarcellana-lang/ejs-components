@@ -1,18 +1,24 @@
 <%
+  // Gather the calendar settings here so the template stays readable below.
   const calendarProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
+
   const calendarLabel = textOr(calendarProps.label, "Calendar");
   const calendarName = textOr(calendarProps.name, "date", true);
+  
   const calendarSingleLabel = textOr(calendarProps.singleLabel, calendarLabel);
   const calendarStartLabel = textOr(calendarProps.startLabel, "Start Date");
   const calendarEndLabel = textOr(calendarProps.endLabel, "End Date");
+
   const calendarStartName = textOr(calendarProps.startName, "startDate", true);
   const calendarEndName = textOr(calendarProps.endName, "endDate", true);
+
   const calendarStartValue = textOr(calendarProps.startValue, "");
   const calendarEndValue = textOr(calendarProps.endValue, "");
   const calendarHelper = textOr(calendarProps.helper, "");
   const calendarMode = calendarProps.mode === "range" ? "range" : "single";
+  
   const calendarShowLabel = calendarProps.showLabel !== false;
   const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;
   const calendarRequired = calendarProps.required === true;
@@ -23,8 +29,12 @@
   class="ui-calendar"
   data-component="calendar"
   data-mode="<%= calendarMode %>"
+  data-name="<%= calendarName %>"
+  data-start-name="<%= calendarStartName %>"
+  data-end-name="<%= calendarEndName %>"
   data-single-label="<%= calendarSingleLabel %>"
   data-start-label="<%= calendarStartLabel %>"
+  data-required="<%= String(calendarRequired) %>"
 >
   <div class="ui-calendar__frame">
     <% if (calendarShowLabel) { %>
@@ -32,6 +42,7 @@
     <% } %>
 
     <% if (calendarAllowModeSwitch) { %>
+      <!-- switch between range and single -->
       <div class="ui-calendar__toggle" role="radiogroup" aria-label="<%= calendarLabel %> mode">
         <label class="ui-calendar__toggle-option <%= !isRange ? "is-active" : "" %>">
           <input type="radio" name="<%= `${calendarName}-mode` %>" value="single" data-calendar-mode <%= !isRange ? "checked" : "" %> />
@@ -50,19 +61,23 @@
         <input
           class="ui-calendar__control"
           type="date"
+          data-calendar-start-input
           name="<%= isRange ? calendarStartName : calendarName %>"
           value="<%= calendarStartValue %>"
           <%= calendarRequired ? "required" : "" %>
         />
       </label>
 
+      <!-- end date for range -->
       <label class="ui-calendar__slot <%= isRange ? "" : "ui-calendar__slot--hidden" %>" data-calendar-end-wrap>
         <span class="ui-calendar__slot-label"><%= calendarEndLabel %></span>
         <input
           class="ui-calendar__control"
           type="date"
+          data-calendar-end-input
           name="<%= calendarEndName %>"
           value="<%= calendarEndValue %>"
+          <%= !isRange ? "disabled" : "" %>
           <%= calendarRequired ? "required" : "" %>
         />
       </label>

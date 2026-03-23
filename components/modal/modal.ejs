@@ -1,4 +1,5 @@
 <%
+  // Collect the modal setup here so the visible HTML stays simple.
   const modalProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
@@ -27,6 +28,7 @@
   data-component="modal"
   aria-hidden="true"
 >
+  <!-- message, confirmation, or custom -->
   <script type="application/json" data-modal-config><%- JSON.stringify(modalConfig) %></script>
   <div class="ui-modal__backdrop" data-modal-close tabindex="-1"></div>
 
@@ -42,6 +44,7 @@
         <%= modalTitle %>
       </h2>
 
+      <!-- close -->
       <button
         type="button"
         class="ui-modal__close"
@@ -52,8 +55,10 @@
       </button>
     </div>
 
+    <!--body -->
     <div class="ui-modal__body" data-modal-body></div>
 
+    <!-- footer -->
     <div class="ui-modal__footer" data-modal-footer></div>
   </div>
 </div>
