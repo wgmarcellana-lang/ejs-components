@@ -1,0 +1,85 @@
+<%
+  const calendarProps = typeof props === "object" && props ? props : {};
+  const calendarLabel = typeof calendarProps.label === "string" ? calendarProps.label : "Calendar";
+  const calendarName = typeof calendarProps.name === "string" && calendarProps.name
+    ? calendarProps.name
+    : "date";
+  const calendarSingleLabel = typeof calendarProps.singleLabel === "string"
+    ? calendarProps.singleLabel
+    : calendarLabel;
+  const calendarStartLabel = typeof calendarProps.startLabel === "string"
+    ? calendarProps.startLabel
+    : "Start Date";
+  const calendarEndLabel = typeof calendarProps.endLabel === "string"
+    ? calendarProps.endLabel
+    : "End Date";
+  const calendarStartName = typeof calendarProps.startName === "string" && calendarProps.startName
+    ? calendarProps.startName
+    : "startDate";
+  const calendarEndName = typeof calendarProps.endName === "string" && calendarProps.endName
+    ? calendarProps.endName
+    : "endDate";
+  const calendarStartValue = typeof calendarProps.startValue === "string" ? calendarProps.startValue : "";
+  const calendarEndValue = typeof calendarProps.endValue === "string" ? calendarProps.endValue : "";
+  const calendarHelper = typeof calendarProps.helper === "string" ? calendarProps.helper : "";
+  const calendarMode = calendarProps.mode === "range" ? "range" : "single";
+  const calendarShowLabel = calendarProps.showLabel !== false;
+  const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;
+  const calendarRequired = calendarProps.required === true;
+  const isRange = calendarMode === "range";
+%>
+
+<div
+  class="ui-calendar"
+  data-component="calendar"
+  data-mode="<%= calendarMode %>"
+  data-single-label="<%= calendarSingleLabel %>"
+  data-start-label="<%= calendarStartLabel %>"
+>
+  <div class="ui-calendar__frame">
+    <% if (calendarShowLabel) { %>
+      <span class="ui-field__label"><%= calendarLabel %></span>
+    <% } %>
+
+    <% if (calendarAllowModeSwitch) { %>
+      <div class="ui-calendar__toggle" role="radiogroup" aria-label="<%= calendarLabel %> mode">
+        <label class="ui-calendar__toggle-option <%= !isRange ? "is-active" : "" %>">
+          <input type="radio" name="<%= `${calendarName}-mode` %>" value="single" data-calendar-mode <%= !isRange ? "checked" : "" %> />
+          <span>Date</span>
+        </label>
+        <label class="ui-calendar__toggle-option <%= isRange ? "is-active" : "" %>">
+          <input type="radio" name="<%= `${calendarName}-mode` %>" value="range" data-calendar-mode <%= isRange ? "checked" : "" %> />
+          <span>Date Range</span>
+        </label>
+      </div>
+    <% } %>
+
+    <div class="ui-calendar__inputs <%= isRange ? "ui-calendar__inputs--range" : "" %>" data-calendar-inputs>
+      <label class="ui-calendar__slot">
+        <span class="ui-calendar__slot-label" data-calendar-start-label><%= isRange ? calendarStartLabel : calendarSingleLabel %></span>
+        <input
+          class="ui-calendar__control"
+          type="date"
+          name="<%= isRange ? calendarStartName : calendarName %>"
+          value="<%= calendarStartValue %>"
+          <%= calendarRequired ? "required" : "" %>
+        />
+      </label>
+
+      <label class="ui-calendar__slot <%= isRange ? "" : "ui-calendar__slot--hidden" %>" data-calendar-end-wrap>
+        <span class="ui-calendar__slot-label"><%= calendarEndLabel %></span>
+        <input
+          class="ui-calendar__control"
+          type="date"
+          name="<%= calendarEndName %>"
+          value="<%= calendarEndValue %>"
+          <%= calendarRequired ? "required" : "" %>
+        />
+      </label>
+    </div>
+  </div>
+
+  <% if (calendarHelper) { %>
+    <span class="ui-field__helper"><%= calendarHelper %></span>
+  <% } %>
+</div>

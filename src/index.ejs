@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EJS Frontend Demo</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+
+  <body>
+    <main class="page-shell">
+      <section class="demo-card">
+        <div class="demo-card__header">
+          <div>
+            <h1>EJS Frontend</h1>
+          </div>
+        </div>
+
+        <form class="component-form" data-demo-form novalidate>
+          <div class="component-grid">
+
+            <!-- input -->
+            <%- include("../components/text-input/text-input.ejs", {
+              props: {
+                label: "Text Input",
+                name: "textTest",
+                placeholder: "Enter text",
+                required: true
+              }
+            }) %>
+
+            <!-- dropdown -->
+            <%- include("../components/dropdown/dropdown.ejs", {
+              props: {
+                label: "Dropdown",
+                name: "dropdownTest",
+                placeholder: "Select options",
+                searchPlaceholder: "Search options",
+                emptyText: "No options found.",
+                mode: "single",
+                searchable: false,
+                options: [
+                  { label: "Option 1", value: "option1" },
+                  { label: "Option 2", value: "option2" },
+                  { label: "Option 3", value: "option3" },
+                  { label: "Option 4", value: "option4" }
+                ]
+              }
+            }) %>
+
+            <!-- calendar -->
+            <%- include("../components/calendar/calendar.ejs", {
+              props: {
+                label: "Calendar",
+                name: "testDate",
+                singleLabel: "Date",
+                startLabel: "Start Date",
+                endLabel: "End Date",
+                startName: "testStart",
+                endName: "testEnd",
+                mode: "range",
+                allowModeSwitch: true,
+              }
+            }) %>
+          </div>
+
+          <!-- buttons -->
+          <div class="form-actions">
+            <%- include("../components/button/button.ejs", {
+              props: {
+                label: "Close",
+                variant: "secondary",
+                type: "button",
+                action: "reset-form"
+              }
+            }) %>
+            <%- include("../components/button/button.ejs", {
+              props: {
+                label: "Submit",
+                variant: "primary",
+                type: "submit"
+              }
+            }) %>
+          </div>
+          
+        </form>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

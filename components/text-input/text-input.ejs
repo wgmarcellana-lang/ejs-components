@@ -1,0 +1,38 @@
+<%
+  const inputProps = typeof props === "object" && props ? props : {};
+  const inputLabel = typeof inputProps.label === "string" ? inputProps.label : "Text Input";
+  const inputName = typeof inputProps.name === "string" && inputProps.name
+    ? inputProps.name
+    : "textInput";
+  const inputPlaceholder = typeof inputProps.placeholder === "string"
+    ? inputProps.placeholder
+    : "";
+  const inputHelper = typeof inputProps.helper === "string" ? inputProps.helper : "";
+  const inputType = typeof inputProps.type === "string" && inputProps.type
+    ? inputProps.type
+    : "text";
+  const inputValue = typeof inputProps.value === "string" ? inputProps.value : "";
+  const inputRequired = inputProps.required === true;
+  const inputShowLabel = inputProps.showLabel !== false;
+%>
+
+<label
+  class="ui-field ui-text-input"
+  data-component="text-input"
+  data-show-label="<%= String(inputShowLabel) %>"
+>
+  <% if (inputShowLabel) { %>
+    <span class="ui-field__label"><%= inputLabel %></span>
+  <% } %>
+  <input
+    class="ui-text-input__control"
+    type="<%= inputType %>"
+    name="<%= inputName %>"
+    placeholder="<%= inputPlaceholder %>"
+    value="<%= inputValue %>"
+    <%= inputRequired ? "required" : "" %>
+  />
+  <% if (inputHelper) { %>
+    <span class="ui-field__helper"><%= inputHelper %></span>
+  <% } %>
+</label>

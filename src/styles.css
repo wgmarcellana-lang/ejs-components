@@ -1,0 +1,134 @@
+@import "../components/button/button.css";
+@import "../components/text-input/text-input.css";
+@import "../components/dropdown/dropdown.css";
+@import "../components/calendar/calendar.css";
+
+:root {
+  --page-bg: #4b1d6b;
+  --page-bg-accent: #5e2490;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --surface-soft: #f6f4fb;
+  --surface-border: rgba(92, 74, 130, 0.12);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-soft: #64748b;
+  --heading: #0f172a;
+  --accent: #06b6d4;
+  --accent-strong: #0891b2;
+  --accent-soft: #cffafe;
+  --input-border: #d6d8e3;
+  --input-border-strong: #a0a8bd;
+  --shadow-lg: 0 22px 44px rgba(24, 18, 37, 0.2);
+  --shadow-md: 0 12px 26px rgba(24, 18, 37, 0.12);
+  --radius-xl: 22px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, "Segoe UI", sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.06), transparent 30%),
+    linear-gradient(180deg, var(--page-bg-accent) 0%, var(--page-bg) 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.06), transparent 28%);
+  pointer-events: none;
+}
+
+.page-shell {
+  position: relative;
+  z-index: 1;
+  width: min(1040px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+.demo-card {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.demo-card {
+  padding: 0;
+}
+
+.demo-card__header {
+  padding: 32px 32px 0;
+}
+
+.demo-card__header h1 {
+  margin: 0;
+  color: var(--heading);
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  line-height: 1.12;
+}
+
+.component-form {
+  display: grid;
+  gap: 24px;
+  padding: 24px 32px 32px;
+}
+
+.component-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.component-grid > * {
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+::placeholder {
+  color: var(--text-soft);
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    width: min(100% - 20px, 1040px);
+    padding: 16px 0 28px;
+  }
+
+  .demo-card {
+    border-radius: 18px;
+  }
+
+  .demo-card__header {
+    padding: 22px 20px 0;
+  }
+
+  .component-form {
+    padding: 18px 20px 22px;
+  }
+
+  .component-grid > * {
+    padding-bottom: 20px;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+}

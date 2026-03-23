@@ -1,0 +1,27 @@
+<%
+  const buttonProps = typeof props === "object" && props ? props : {};
+  const buttonLabel = typeof buttonProps.label === "string" && buttonProps.label
+    ? buttonProps.label
+    : "Button";
+  const buttonVariant = typeof buttonProps.variant === "string" && buttonProps.variant
+    ? buttonProps.variant
+    : "primary";
+  const buttonSize = typeof buttonProps.size === "string" && buttonProps.size
+    ? buttonProps.size
+    : "md";
+  const buttonType = typeof buttonProps.type === "string" && buttonProps.type
+    ? buttonProps.type
+    : "button";
+  const buttonAction = typeof buttonProps.action === "string" ? buttonProps.action : "";
+%>
+
+<button
+  type="<%= buttonType %>"
+  class="ui-button ui-button--<%= buttonVariant %> ui-button--<%= buttonSize %>"
+  data-component="button"
+  data-variant="<%= buttonVariant %>"
+  data-size="<%= buttonSize %>"
+  <%= buttonAction ? `data-action="${buttonAction}"` : "" %>
+>
+  <%= buttonLabel %>
+</button>

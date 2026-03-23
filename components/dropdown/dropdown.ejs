@@ -1,0 +1,77 @@
+<%
+  const dropdownProps = typeof props === "object" && props ? props : {};
+  const dropdownLabel = typeof dropdownProps.label === "string" ? dropdownProps.label : "Dropdown";
+  const dropdownName = typeof dropdownProps.name === "string" && dropdownProps.name
+    ? dropdownProps.name
+    : "dropdown";
+  const dropdownPlaceholder = typeof dropdownProps.placeholder === "string"
+    ? dropdownProps.placeholder
+    : "Select an option";
+  const dropdownSearchPlaceholder = typeof dropdownProps.searchPlaceholder === "string"
+    ? dropdownProps.searchPlaceholder
+    : "Search options";
+  const dropdownEmptyText = typeof dropdownProps.emptyText === "string"
+    ? dropdownProps.emptyText
+    : "No matching options";
+  const dropdownHelper = typeof dropdownProps.helper === "string" ? dropdownProps.helper : "";
+  const dropdownMode = dropdownProps.mode === "multiple" ? "multiple" : "single";
+  const dropdownSearchable = dropdownProps.searchable === true;
+  const dropdownShowLabel = dropdownProps.showLabel !== false;
+  const dropdownOptions = Array.isArray(dropdownProps.options) ? dropdownProps.options : [];
+  const dropdownSelected = Array.isArray(dropdownProps.selected)
+    ? dropdownProps.selected
+    : [];
+  const dropdownSummary = dropdownSelected.length
+    ? (dropdownMode === "multiple"
+        ? `${dropdownSelected.length} selected`
+        : ((dropdownOptions.find((option) => option.value === dropdownSelected[0]) || {}).label || dropdownPlaceholder))
+    : dropdownPlaceholder;
+%>
+
+<div
+  class="ui-field ui-dropdown"
+  data-component="dropdown"
+  data-name="<%= dropdownName %>"
+  data-mode="<%= dropdownMode %>"
+  data-placeholder="<%= dropdownPlaceholder %>"
+  data-searchable="<%= String(dropdownSearchable) %>"
+  data-empty-text="<%= dropdownEmptyText %>"
+>
+  <% if (dropdownShowLabel) { %>
+    <span class="ui-field__label"><%= dropdownLabel %></span>
+  <% } %>
+
+  <div class="ui-dropdown__frame">
+    <script type="application/json" data-dropdown-options><%- JSON.stringify(dropdownOptions) %></script>
+    <script type="application/json" data-dropdown-selected><%- JSON.stringify(dropdownSelected) %></script>
+
+    <button type="button" class="ui-dropdown__trigger" aria-expanded="false" data-dropdown-trigger>
+      <span class="ui-dropdown__summary" data-dropdown-summary><%= dropdownSummary %></span>
+      <span class="ui-dropdown__chevron" aria-hidden="true">+</span>
+    </button>
+
+    <div class="ui-dropdown__panel" data-dropdown-panel hidden>
+      <% if (dropdownSearchable) { %>
+        <div class="ui-dropdown__search-wrap">
+          <input
+            type="search"
+            class="ui-dropdown__search"
+            placeholder="<%= dropdownSearchPlaceholder %>"
+            data-dropdown-search
+          />
+        </div>
+      <% } %>
+
+      <% if (dropdownMode === "multiple") { %>
+        <div class="ui-dropdown__tags" data-dropdown-tags></div>
+      <% } %>
+
+      <div class="ui-dropdown__options" data-dropdown-options-list></div>
+      <div class="ui-dropdown__inputs" data-dropdown-inputs></div>
+    </div>
+  </div>
+
+  <% if (dropdownHelper) { %>
+    <span class="ui-field__helper"><%= dropdownHelper %></span>
+  <% } %>
+</div>

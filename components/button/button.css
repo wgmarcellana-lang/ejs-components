@@ -1,0 +1,72 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  min-height: 44px;
+  padding: 0.72rem 1.25rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.ui-button:hover {
+  transform: translateY(-1px);
+}
+
+.ui-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.ui-button--primary {
+  background: linear-gradient(135deg, #6f49d7 0%, #4b1d6b 100%);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(75, 29, 107, 0.24);
+}
+
+.ui-button--primary:hover {
+  box-shadow: 0 16px 28px rgba(75, 29, 107, 0.28);
+}
+
+.ui-button--secondary {
+  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+  color: #4d4567;
+  border-color: var(--input-border);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.ui-button--secondary:hover {
+  background: #f8fafc;
+  border-color: var(--input-border-strong);
+}
+
+.ui-button--sm {
+  min-height: 40px;
+  padding: 0.62rem 0.95rem;
+}
+
+.ui-button--md {
+  min-height: 44px;
+}
+
+.ui-button--lg {
+  min-height: 48px;
+  padding-inline: 1.35rem;
+}
+
+@media (max-width: 640px) {
+  .ui-button {
+    width: 100%;
+  }
+}
