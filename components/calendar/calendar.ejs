@@ -18,8 +18,14 @@
   const calendarShowLabel = calendarProps.showLabel !== false;
   const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;
   const calendarRequired = calendarProps.required === true;
+  const calendarStandalone = calendarProps.standalone === true;
   const isRange = calendarMode === "range";
 %>
+
+<% if (calendarStandalone) { %>
+  <link rel="stylesheet" href="/components/text-input.css" />
+  <link rel="stylesheet" href="/components/calendar.css" />
+<% } %>
 
 <div
   class="ui-calendar"
@@ -84,3 +90,10 @@
     <span class="ui-field__helper"><%= calendarHelper %></span>
   <% } %>
 </div>
+
+<% if (calendarStandalone) { %>
+  <script type="module">
+    import { initCalendars } from "/components/calendar.js";
+    initCalendars();
+  </script>
+<% } %>

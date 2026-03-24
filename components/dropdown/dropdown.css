@@ -1,3 +1,28 @@
+/* ── Default tokens — override in your project's :root ── */
+:root {
+  --input-border: #d6d8e3;
+  --input-border-strong: #a0a8bd;
+  --shadow-md: 0 12px 26px rgba(24, 18, 37, 0.12);
+}
+
+/* ui-field shared styles (duplicated from text-input for standalone portability) */
+.ui-field {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-field__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4e4767;
+}
+
+.ui-field__helper {
+  color: #64748b;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
 .ui-dropdown {
   display: grid;
   gap: 12px;

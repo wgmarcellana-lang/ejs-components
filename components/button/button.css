@@ -1,3 +1,8 @@
+/* ── Default tokens — override in your project's :root ── */
+:root {
+  --button-accent-soft: #cffafe;
+}
+
 .ui-button {
   display: inline-flex;
   align-items: center;
@@ -37,7 +42,7 @@
 
 .ui-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft, var(--button-accent-soft));
 }
 
 .ui-button--primary {
@@ -53,13 +58,13 @@
 .ui-button--secondary {
   background: linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
   color: #4d4567;
-  border-color: var(--input-border);
+  border-color: var(--input-border, #d6d8e3);
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .ui-button--secondary:hover {
   background: #f8fafc;
-  border-color: var(--input-border-strong);
+  border-color: var(--input-border-strong, #a0a8bd);
 }
 
 .ui-button--sm {

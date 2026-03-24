@@ -13,6 +13,7 @@
   const dropdownMode = dropdownProps.mode === "multiple" ? "multiple" : "single";
   const dropdownSearchable = dropdownProps.searchable === true;
   const dropdownShowLabel = dropdownProps.showLabel !== false;
+  const dropdownStandalone = dropdownProps.standalone === true;
   const dropdownOptions = Array.isArray(dropdownProps.options) ? dropdownProps.options : [];
   const dropdownSelected = Array.isArray(dropdownProps.selected) ? dropdownProps.selected : [];
   const dropdownSelectedOption = dropdownOptions.find(
@@ -24,6 +25,11 @@
       ? `${dropdownSelected.length} selected`
       : dropdownSelectedOption?.label || dropdownPlaceholder;
 %>
+
+<% if (dropdownStandalone) { %>
+  <link rel="stylesheet" href="/components/text-input.css" />
+  <link rel="stylesheet" href="/components/dropdown.css" />
+<% } %>
 
 <div
   class="ui-field ui-dropdown"
@@ -75,3 +81,10 @@
     <span class="ui-field__helper"><%= dropdownHelper %></span>
   <% } %>
 </div>
+
+<% if (dropdownStandalone) { %>
+  <script type="module">
+    import { initDropdowns } from "/components/dropdown.js";
+    initDropdowns();
+  </script>
+<% } %>

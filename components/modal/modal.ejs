@@ -9,6 +9,7 @@
   const modalMode = ["message", "confirmation", "custom"].includes(modalProps.mode)
     ? modalProps.mode
     : "message";
+  const modalStandalone = modalProps.standalone === true;
   const modalConfig = {
     mode: modalMode,
     title: modalTitle,
@@ -21,6 +22,11 @@
     buttons: Array.isArray(modalProps.buttons) ? modalProps.buttons : []
   };
 %>
+
+<% if (modalStandalone) { %>
+  <link rel="stylesheet" href="/components/button.css" />
+  <link rel="stylesheet" href="/components/modal.css" />
+<% } %>
 
 <div
   id="<%= modalId %>"
@@ -55,10 +61,14 @@
       </button>
     </div>
 
-    <!--body -->
     <div class="ui-modal__body" data-modal-body></div>
-
-    <!-- footer -->
     <div class="ui-modal__footer" data-modal-footer></div>
   </div>
 </div>
+
+<% if (modalStandalone) { %>
+  <script type="module">
+    import { initModals } from "/components/modal.js";
+    initModals();
+  </script>
+<% } %>

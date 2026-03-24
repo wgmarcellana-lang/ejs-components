@@ -1,3 +1,9 @@
+/* ── Default tokens — override in your project's :root ── */
+:root {
+  --accent-soft: #cffafe;
+  --shadow-md: 0 12px 26px rgba(24, 18, 37, 0.12);
+}
+
 .ui-modal {
   position: fixed;
   inset: 0;

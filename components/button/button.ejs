@@ -10,7 +10,12 @@
   const buttonType = textOr(buttonProps.type, "button", true);
   const buttonAction = textOr(buttonProps.action, "");
   const buttonDisabled = buttonProps.disabled === true;
+  const buttonStandalone = buttonProps.standalone === true;
 %>
+
+<% if (buttonStandalone) { %>
+  <link rel="stylesheet" href="/components/button.css" />
+<% } %>
 
 <button
   type="<%= buttonType %>"
@@ -26,3 +31,10 @@
 >
   <%= buttonLabel %>
 </button>
+
+<% if (buttonStandalone) { %>
+  <script type="module">
+    import { initButtons } from "/components/button.js";
+    initButtons();
+  </script>
+<% } %>

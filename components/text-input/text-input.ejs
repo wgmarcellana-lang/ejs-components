@@ -12,7 +12,12 @@
   const inputValue = textOr(inputProps.value, "");
   const inputRequired = inputProps.required === true;
   const inputShowLabel = inputProps.showLabel !== false;
+  const inputStandalone = inputProps.standalone === true;
 %>
+
+<% if (inputStandalone) { %>
+  <link rel="stylesheet" href="/components/text-input.css" />
+<% } %>
 
 <label
   class="ui-field ui-text-input"
@@ -36,3 +41,10 @@
     <span class="ui-field__helper"><%= inputHelper %></span>
   <% } %>
 </label>
+
+<% if (inputStandalone) { %>
+  <script type="module">
+    import { initTextInputs } from "/components/text-input.js";
+    initTextInputs();
+  </script>
+<% } %>
