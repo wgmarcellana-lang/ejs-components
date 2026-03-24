@@ -10,11 +10,11 @@
   appearance: none;
   border: 1px solid transparent;
   border-radius: 999px;
-  min-height: 44px;
-  padding: 0.72rem 1.25rem;
+  min-height: 46px;
+  padding: 0.76rem 1.3rem;
   font: inherit;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 650;
   line-height: 1;
   cursor: pointer;
   transition:
@@ -42,28 +42,28 @@
 
 .ui-button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-soft, var(--button-accent-soft));
+  box-shadow: 0 0 0 4px rgba(111, 73, 215, 0.14);
 }
 
 .ui-button--primary {
   background: linear-gradient(135deg, #6f49d7 0%, #592a81 100%);
   color: #fff;
-  box-shadow: 0 12px 24px rgba(89, 42, 129, 0.24);
+  box-shadow: 0 14px 28px rgba(89, 42, 129, 0.26);
 }
 
 .ui-button--primary:hover {
-  box-shadow: 0 16px 28px rgba(89, 42, 129, 0.28);
+  box-shadow: 0 18px 32px rgba(89, 42, 129, 0.3);
 }
 
 .ui-button--secondary {
-  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
   color: #4d4567;
   border-color: var(--input-border, #d6d8e3);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
 }
 
 .ui-button--secondary:hover {
-  background: #f8fafc;
+  background: #ffffff;
   border-color: var(--input-border-strong, #a0a8bd);
 }
 
