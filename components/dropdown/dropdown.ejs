@@ -1,9 +1,10 @@
 <%
-  // Prepare all dropdown settings up front so the markup below stays easier to follow.
+  // Resolve props up front so the markup below stays readable.
   const dropdownProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
-  const dropdownLabel = textOr(dropdownProps.label, "Dropdown"); //here if no label
+
+  const dropdownLabel = textOr(dropdownProps.label, "Dropdown");
   const dropdownName = textOr(dropdownProps.name, "dropdown", true);
   const dropdownPlaceholder = textOr(dropdownProps.placeholder, "Select an option");
   const dropdownSearchPlaceholder = textOr(dropdownProps.searchPlaceholder, "Search options");
@@ -13,9 +14,7 @@
   const dropdownSearchable = dropdownProps.searchable === true;
   const dropdownShowLabel = dropdownProps.showLabel !== false;
   const dropdownOptions = Array.isArray(dropdownProps.options) ? dropdownProps.options : [];
-  const dropdownSelected = Array.isArray(dropdownProps.selected)
-    ? dropdownProps.selected
-    : [];
+  const dropdownSelected = Array.isArray(dropdownProps.selected) ? dropdownProps.selected : [];
   const dropdownSelectedOption = dropdownOptions.find(
     (option) => option.value === dropdownSelected[0]
   );

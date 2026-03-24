@@ -1,5 +1,5 @@
 <%
-  // Collect the modal setup here so the visible HTML stays simple.
+  // Resolve props up front so the markup below stays readable.
   const modalProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
@@ -29,7 +29,7 @@
   aria-hidden="true"
 >
   <!-- message, confirmation, or custom -->
-  <script type="application/json" data-modal-config><%- JSON.stringify(modalConfig) %></script>
+<script type="application/json" data-modal-config><%- JSON.stringify(modalConfig) %></script>
   <div class="ui-modal__backdrop" data-modal-close tabindex="-1"></div>
 
   <div

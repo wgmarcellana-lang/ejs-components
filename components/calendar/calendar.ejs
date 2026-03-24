@@ -1,24 +1,20 @@
 <%
-  // Gather the calendar settings here so the template stays readable below.
+  // Resolve props up front so the markup below stays readable.
   const calendarProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
 
-  const calendarLabel = textOr(calendarProps.label, "Calendar"); //here if no label
+  const calendarLabel = textOr(calendarProps.label, "Calendar");
   const calendarName = textOr(calendarProps.name, "date", true);
-  
   const calendarSingleLabel = textOr(calendarProps.singleLabel, calendarLabel);
   const calendarStartLabel = textOr(calendarProps.startLabel, "Start Date");
   const calendarEndLabel = textOr(calendarProps.endLabel, "End Date");
-
   const calendarStartName = textOr(calendarProps.startName, "startDate", true);
   const calendarEndName = textOr(calendarProps.endName, "endDate", true);
-
   const calendarStartValue = textOr(calendarProps.startValue, "");
   const calendarEndValue = textOr(calendarProps.endValue, "");
   const calendarHelper = textOr(calendarProps.helper, "");
   const calendarMode = calendarProps.mode === "range" ? "range" : "single";
-  
   const calendarShowLabel = calendarProps.showLabel !== false;
   const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;
   const calendarRequired = calendarProps.required === true;

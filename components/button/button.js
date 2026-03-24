@@ -6,7 +6,7 @@ function applyButtonConfig(button) {
     label: dataLabel,
     disabled: dataDisabled
   } = button.dataset;
-  
+
   const type = dataType || button.getAttribute("type") || "button";
   const label = dataLabel || button.textContent.trim() || "Button";
   const disabled = dataDisabled === "true";

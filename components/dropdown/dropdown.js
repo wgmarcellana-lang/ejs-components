@@ -2,7 +2,7 @@ function toBoolean(value) {
   return value === "true";
 }
 
-// security?? 
+// security??
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -68,14 +68,12 @@ function renderHiddenInputs(container, config, selectedOptions) {
   container.innerHTML = selectedOptions
     .map(
       (option) =>
-        `<input type="hidden" name="${escapeHtml(inputName)}" value="${escapeHtml(
-          option.value
-        )}" />`
+        `<input type="hidden" name="${escapeHtml(inputName)}" value="${escapeHtml(option.value)}" />`
     )
     .join("");
 }
 
-// dropdown 
+// dropdown
 function renderOptions(list, searchValue, state, config) {
   if (!list) {
     return;
@@ -85,7 +83,7 @@ function renderOptions(list, searchValue, state, config) {
   const normalizedQuery = searchValue.trim().toLowerCase();
 
   const filtered = config.options.filter((option) =>
-    option.label.toLowerCase().includes(normalizedQuery)  //search
+    option.label.toLowerCase().includes(normalizedQuery)
   );
 
   list.innerHTML = filtered.length
@@ -108,9 +106,7 @@ function renderOptions(list, searchValue, state, config) {
               </span>
               ${
                 config.mode === "multiple"
-                  ? `<span class="ui-dropdown__indicator">${
-                      selected ? "Selected" : "Add"
-                    }</span>`
+                  ? `<span class="ui-dropdown__indicator">${selected ? "Selected" : "Add"}</span>`
                   : ""
               }
             </label>
@@ -121,7 +117,7 @@ function renderOptions(list, searchValue, state, config) {
 }
 
 // main function
-function renderDropdown(element) {
+function initDropdown(element) {
   if (element.dataset.dropdownInitialized === "true") {
     return;
   }
@@ -142,6 +138,7 @@ function renderDropdown(element) {
   const state = {
     selectedValues: config.mode === "multiple" ? initialSelected : initialSelected.slice(0, 1)
   };
+
   const trigger = element.querySelector("[data-dropdown-trigger]");
   const panel = element.querySelector("[data-dropdown-panel]");
   const summary = element.querySelector("[data-dropdown-summary]");
@@ -237,5 +234,5 @@ function renderDropdown(element) {
 }
 
 export function initDropdowns(root = document) {
-  root.querySelectorAll("[data-component='dropdown']").forEach(renderDropdown);
+  root.querySelectorAll("[data-component='dropdown']").forEach(initDropdown);
 }

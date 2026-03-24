@@ -1,9 +1,10 @@
 <%
-  // Gather the text input settings first so the markup below stays nice and short.
+  // Resolve props up front so the markup below stays readable.
   const inputProps = props && typeof props === "object" ? props : {};
   const textOr = (value, fallback, requireValue = false) =>
     typeof value === "string" && (!requireValue || value) ? value : fallback;
-  const inputLabel = textOr(inputProps.label, "Text Input"); //here if no label
+
+  const inputLabel = textOr(inputProps.label, "Text Input");
   const inputName = textOr(inputProps.name, "textInput", true);
   const inputPlaceholder = textOr(inputProps.placeholder, "");
   const inputHelper = textOr(inputProps.helper, "");
@@ -30,6 +31,7 @@
     value="<%= inputValue %>"
     <%= inputRequired ? "required" : "" %>
   />
+
   <% if (inputHelper) { %>
     <span class="ui-field__helper"><%= inputHelper %></span>
   <% } %>

@@ -7,7 +7,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-// do i need to have a button for all?
 function defaultButtons() {
   return [{ label: "Close", variant: "secondary", close: true }];
 }
@@ -90,7 +89,7 @@ function createCustomConfig(options = {}) {
 }
 
 // mode switcher
-function createConfiguredModalState(config = {}) {
+function createModalConfig(config = {}) {
   if (config.mode === "confirmation") {
     return createConfirmationConfig(config);
   }
@@ -179,9 +178,8 @@ function createModalController(modal) {
     renderBody(body, nextConfig);
     renderFooter(modal, footer, nextConfig.buttons);
 
-    previousActiveElement = document.activeElement instanceof HTMLElement
-      ? document.activeElement
-      : null;
+    previousActiveElement =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
@@ -189,8 +187,9 @@ function createModalController(modal) {
 
     window.requestAnimationFrame(() => {
       const focusTarget =
-        dialog?.querySelector("[data-modal-close], button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])") ||
-        dialog;
+        dialog?.querySelector(
+          "[data-modal-close], button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+        ) || dialog;
       focusTarget?.focus?.();
     });
   }
@@ -208,7 +207,7 @@ function createModalController(modal) {
 
   function openConfigured() {
     const config = parseJsonScript(modal, "[data-modal-config]", {});
-    open(createConfiguredModalState(config));
+    open(createModalConfig(config));
   }
 
   modal.openModal = open;
