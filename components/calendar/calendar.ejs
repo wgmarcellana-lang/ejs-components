@@ -12,6 +12,7 @@
     calendarHelper,
     calendarMode,
     calendarShowLabel,
+    calendarShowInputLabels,
     calendarAllowModeSwitch,
     calendarRequired,
     calendarStandalone,
@@ -32,16 +33,17 @@
   data-end-name="<%= calendarEndName %>"
   data-single-label="<%= calendarSingleLabel %>"
   data-start-label="<%= calendarStartLabel %>"
+  data-end-label="<%= calendarEndLabel %>"
   data-required="<%= String(calendarRequired) %>"
 >
   <div class="ui-calendar__frame">
-    <% if (calendarShowLabel) { %>
+    <% if (calendarShowLabel && calendarLabel) { %>
       <span class="ui-field__label"><%= calendarLabel %></span>
     <% } %>
 
     <% if (calendarAllowModeSwitch) { %>
       <!-- switch between range and single -->
-      <div class="ui-calendar__toggle" role="radiogroup" aria-label="<%= calendarLabel %> mode">
+      <div class="ui-calendar__toggle" role="radiogroup" aria-label="<%= calendarLabel || "Calendar" %> mode">
         <label class="ui-calendar__toggle-option <%= !isRange ? "is-active" : "" %>">
           <input type="radio" name="<%= `${calendarName}-mode` %>" value="single" data-calendar-mode <%= !isRange ? "checked" : "" %> />
           <span>Date</span>
@@ -55,26 +57,32 @@
 
     <div class="ui-calendar__inputs <%= isRange ? "ui-calendar__inputs--range" : "" %>" data-calendar-inputs>
       <label class="ui-calendar__slot">
-        <span class="ui-calendar__slot-label" data-calendar-start-label><%= isRange ? calendarStartLabel : calendarSingleLabel %></span>
+        <% if (calendarShowInputLabels && (calendarSingleLabel || calendarStartLabel)) { %>
+          <span class="ui-calendar__slot-label" data-calendar-start-label><%= isRange ? calendarStartLabel : calendarSingleLabel %></span>
+        <% } %>
         <input
           class="ui-calendar__control"
           type="date"
           data-calendar-start-input
           name="<%= isRange ? calendarStartName : calendarName %>"
           value="<%= calendarStartValue %>"
+          aria-label="<%= isRange ? (calendarStartLabel || "Start Date") : (calendarSingleLabel || "Date") %>"
           <%= calendarRequired ? "required" : "" %>
         />
       </label>
 
       <!-- end date for range -->
       <label class="ui-calendar__slot <%= isRange ? "" : "ui-calendar__slot--hidden" %>" data-calendar-end-wrap>
-        <span class="ui-calendar__slot-label"><%= calendarEndLabel %></span>
+        <% if (calendarShowInputLabels && calendarEndLabel) { %>
+          <span class="ui-calendar__slot-label" data-calendar-end-label><%= calendarEndLabel %></span>
+        <% } %>
         <input
           class="ui-calendar__control"
           type="date"
           data-calendar-end-input
           name="<%= calendarEndName %>"
           value="<%= calendarEndValue %>"
+          aria-label="<%= calendarEndLabel || "End Date" %>"
           <%= !isRange ? "disabled" : "" %>
           <%= calendarRequired ? "required" : "" %>
         />

@@ -68,7 +68,11 @@
 }
 
 .ui-dropdown__summary {
-  color: #0f172a;
+  color: var(--text-soft, #64748b);
+}
+
+.ui-dropdown__summary[data-has-selection="true"] {
+  color: #000000;
 }
 
 .ui-dropdown__chevron {

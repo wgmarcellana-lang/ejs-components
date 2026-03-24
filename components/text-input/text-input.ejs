@@ -21,7 +21,7 @@
   data-component="text-input"
   data-show-label="<%= String(inputShowLabel) %>"
 >
-  <% if (inputShowLabel) { %>
+  <% if (inputShowLabel && inputLabel) { %>
     <span class="ui-field__label"><%= inputLabel %></span>
   <% } %>
 

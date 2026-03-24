@@ -30,7 +30,7 @@
   data-searchable="<%= String(dropdownSearchable) %>"
   data-empty-text="<%= dropdownEmptyText %>"
 >
-  <% if (dropdownShowLabel) { %>
+  <% if (dropdownShowLabel && dropdownLabel) { %>
     <span class="ui-field__label"><%= dropdownLabel %></span>
   <% } %>
 

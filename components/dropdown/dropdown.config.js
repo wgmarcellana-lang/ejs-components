@@ -4,6 +4,7 @@ function textOr(value, fallback, requireValue = false) {
 
 module.exports = ({ props }) => {
   const dropdownProps = props && typeof props === "object" ? props : {};
+  const dropdownLabel = textOr(dropdownProps.label, "");
   const dropdownMode = dropdownProps.mode === "multiple" ? "multiple" : "single";
   const dropdownPlaceholder = textOr(dropdownProps.placeholder, "Select an option");
   const dropdownOptions = Array.isArray(dropdownProps.options) ? dropdownProps.options : [];
@@ -13,7 +14,7 @@ module.exports = ({ props }) => {
   );
 
   return {
-    dropdownLabel: textOr(dropdownProps.label, "Dropdown"),
+    dropdownLabel,
     dropdownName: textOr(dropdownProps.name, "dropdown", true),
     dropdownPlaceholder,
     dropdownSearchPlaceholder: textOr(dropdownProps.searchPlaceholder, "Search options"),
@@ -21,7 +22,7 @@ module.exports = ({ props }) => {
     dropdownHelper: textOr(dropdownProps.helper, ""),
     dropdownMode,
     dropdownSearchable: dropdownProps.searchable === true,
-    dropdownShowLabel: dropdownProps.showLabel !== false,
+    dropdownShowLabel: dropdownProps.showLabel !== false && Boolean(dropdownLabel),
     dropdownStandalone: dropdownProps.standalone === true,
     dropdownOptions,
     dropdownSelected,

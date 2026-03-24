@@ -101,12 +101,16 @@
   border: 1px solid var(--input-border);
   font: inherit;
   font-size: 0.875rem;
-  color: #0f172a;
+  color: #64748b;
   background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     0 1px 2px rgba(15, 23, 42, 0.03);
   transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.ui-calendar__control[data-has-value="true"] {
+  color: #000000;
 }
 
 .ui-calendar__control:hover {

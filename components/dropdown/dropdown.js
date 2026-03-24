@@ -158,6 +158,7 @@ function initDropdown(element) {
   function syncUi() {
     const pickedOptions = selectedOptions();
     summary.textContent = getSummary(config, pickedOptions);
+    summary.dataset.hasSelection = String(pickedOptions.length > 0);
     renderTags(tags, pickedOptions);
     renderHiddenInputs(hiddenInputs, config, pickedOptions);
     renderOptions(optionsList, searchInput?.value || "", state, config);
