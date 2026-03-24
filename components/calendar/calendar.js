@@ -75,3 +75,7 @@ function initCalendar(element) {
 export function initCalendars(root = document) {
   root.querySelectorAll("[data-component='calendar']").forEach(initCalendar);
 }
+
+if (typeof document !== "undefined") {
+  initCalendars();
+}

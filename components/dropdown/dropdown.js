@@ -236,3 +236,7 @@ function initDropdown(element) {
 export function initDropdowns(root = document) {
   root.querySelectorAll("[data-component='dropdown']").forEach(initDropdown);
 }
+
+if (typeof document !== "undefined") {
+  initDropdowns();
+}

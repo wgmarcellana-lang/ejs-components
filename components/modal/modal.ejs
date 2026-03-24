@@ -1,31 +1,12 @@
 <%
-  // Resolve props up front so the markup below stays readable.
-  const modalProps = props && typeof props === "object" ? props : {};
-  const textOr = (value, fallback, requireValue = false) =>
-    typeof value === "string" && (!requireValue || value) ? value : fallback;
-
-  const modalId = textOr(modalProps.id, "ui-modal", true);
-  const modalTitle = textOr(modalProps.title, "Modal");
-  const modalMode = ["message", "confirmation", "custom"].includes(modalProps.mode)
-    ? modalProps.mode
-    : "message";
-  const modalStandalone = modalProps.standalone === true;
-  const modalConfig = {
-    mode: modalMode,
-    title: modalTitle,
-    message: textOr(modalProps.message, ""),
-    bodyHtml: typeof modalProps.bodyHtml === "string" ? modalProps.bodyHtml : "",
-    closeText: textOr(modalProps.closeText, "Close", true),
-    cancelText: textOr(modalProps.cancelText, "Cancel", true),
-    confirmText: textOr(modalProps.confirmText, "OK", true),
-    confirmVariant: textOr(modalProps.confirmVariant, "primary", true),
-    buttons: Array.isArray(modalProps.buttons) ? modalProps.buttons : []
-  };
+  const { modalId, modalTitle, modalStandalone, modalConfig } = loadConfig(
+    "./modal.config.js",
+    { props }
+  );
 %>
 
 <% if (modalStandalone) { %>
-  <link rel="stylesheet" href="/components/button.css" />
-  <link rel="stylesheet" href="/components/modal.css" />
+  <link rel="stylesheet" href="<%= asset('./modal.css') %>" />
 <% } %>
 
 <div
@@ -67,8 +48,5 @@
 </div>
 
 <% if (modalStandalone) { %>
-  <script type="module">
-    import { initModals } from "/components/modal.js";
-    initModals();
-  </script>
+  <script type="module" src="<%= asset('./modal.js') %>"></script>
 <% } %>

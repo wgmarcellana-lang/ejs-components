@@ -136,7 +136,7 @@ function renderFooter(modal, footer, buttons) {
         : "secondary";
 
     button.type = "button";
-    button.className = `ui-button ui-button--${variant} ui-button--md`;
+    button.className = `ui-modal__button ui-modal__button--${variant}`;
     button.textContent =
       typeof buttonConfig.label === "string" && buttonConfig.label
         ? buttonConfig.label
@@ -278,4 +278,8 @@ export function initModals(root = document) {
       modal?.openModal(createCustomConfig(options));
     }
   };
+}
+
+if (typeof document !== "undefined") {
+  initModals();
 }

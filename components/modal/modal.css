@@ -146,41 +146,65 @@
   border-top: 1px solid rgba(210, 220, 235, 0.9);
 }
 
-body.modal-open {
-  overflow: hidden;
-}
-
-.ui-modal__footer .ui-button {
+.ui-modal__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 76px;
   min-height: 42px;
   padding: 0.72rem 1.15rem;
+  border: 1px solid transparent;
   border-radius: 10px;
+  background: #ffffff;
+  color: #334155;
+  font: inherit;
   font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
   box-shadow: none;
+  transition:
+    transform 140ms ease,
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
 }
 
-.ui-modal__footer .ui-button--secondary {
+.ui-modal__button:hover {
+  transform: translateY(-1px);
+}
+
+.ui-modal__button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.ui-modal__button--secondary {
   background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   border-color: #c9d6e8;
   color: #334155;
 }
 
-.ui-modal__footer .ui-button--secondary:hover {
+.ui-modal__button--secondary:hover {
   background: #f3f8fd;
   border-color: #afc3dc;
 }
 
-.ui-modal__footer .ui-button--primary {
+.ui-modal__button--primary {
   background: linear-gradient(180deg, #1fb8d4 0%, #0ea5c6 100%);
   color: #ffffff;
   border-color: transparent;
   box-shadow: 0 10px 22px rgba(14, 165, 198, 0.24);
 }
 
-.ui-modal__footer .ui-button--primary:hover {
+.ui-modal__button--primary:hover {
   background: linear-gradient(180deg, #26c3df 0%, #109bb8 100%);
   box-shadow: 0 14px 24px rgba(14, 165, 198, 0.28);
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 .ui-modal__body .ui-field {
@@ -256,7 +280,7 @@ body.modal-open {
     flex-direction: column-reverse;
   }
 
-  .ui-modal__footer .ui-button {
+  .ui-modal__button {
     width: 100%;
   }
 }

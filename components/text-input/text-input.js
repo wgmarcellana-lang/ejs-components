@@ -13,3 +13,7 @@ function initTextInput(element) {
 export function initTextInputs(root = document) {
   root.querySelectorAll("[data-component='text-input']").forEach(initTextInput);
 }
+
+if (typeof document !== "undefined") {
+  initTextInputs();
+}

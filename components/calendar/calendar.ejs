@@ -1,30 +1,26 @@
 <%
-  // Resolve props up front so the markup below stays readable.
-  const calendarProps = props && typeof props === "object" ? props : {};
-  const textOr = (value, fallback, requireValue = false) =>
-    typeof value === "string" && (!requireValue || value) ? value : fallback;
-
-  const calendarLabel = textOr(calendarProps.label, "Calendar");
-  const calendarName = textOr(calendarProps.name, "date", true);
-  const calendarSingleLabel = textOr(calendarProps.singleLabel, calendarLabel);
-  const calendarStartLabel = textOr(calendarProps.startLabel, "Start Date");
-  const calendarEndLabel = textOr(calendarProps.endLabel, "End Date");
-  const calendarStartName = textOr(calendarProps.startName, "startDate", true);
-  const calendarEndName = textOr(calendarProps.endName, "endDate", true);
-  const calendarStartValue = textOr(calendarProps.startValue, "");
-  const calendarEndValue = textOr(calendarProps.endValue, "");
-  const calendarHelper = textOr(calendarProps.helper, "");
-  const calendarMode = calendarProps.mode === "range" ? "range" : "single";
-  const calendarShowLabel = calendarProps.showLabel !== false;
-  const calendarAllowModeSwitch = calendarProps.allowModeSwitch === true;
-  const calendarRequired = calendarProps.required === true;
-  const calendarStandalone = calendarProps.standalone === true;
-  const isRange = calendarMode === "range";
+  const {
+    calendarLabel,
+    calendarName,
+    calendarSingleLabel,
+    calendarStartLabel,
+    calendarEndLabel,
+    calendarStartName,
+    calendarEndName,
+    calendarStartValue,
+    calendarEndValue,
+    calendarHelper,
+    calendarMode,
+    calendarShowLabel,
+    calendarAllowModeSwitch,
+    calendarRequired,
+    calendarStandalone,
+    isRange
+  } = loadConfig("./calendar.config.js", { props });
 %>
 
 <% if (calendarStandalone) { %>
-  <link rel="stylesheet" href="/components/text-input.css" />
-  <link rel="stylesheet" href="/components/calendar.css" />
+  <link rel="stylesheet" href="<%= asset('./calendar.css') %>" />
 <% } %>
 
 <div
@@ -92,8 +88,5 @@
 </div>
 
 <% if (calendarStandalone) { %>
-  <script type="module">
-    import { initCalendars } from "/components/calendar.js";
-    initCalendars();
-  </script>
+  <script type="module" src="<%= asset('./calendar.js') %>"></script>
 <% } %>

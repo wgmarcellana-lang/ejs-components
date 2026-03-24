@@ -1,20 +1,17 @@
 <%
-  // Resolve props up front so the markup below stays readable.
-  const buttonProps = props && typeof props === "object" ? props : {};
-  const textOr = (value, fallback, requireValue = false) =>
-    typeof value === "string" && (!requireValue || value) ? value : fallback;
-
-  const buttonLabel = textOr(buttonProps.label, "Button", true);
-  const buttonVariant = textOr(buttonProps.variant, "primary", true);
-  const buttonSize = textOr(buttonProps.size, "md", true);
-  const buttonType = textOr(buttonProps.type, "button", true);
-  const buttonAction = textOr(buttonProps.action, "");
-  const buttonDisabled = buttonProps.disabled === true;
-  const buttonStandalone = buttonProps.standalone === true;
+  const {
+    buttonLabel,
+    buttonVariant,
+    buttonSize,
+    buttonType,
+    buttonAction,
+    buttonDisabled,
+    buttonStandalone
+  } = loadConfig("./button.config.js", { props });
 %>
 
 <% if (buttonStandalone) { %>
-  <link rel="stylesheet" href="/components/button.css" />
+  <link rel="stylesheet" href="<%= asset('./button.css') %>" />
 <% } %>
 
 <button
@@ -33,8 +30,5 @@
 </button>
 
 <% if (buttonStandalone) { %>
-  <script type="module">
-    import { initButtons } from "/components/button.js";
-    initButtons();
-  </script>
+  <script type="module" src="<%= asset('./button.js') %>"></script>
 <% } %>

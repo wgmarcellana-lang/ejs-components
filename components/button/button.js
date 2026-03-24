@@ -20,3 +20,7 @@ function applyButtonConfig(button) {
 export function initButtons(root = document) {
   root.querySelectorAll("[data-component='button']").forEach(applyButtonConfig);
 }
+
+if (typeof document !== "undefined") {
+  initButtons();
+}

@@ -1,34 +1,23 @@
 <%
-  // Resolve props up front so the markup below stays readable.
-  const dropdownProps = props && typeof props === "object" ? props : {};
-  const textOr = (value, fallback, requireValue = false) =>
-    typeof value === "string" && (!requireValue || value) ? value : fallback;
-
-  const dropdownLabel = textOr(dropdownProps.label, "Dropdown");
-  const dropdownName = textOr(dropdownProps.name, "dropdown", true);
-  const dropdownPlaceholder = textOr(dropdownProps.placeholder, "Select an option");
-  const dropdownSearchPlaceholder = textOr(dropdownProps.searchPlaceholder, "Search options");
-  const dropdownEmptyText = textOr(dropdownProps.emptyText, "No matching options");
-  const dropdownHelper = textOr(dropdownProps.helper, "");
-  const dropdownMode = dropdownProps.mode === "multiple" ? "multiple" : "single";
-  const dropdownSearchable = dropdownProps.searchable === true;
-  const dropdownShowLabel = dropdownProps.showLabel !== false;
-  const dropdownStandalone = dropdownProps.standalone === true;
-  const dropdownOptions = Array.isArray(dropdownProps.options) ? dropdownProps.options : [];
-  const dropdownSelected = Array.isArray(dropdownProps.selected) ? dropdownProps.selected : [];
-  const dropdownSelectedOption = dropdownOptions.find(
-    (option) => option.value === dropdownSelected[0]
-  );
-  const dropdownSummary = !dropdownSelected.length
-    ? dropdownPlaceholder
-    : dropdownMode === "multiple"
-      ? `${dropdownSelected.length} selected`
-      : dropdownSelectedOption?.label || dropdownPlaceholder;
+  const {
+    dropdownLabel,
+    dropdownName,
+    dropdownPlaceholder,
+    dropdownSearchPlaceholder,
+    dropdownEmptyText,
+    dropdownHelper,
+    dropdownMode,
+    dropdownSearchable,
+    dropdownShowLabel,
+    dropdownStandalone,
+    dropdownOptions,
+    dropdownSelected,
+    dropdownSummary
+  } = loadConfig("./dropdown.config.js", { props });
 %>
 
 <% if (dropdownStandalone) { %>
-  <link rel="stylesheet" href="/components/text-input.css" />
-  <link rel="stylesheet" href="/components/dropdown.css" />
+  <link rel="stylesheet" href="<%= asset('./dropdown.css') %>" />
 <% } %>
 
 <div
@@ -83,8 +72,5 @@
 </div>
 
 <% if (dropdownStandalone) { %>
-  <script type="module">
-    import { initDropdowns } from "/components/dropdown.js";
-    initDropdowns();
-  </script>
+  <script type="module" src="<%= asset('./dropdown.js') %>"></script>
 <% } %>

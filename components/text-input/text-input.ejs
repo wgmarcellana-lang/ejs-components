@@ -1,22 +1,19 @@
 <%
-  // Resolve props up front so the markup below stays readable.
-  const inputProps = props && typeof props === "object" ? props : {};
-  const textOr = (value, fallback, requireValue = false) =>
-    typeof value === "string" && (!requireValue || value) ? value : fallback;
-
-  const inputLabel = textOr(inputProps.label, "Text Input");
-  const inputName = textOr(inputProps.name, "textInput", true);
-  const inputPlaceholder = textOr(inputProps.placeholder, "");
-  const inputHelper = textOr(inputProps.helper, "");
-  const inputType = textOr(inputProps.type, "text", true);
-  const inputValue = textOr(inputProps.value, "");
-  const inputRequired = inputProps.required === true;
-  const inputShowLabel = inputProps.showLabel !== false;
-  const inputStandalone = inputProps.standalone === true;
+  const {
+    inputLabel,
+    inputName,
+    inputPlaceholder,
+    inputHelper,
+    inputType,
+    inputValue,
+    inputRequired,
+    inputShowLabel,
+    inputStandalone
+  } = loadConfig("./text-input.config.js", { props });
 %>
 
 <% if (inputStandalone) { %>
-  <link rel="stylesheet" href="/components/text-input.css" />
+  <link rel="stylesheet" href="<%= asset('./text-input.css') %>" />
 <% } %>
 
 <label
@@ -43,8 +40,5 @@
 </label>
 
 <% if (inputStandalone) { %>
-  <script type="module">
-    import { initTextInputs } from "/components/text-input.js";
-    initTextInputs();
-  </script>
+  <script type="module" src="<%= asset('./text-input.js') %>"></script>
 <% } %>
