@@ -55,38 +55,103 @@
       </div>
     <% } %>
 
-    <div class="ui-calendar__inputs <%= isRange ? "ui-calendar__inputs--range" : "" %>" data-calendar-inputs>
-      <label class="ui-calendar__slot">
-        <% if (calendarShowInputLabels && (calendarSingleLabel || calendarStartLabel)) { %>
-          <span class="ui-calendar__slot-label" data-calendar-start-label><%= isRange ? calendarStartLabel : calendarSingleLabel %></span>
+    <div class="ui-calendar__inputs" data-calendar-inputs>
+      <label class="ui-calendar__slot <%= isRange ? "ui-calendar__slot--hidden" : "" %>" data-calendar-single-wrap>
+        <% if (calendarShowInputLabels && calendarSingleLabel) { %>
+          <span class="ui-calendar__slot-label"><%= calendarSingleLabel %></span>
         <% } %>
-        <input
-          class="ui-calendar__control"
-          type="date"
-          data-calendar-start-input
-          name="<%= isRange ? calendarStartName : calendarName %>"
-          value="<%= calendarStartValue %>"
-          aria-label="<%= isRange ? (calendarStartLabel || "Start Date") : (calendarSingleLabel || "Date") %>"
-          <%= calendarRequired ? "required" : "" %>
-        />
+        <div class="ui-calendar__display-field">
+          <button
+            class="ui-calendar__control ui-calendar__display"
+            type="button"
+            data-calendar-single-trigger
+            aria-label="<%= calendarSingleLabel || "Date" %>"
+          >
+            <span class="ui-calendar__display-text" data-calendar-single-display>MM/DD/YYYY</span>
+            <span class="ui-calendar__icon" aria-hidden="true">CAL</span>
+          </button>
+          <input
+            type="hidden"
+            data-calendar-single-input
+            name="<%= isRange ? "" : calendarName %>"
+            value="<%= calendarStartValue %>"
+            <%= isRange ? "disabled" : "" %>
+            <%= calendarRequired ? "required" : "" %>
+          />
+        </div>
       </label>
 
-      <!-- end date for range -->
-      <label class="ui-calendar__slot <%= isRange ? "" : "ui-calendar__slot--hidden" %>" data-calendar-end-wrap>
-        <% if (calendarShowInputLabels && calendarEndLabel) { %>
-          <span class="ui-calendar__slot-label" data-calendar-end-label><%= calendarEndLabel %></span>
-        <% } %>
-        <input
-          class="ui-calendar__control"
-          type="date"
-          data-calendar-end-input
-          name="<%= calendarEndName %>"
-          value="<%= calendarEndValue %>"
-          aria-label="<%= calendarEndLabel || "End Date" %>"
-          <%= !isRange ? "disabled" : "" %>
-          <%= calendarRequired ? "required" : "" %>
-        />
-      </label>
+      <div class="ui-calendar__range <%= isRange ? "" : "ui-calendar__range--hidden" %>" data-calendar-range-wrap>
+        <div class="ui-calendar__range-fields">
+          <label class="ui-calendar__slot">
+            <% if (calendarShowInputLabels && calendarStartLabel) { %>
+              <span class="ui-calendar__slot-label"><%= calendarStartLabel %></span>
+            <% } %>
+            <div class="ui-calendar__display-field">
+              <button
+                class="ui-calendar__control ui-calendar__display"
+                type="button"
+                data-calendar-start-trigger
+                aria-label="<%= calendarStartLabel || "Start Date" %>"
+              >
+                <span class="ui-calendar__display-text" data-calendar-start-display>MM/DD/YYYY</span>
+                <span class="ui-calendar__icon" aria-hidden="true">CAL</span>
+              </button>
+              <input
+                type="hidden"
+                data-calendar-start-input
+                name="<%= calendarStartName %>"
+                value="<%= calendarStartValue %>"
+                <%= !isRange ? "disabled" : "" %>
+              />
+            </div>
+          </label>
+
+          <label class="ui-calendar__slot">
+            <% if (calendarShowInputLabels && calendarEndLabel) { %>
+              <span class="ui-calendar__slot-label"><%= calendarEndLabel %></span>
+            <% } %>
+            <div class="ui-calendar__display-field">
+              <button
+                class="ui-calendar__control ui-calendar__display"
+                type="button"
+                data-calendar-end-trigger
+                aria-label="<%= calendarEndLabel || "End Date" %>"
+              >
+                <span class="ui-calendar__display-text" data-calendar-end-display>MM/DD/YYYY</span>
+                <span class="ui-calendar__icon" aria-hidden="true">CAL</span>
+              </button>
+              <input
+                type="hidden"
+                data-calendar-end-input
+                name="<%= calendarEndName %>"
+                value="<%= calendarEndValue %>"
+                <%= !isRange ? "disabled" : "" %>
+              />
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="ui-calendar__panel" data-calendar-panel hidden>
+        <div class="ui-calendar__panel-header">
+          <button class="ui-calendar__nav" type="button" data-calendar-prev aria-label="Previous month">&lt;</button>
+          <h3 class="ui-calendar__title" data-calendar-title></h3>
+          <button class="ui-calendar__nav" type="button" data-calendar-next aria-label="Next month">&gt;</button>
+        </div>
+
+        <div class="ui-calendar__weekdays" aria-hidden="true">
+          <span>Sun</span>
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+        </div>
+
+        <div class="ui-calendar__grid" data-calendar-grid></div>
+      </div>
     </div>
   </div>
 

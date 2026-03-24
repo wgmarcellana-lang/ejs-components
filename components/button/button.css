@@ -46,13 +46,13 @@
 }
 
 .ui-button--primary {
-  background: linear-gradient(135deg, #6f49d7 0%, #4b1d6b 100%);
+  background: linear-gradient(135deg, #6f49d7 0%, #592a81 100%);
   color: #fff;
-  box-shadow: 0 12px 24px rgba(75, 29, 107, 0.24);
+  box-shadow: 0 12px 24px rgba(89, 42, 129, 0.24);
 }
 
 .ui-button--primary:hover {
-  box-shadow: 0 16px 28px rgba(75, 29, 107, 0.28);
+  box-shadow: 0 16px 28px rgba(89, 42, 129, 0.28);
 }
 
 .ui-button--secondary {
