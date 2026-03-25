@@ -6,6 +6,9 @@
     inputHelper,
     inputType,
     inputValue,
+    inputId,
+    inputAutocomplete,
+    inputToggleLabel,
     inputRequired,
     inputShowLabel,
     inputStandalone
@@ -20,19 +23,36 @@
   class="ui-field ui-text-input"
   data-component="text-input"
   data-show-label="<%= String(inputShowLabel) %>"
+  data-has-toggle="<%= String(inputType === "password") %>"
 >
   <% if (inputShowLabel && inputLabel) { %>
     <span class="ui-field__label"><%= inputLabel %></span>
   <% } %>
 
-  <input
-    class="ui-text-input__control"
-    type="<%= inputType %>"
-    name="<%= inputName %>"
-    placeholder="<%= inputPlaceholder %>"
-    value="<%= inputValue %>"
-    <%= inputRequired ? "required" : "" %>
-  />
+  <span class="ui-text-input__control-wrap">
+    <input
+      class="ui-text-input__control"
+      type="<%= inputType %>"
+      <%- inputId ? `id="${inputId}"` : "" %>
+      name="<%= inputName %>"
+      placeholder="<%= inputPlaceholder %>"
+      value="<%= inputValue %>"
+      <%- inputAutocomplete ? `autocomplete="${inputAutocomplete}"` : "" %>
+      <%= inputRequired ? "required" : "" %>
+    />
+
+    <% if (inputType === "password") { %>
+      <button
+        class="ui-text-input__toggle"
+        type="button"
+        data-password-toggle
+        aria-pressed="false"
+        aria-label="<%= inputToggleLabel %>"
+      >
+        Show
+      </button>
+    <% } %>
+  </span>
 
   <% if (inputHelper) { %>
     <span class="ui-field__helper"><%= inputHelper %></span>

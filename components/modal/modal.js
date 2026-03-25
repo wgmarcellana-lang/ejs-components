@@ -1,3 +1,5 @@
+import { initTextInputs } from "../text-input/text-input.js";
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -109,6 +111,7 @@ function renderBody(body, config) {
 
   if (config.bodyHtml) {
     body.innerHTML = config.bodyHtml;
+    initTextInputs(body);
     return;
   }
 

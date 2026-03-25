@@ -6,6 +6,8 @@ const app = express();
 const rootDir = __dirname;
 const port = process.env.PORT || 3000;
 
+app.use(express.json());
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -108,6 +110,14 @@ app.get("/", (_req, res) => {
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
+});
+
+app.post("/api/demo-form", (req, res) => {
+  res.json({
+    ok: true,
+    receivedAt: new Date().toISOString(),
+    payload: req.body && typeof req.body === "object" ? req.body : {}
+  });
 });
 
 app.listen(port, () => {

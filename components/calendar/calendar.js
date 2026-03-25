@@ -62,6 +62,24 @@ function formatMonthTitle(date) {
   }).format(date);
 }
 
+// month choose
+function getMonthOptions() {
+  return Array.from({ length: 12 }, (_value, index) => ({
+    value: String(index),
+    label: new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      timeZone: "UTC"
+    }).format(createUtcDate(2024, index, 1))
+  }));
+}
+
+function getYearOptions(baseYear) {
+  return Array.from({ length: 21 }, (_value, index) => {
+    const year = baseYear - 10 + index;
+    return { value: String(year), label: String(year) };
+  });
+}
+
 function addMonths(date, delta) {
   return createUtcDate(date.getUTCFullYear(), date.getUTCMonth() + delta, 1);
 }
@@ -153,6 +171,8 @@ function initCalendar(element) {
   const grid = element.querySelector("[data-calendar-grid]");
   const prevButton = element.querySelector("[data-calendar-prev]");
   const nextButton = element.querySelector("[data-calendar-next]");
+  const monthSelect = element.querySelector("[data-calendar-month]");
+  const yearSelect = element.querySelector("[data-calendar-year]");
 
   if (
     !singleWrap ||
@@ -167,10 +187,11 @@ function initCalendar(element) {
     !startDisplay ||
     !endDisplay ||
     !panel ||
-    !title ||
     !grid ||
     !prevButton ||
-    !nextButton
+    !nextButton ||
+    !monthSelect ||
+    !yearSelect
   ) {
     return;
   }
@@ -195,6 +216,8 @@ function initCalendar(element) {
       parseIsoDate(singleInput.value) ||
       getTodayUtc()
   };
+
+  const monthOptions = getMonthOptions();
 
   function syncTriggerStates() {
     singleTrigger.dataset.panelOpen = String(state.isOpen && state.mode === "single");
@@ -227,6 +250,46 @@ function initCalendar(element) {
     endDisplay.dataset.hasValue = String(Boolean(state.rangeEnd));
   }
 
+  function emitChange() {
+    const detail = {
+      component: "calendar",
+      mode: state.mode,
+      values: {
+        [config.name]: state.mode === "single" ? formatIsoDate(state.singleDate) : "",
+        [config.startName]: state.mode === "range" ? formatIsoDate(state.rangeStart) : "",
+        [config.endName]: state.mode === "range" ? formatIsoDate(state.rangeEnd) : ""
+      }
+    };
+
+    element.dispatchEvent(
+      new CustomEvent("component:change", {
+        bubbles: true,
+        detail
+      })
+    );
+  }
+
+  function syncPickerOptions() {
+    const viewYear = state.viewDate.getUTCFullYear();
+    const years = getYearOptions(viewYear);
+
+    monthSelect.innerHTML = monthOptions
+      .map(
+        (option) =>
+          `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`
+      )
+      .join("");
+    yearSelect.innerHTML = years
+      .map(
+        (option) =>
+          `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`
+      )
+      .join("");
+
+    monthSelect.value = String(state.viewDate.getUTCMonth());
+    yearSelect.value = String(viewYear);
+  }
+
   function renderCalendar() {
     if (!state.isOpen) {
       panel.hidden = true;
@@ -236,7 +299,7 @@ function initCalendar(element) {
 
     panel.hidden = false;
     syncTriggerStates();
-    title.textContent = formatMonthTitle(state.viewDate);
+    syncPickerOptions();
 
     const cells = getMonthCells(state.viewDate);
 
@@ -322,6 +385,7 @@ function initCalendar(element) {
     syncSingleState();
     syncRangeState();
     renderCalendar();
+    emitChange();
   }
 
   function setViewDate(date) {
@@ -351,6 +415,7 @@ function initCalendar(element) {
     setViewDate(nextDate);
     syncRangeState();
     renderCalendar();
+    emitChange();
   }
 
   function handleSingleSelection(nextDate) {
@@ -358,6 +423,8 @@ function initCalendar(element) {
     setViewDate(nextDate);
     syncSingleState();
     renderCalendar();
+    emitChange();
+    closePanel();
   }
 
   function openPanel(boundary) {
@@ -474,6 +541,24 @@ function initCalendar(element) {
     renderCalendar();
   });
 
+  monthSelect.addEventListener("change", () => {
+    state.viewDate = createUtcDate(
+      state.viewDate.getUTCFullYear(),
+      Number(monthSelect.value),
+      1
+    );
+    renderCalendar();
+  });
+
+  yearSelect.addEventListener("change", () => {
+    state.viewDate = createUtcDate(
+      Number(yearSelect.value),
+      state.viewDate.getUTCMonth(),
+      1
+    );
+    renderCalendar();
+  });
+
   document.addEventListener("pointerdown", (event) => {
     if (!element.contains(event.target)) {
       closePanel();
@@ -505,6 +590,7 @@ function initCalendar(element) {
   };
 
   syncMode(state.mode);
+  emitChange();
   element.dataset.calendarInitialized = "true";
 }
 

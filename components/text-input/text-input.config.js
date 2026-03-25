@@ -13,6 +13,9 @@ module.exports = ({ props }) => {
     inputHelper: textOr(inputProps.helper, ""),
     inputType: textOr(inputProps.type, "text", true),
     inputValue: textOr(inputProps.value, ""),
+    inputId: textOr(inputProps.id, ""),
+    inputAutocomplete: textOr(inputProps.autocomplete, ""),
+    inputToggleLabel: textOr(inputProps.toggleLabel, "Show password"),
     inputRequired: inputProps.required === true,
     inputShowLabel: inputProps.showLabel !== false && Boolean(inputLabel),
     inputStandalone: inputProps.standalone === true

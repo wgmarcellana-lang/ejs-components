@@ -26,7 +26,8 @@
                 label: "Text Input",
                 name: "textTest",
                 placeholder: "Enter text",
-                required: true
+                type: "text",
+                required: true,
               }
             }) %>
 
@@ -64,6 +65,14 @@
               }
             }) %>
           </div>
+
+          <!-- for testing only -->
+          <section class="form-output" aria-live="polite">
+            <div class="form-output__header">
+              <h2>Submission Response</h2>
+            </div>
+            <pre class="form-output__code" data-demo-output>No submission yet.</pre>
+          </section>
 
           <!-- buttons -->
           <div class="form-actions">
@@ -107,16 +116,24 @@
         cancelText: "Cancel",
         confirmText: "OK",
         confirmVariant: "primary",
-        bodyHtml: `
-          <div class="ui-field">
-            <label for="modal-username">Username</label>
-            <input id="modal-username" type="text" placeholder="Enter username" />
-          </div>
-          <div class="ui-field">
-            <label for="modal-password">Password</label>
-            <input id="modal-password" type="password" placeholder="Enter password" />
-          </div>
-        `,
+        bodyHtml: include("../components/text-input/text-input.ejs", {
+          props: {
+            label: "Username",
+            id: "modal-username",
+            name: "modalUsername",
+            placeholder: "Enter username",
+            type: "text"
+          }
+        }) + include("../components/text-input/text-input.ejs", {
+          props: {
+            label: "Password",
+            id: "modal-password",
+            name: "modalPassword",
+            placeholder: "Enter password",
+            type: "password",
+            autocomplete: "current-password"
+          }
+        }),
         buttons: [
           { label: "Cancel", variant: "secondary", close: true },
           { label: "Save", variant: "primary", close: true }

@@ -29,6 +29,7 @@
   data-show-label="<%= String(dropdownShowLabel) %>"
   data-searchable="<%= String(dropdownSearchable) %>"
   data-empty-text="<%= dropdownEmptyText %>"
+  data-has-options="<%= String(dropdownOptions.length > 0) %>"
 >
   <% if (dropdownShowLabel && dropdownLabel) { %>
     <span class="ui-field__label"><%= dropdownLabel %></span>
@@ -44,7 +45,7 @@
     </button>
 
     <div class="ui-dropdown__panel" data-dropdown-panel hidden>
-      <% if (dropdownSearchable) { %>
+      <% if (dropdownSearchable && dropdownOptions.length > 0) { %>
         <!-- search -->
         <div class="ui-dropdown__search-wrap">
           <input

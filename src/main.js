@@ -4,15 +4,60 @@ import { initDropdowns } from "../components/dropdown/dropdown.js";
 import { initCalendars } from "../components/calendar/calendar.js";
 import { initModals } from "../components/modal/modal.js";
 
-function serializeForm(form) {
-  const formData = new FormData(form);
+function buildInitialFormState(form) {
   const payload = {};
+  const fields = form.querySelectorAll("input[name]:not([type='hidden']), textarea[name], select[name]");
 
-  formData.forEach((value, key) => {
-    if (payload[key]) {
-      payload[key] = [].concat(payload[key], value);
-    } else {
-      payload[key] = value;
+  fields.forEach((field) => {
+    if (field.type === "radio" || field.type === "checkbox") {
+      return;
+    }
+
+    payload[field.name] = field.value || "";
+  });
+
+  form.querySelectorAll("[data-component='dropdown']").forEach((element) => {
+    const name = element.dataset.name;
+    const isMultiple = element.dataset.mode === "multiple";
+    const selectedScript = element.querySelector("[data-dropdown-selected]");
+    let selectedValues = [];
+
+    if (selectedScript) {
+      try {
+        const parsed = JSON.parse(selectedScript.textContent || "[]");
+        selectedValues = Array.isArray(parsed) ? parsed : [];
+      } catch (_error) {
+        selectedValues = [];
+      }
+    }
+
+    if (name) {
+      payload[name] = isMultiple ? selectedValues : selectedValues[0] || "";
+    }
+  });
+
+  form.querySelectorAll("[data-component='calendar']").forEach((element) => {
+    const mode = element.dataset.mode === "range" ? "range" : "single";
+
+    if (mode === "range") {
+      const startName = element.dataset.startName;
+      const endName = element.dataset.endName;
+
+      if (startName) {
+        payload[startName] = element.querySelector("[data-calendar-start-input]")?.value || "";
+      }
+
+      if (endName) {
+        payload[endName] = element.querySelector("[data-calendar-end-input]")?.value || "";
+      }
+
+      return;
+    }
+
+    const name = element.dataset.name;
+
+    if (name) {
+      payload[name] = element.querySelector("[data-calendar-single-input]")?.value || "";
     }
   });
 
@@ -31,11 +76,103 @@ function setupDemoForm() {
     return;
   }
 
-  form.addEventListener("submit", (event) => {
+  let formState = buildInitialFormState(form);
+
+  function resetState() {
+    formState = buildInitialFormState(form);
+  }
+
+  function writeOutput(value) {
+    if (output) {
+      output.textContent = value;
+    }
+  }
+
+  form.addEventListener("component:change", (event) => {
+    const detail = event.detail || {};
+
+    if (detail.component === "calendar" && detail.values && typeof detail.values === "object") {
+      formState = {
+        ...formState,
+        ...detail.values
+      };
+      return;
+    }
+
+    if (typeof detail.name === "string") {
+      formState = {
+        ...formState,
+        [detail.name]: detail.value
+      };
+    }
+  });
+
+  form.addEventListener("input", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    if (!target.name || target.closest("[data-component='text-input']") == null) {
+      return;
+    }
+
+    formState = {
+      ...formState,
+      [target.name]: target.value
+    };
+  });
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (output) {
-      output.textContent = JSON.stringify(serializeForm(form), null, 2);
+    try {
+      const response = await fetch("/api/demo-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formState)
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const rawBody = await response.text();
+      let result;
+
+      if (contentType.includes("application/json")) {
+        result = rawBody ? JSON.parse(rawBody) : {};
+      } else {
+        result = {
+          ok: false,
+          status: response.status,
+          error: "Expected JSON response but received a different content type.",
+          contentType,
+          bodyPreview: rawBody.slice(0, 240)
+        };
+      }
+
+      if (!response.ok && result.ok !== false) {
+        result = {
+          ok: false,
+          status: response.status,
+          error: "Request failed.",
+          response: result
+        };
+      }
+
+      writeOutput(JSON.stringify(result, null, 2));
+    } catch (error) {
+      writeOutput(
+        JSON.stringify(
+          {
+            ok: false,
+            error: error instanceof Error ? error.message : "Submission failed"
+          },
+          null,
+          2
+        )
+      );
     }
   });
 
@@ -62,10 +199,11 @@ function setupDemoForm() {
         }
       });
 
-    if (output) {
-      output.textContent = "No submission yet.";
-    }
+    resetState();
+    writeOutput("No submission yet.");
   });
+
+  resetState();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

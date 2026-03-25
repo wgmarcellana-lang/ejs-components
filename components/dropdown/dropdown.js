@@ -104,11 +104,6 @@ function renderOptions(list, searchValue, state, config) {
                 />
                 <span>${escapeHtml(option.label)}</span>
               </span>
-              ${
-                config.mode === "multiple"
-                  ? `<span class="ui-dropdown__indicator">${selected ? "Selected" : "Add"}</span>`
-                  : ""
-              }
             </label>
           `;
         })
@@ -132,6 +127,7 @@ function initDropdown(element) {
     showLabel: element.dataset.showLabel !== "false",
     mode: element.dataset.mode === "multiple" ? "multiple" : "single",
     searchable: toBoolean(element.dataset.searchable),
+    hasOptions: toBoolean(element.dataset.hasOptions),
     options
   };
 
@@ -146,6 +142,7 @@ function initDropdown(element) {
   const hiddenInputs = element.querySelector("[data-dropdown-inputs]");
   const searchInput = element.querySelector("[data-dropdown-search]");
   const tags = element.querySelector("[data-dropdown-tags]");
+  const searchWrap = element.querySelector(".ui-dropdown__search-wrap");
 
   if (!trigger || !panel || !summary || !optionsList || !hiddenInputs) {
     return;
@@ -155,13 +152,33 @@ function initDropdown(element) {
     return config.options.filter((option) => state.selectedValues.includes(option.value));
   }
 
+  function emitChange() {
+    const values = config.mode === "multiple" ? [...state.selectedValues] : state.selectedValues[0] || "";
+
+    element.dispatchEvent(
+      new CustomEvent("component:change", {
+        bubbles: true,
+        detail: {
+          component: "dropdown",
+          name: config.name,
+          value: values
+        }
+      })
+    );
+  }
+
   function syncUi() {
     const pickedOptions = selectedOptions();
     summary.textContent = getSummary(config, pickedOptions);
     summary.dataset.hasSelection = String(pickedOptions.length > 0);
+    element.dataset.hasSelection = String(pickedOptions.length > 0);
     renderTags(tags, pickedOptions);
     renderHiddenInputs(hiddenInputs, config, pickedOptions);
     renderOptions(optionsList, searchInput?.value || "", state, config);
+
+    if (searchWrap) {
+      searchWrap.hidden = !config.hasOptions;
+    }
   }
 
   function closePanel() {
@@ -206,6 +223,7 @@ function initDropdown(element) {
     }
 
     syncUi();
+    emitChange();
   });
 
   searchInput?.addEventListener("input", () => {
@@ -228,10 +246,12 @@ function initDropdown(element) {
 
     syncUi();
     closePanel();
+    emitChange();
   };
 
   element.dataset.dropdownInitialized = "true";
   syncUi();
+  emitChange();
 }
 
 export function initDropdowns(root = document) {
