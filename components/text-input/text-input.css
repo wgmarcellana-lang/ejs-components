@@ -1,7 +1,6 @@
-/* ── Default tokens — override in your project's :root ── */
 :root {
-  --input-border: #d6d8e3;
-  --input-border-strong: #a0a8bd;
+  --input-border: #ddd4f0;
+  --input-border-strong: #bcaadf;
 }
 
 .ui-field {
@@ -10,16 +9,16 @@
 }
 
 .ui-field__label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #5a5175;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #554d6e;
   letter-spacing: 0.01em;
 }
 
 .ui-field__helper {
-  color: #6b7288;
-  font-size: 0.78rem;
-  line-height: 1.5;
+  color: #756c8d;
+  font-size: 0.8rem;
+  line-height: 1.6;
 }
 
 .ui-text-input {
@@ -36,21 +35,21 @@
 .ui-text-input__control {
   width: 100%;
   min-height: 50px;
-  padding: 0.85rem 1rem;
+  padding: 0.88rem 1rem;
   border-radius: 1rem;
   border: 1px solid var(--input-border);
-  background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
   font: inherit;
-  font-size: 0.875rem;
-  color: #16132a;
+  font-size: 0.9rem;
+  color: #1f1830;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 6px 18px rgba(15, 23, 42, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 8px 22px rgba(15, 23, 42, 0.05);
   transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
 }
 
 .ui-text-input[data-has-toggle="true"] .ui-text-input__control {
-  padding-right: 4.8rem;
+  padding-right: 5.2rem;
 }
 
 .ui-text-input__control:hover {
@@ -62,39 +61,46 @@
   outline: none;
   border-color: #7a55db;
   box-shadow:
-    0 0 0 4px rgba(111, 73, 215, 0.12),
+    var(--focus-ring, 0 0 0 4px rgba(111, 73, 215, 0.12)),
     inset 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .ui-text-input__control:disabled {
-  background: #f5f4f8;
-  color: #98a1b2;
+  background: #f6f3fb;
+  color: #9a93ac;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .ui-text-input__toggle {
   position: absolute;
-  right: 0.9rem;
+  right: 0.7rem;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2rem;
-  border: 0;
-  background: transparent;
+  min-height: 2.15rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(111, 73, 215, 0.14);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #faf8ff 0%, #f1ebff 100%);
   color: #6f49d7;
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 0.25rem;
   line-height: 1;
   z-index: 1;
+  transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.ui-text-input__toggle:hover {
+  border-color: rgba(111, 73, 215, 0.22);
+  background: #f7f2ff;
 }
 
 .ui-text-input__toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(111, 73, 215, 0.12);
-  border-radius: 999px;
+  box-shadow: var(--focus-ring, 0 0 0 4px rgba(111, 73, 215, 0.12));
 }
