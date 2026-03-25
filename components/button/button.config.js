@@ -7,7 +7,7 @@ module.exports = ({ props }) => {
 
   return {
     label: textOr(buttonProps.label, "Button", true),
-    variant: textOr(buttonProps.variant, "primary", true),
+    variant: textOr(buttonProps.variant, "secondary", true),
     size: textOr(buttonProps.size, "md", true),
     type: textOr(buttonProps.type, "button", true),
     action: textOr(buttonProps.action, ""),

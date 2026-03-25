@@ -119,9 +119,10 @@ function initDropdown(element) {
 
   const options = parseJsonScript(element, "[data-dropdown-options]");
   const initialSelected = parseJsonScript(element, "[data-dropdown-selected]");
+  const name = element.dataset.name;
   const config = {
-    name: element.dataset.name || "dropdown",
-    groupName: `${element.dataset.name || "dropdown"}-selection`,
+    name,
+    groupName: `${name}-selection`,
     placeholder: element.dataset.placeholder || "Select an option",
     emptyText: element.dataset.emptyText || "No matching options",
     showLabel: element.dataset.showLabel !== "false",

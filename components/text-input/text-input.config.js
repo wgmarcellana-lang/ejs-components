@@ -2,13 +2,21 @@ function textOr(value, fallback, requireValue = false) {
   return typeof value === "string" && (!requireValue || value) ? value : fallback;
 }
 
+function requiredText(value, propName) {
+  if (typeof value === "string" && value) {
+    return value;
+  }
+
+  throw new Error(`text-input requires a non-empty "${propName}" prop`);
+}
+
 module.exports = ({ props }) => {
   const inputProps = props && typeof props === "object" ? props : {};
   const label = textOr(inputProps.label, "");
 
   return {
     label,
-    name: textOr(inputProps.name, "textInput", true),
+    name: requiredText(inputProps.name, "name"),
     placeholder: textOr(inputProps.placeholder, ""),
     helper: textOr(inputProps.helper, ""),
     type: textOr(inputProps.type, "text", true),

@@ -2,6 +2,14 @@ function textOr(value, fallback, requireValue = false) {
   return typeof value === "string" && (!requireValue || value) ? value : fallback;
 }
 
+function requiredText(value, propName) {
+  if (typeof value === "string" && value) {
+    return value;
+  }
+
+  throw new Error(`modal requires a non-empty "${propName}" prop`);
+}
+
 module.exports = ({ props }) => {
   const modalProps = props && typeof props === "object" ? props : {};
   const title = textOr(modalProps.title, "Modal");
@@ -10,7 +18,7 @@ module.exports = ({ props }) => {
     : "message";
 
   return {
-    id: textOr(modalProps.id, "ui-modal", true),
+    id: requiredText(modalProps.id, "id"),
     title,
     standalone: modalProps.standalone === true,
     config: {

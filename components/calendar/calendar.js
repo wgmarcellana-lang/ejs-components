@@ -144,7 +144,7 @@ function initCalendar(element) {
 
   const config = {
     mode: getMode(element.dataset.mode),
-    name: element.dataset.name || "date",
+    name: element.dataset.name || "",
     startName: element.dataset.startName || "startDate",
     endName: element.dataset.endName || "endDate",
     singleLabel: element.dataset.singleLabel || "",

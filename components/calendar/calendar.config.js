@@ -2,19 +2,32 @@ function textOr(value, fallback, requireValue = false) {
   return typeof value === "string" && (!requireValue || value) ? value : fallback;
 }
 
+function requiredText(value, propName) {
+  if (typeof value === "string" && value) {
+    return value;
+  }
+
+  throw new Error(`calendar requires a non-empty "${propName}" prop`);
+}
+
 module.exports = ({ props }) => {
   const calendarProps = props && typeof props === "object" ? props : {};
   const label = textOr(calendarProps.label, "");
   const mode = calendarProps.mode === "range" ? "range" : "single";
+  const isRange = mode === "range";
 
   return {
     label,
-    name: textOr(calendarProps.name, "date", true),
+    name: requiredText(calendarProps.name, "name"),
     singleLabel: textOr(calendarProps.singleLabel, ""),
     startLabel: textOr(calendarProps.startLabel, ""),
     endLabel: textOr(calendarProps.endLabel, ""),
-    startName: textOr(calendarProps.startName, "startDate", true),
-    endName: textOr(calendarProps.endName, "endDate", true),
+    startName: isRange
+      ? requiredText(calendarProps.startName, "startName")
+      : textOr(calendarProps.startName, "startDate", true),
+    endName: isRange
+      ? requiredText(calendarProps.endName, "endName")
+      : textOr(calendarProps.endName, "endDate", true),
     startValue: textOr(calendarProps.startValue, ""),
     endValue: textOr(calendarProps.endValue, ""),
     helper: textOr(calendarProps.helper, ""),
@@ -24,6 +37,6 @@ module.exports = ({ props }) => {
     allowModeSwitch: calendarProps.allowModeSwitch === true,
     required: calendarProps.required === true,
     standalone: calendarProps.standalone === true,
-    isRange: mode === "range",
+    isRange,
   };
 };

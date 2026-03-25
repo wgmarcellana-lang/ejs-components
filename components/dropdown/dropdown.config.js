@@ -2,6 +2,14 @@ function textOr(value, fallback, requireValue = false) {
   return typeof value === "string" && (!requireValue || value) ? value : fallback;
 }
 
+function requiredText(value, propName) {
+  if (typeof value === "string" && value) {
+    return value;
+  }
+
+  throw new Error(`dropdown requires a non-empty "${propName}" prop`);
+}
+
 module.exports = ({ props }) => {
   const dropdownProps = props && typeof props === "object" ? props : {};
   const label = textOr(dropdownProps.label, "");
@@ -13,7 +21,7 @@ module.exports = ({ props }) => {
 
   return {
     label,
-    name: textOr(dropdownProps.name, "dropdown", true),
+    name: requiredText(dropdownProps.name, "name"),
     placeholder,
     searchPlaceholder: textOr(dropdownProps.searchPlaceholder, "Search options"),
     emptyText: textOr(dropdownProps.emptyText, "No matching options"),
