@@ -1,34 +1,26 @@
 <%
-  const {
-    buttonLabel,
-    buttonVariant,
-    buttonSize,
-    buttonType,
-    buttonAction,
-    buttonDisabled,
-    buttonStandalone
-  } = loadConfig("./button.config.js", { props });
+  const btn = loadConfig("./button.config.js", { props });
 %>
 
-<% if (buttonStandalone) { %>
+<% if (btn.standalone) { %>
   <link rel="stylesheet" href="<%= asset('./button.css') %>" />
 <% } %>
 
 <button
-  type="<%= buttonType %>"
-  class="ui-button ui-button--<%= buttonVariant %> ui-button--<%= buttonSize %>"
+  type="<%= btn.type %>"
+  class="ui-button ui-button--<%= btn.variant %> ui-button--<%= btn.size %>"
   data-component="button"
-  data-label="<%= buttonLabel %>"
-  data-type="<%= buttonType %>"
-  data-variant="<%= buttonVariant %>"
-  data-size="<%= buttonSize %>"
-  data-disabled="<%= String(buttonDisabled) %>"
-  <%- buttonAction ? `data-action="${buttonAction}"` : "" %>
-  <%= buttonDisabled ? "disabled" : "" %>
+  data-label="<%= btn.label %>"
+  data-type="<%= btn.type %>"
+  data-variant="<%= btn.variant %>"
+  data-size="<%= btn.size %>"
+  data-disabled="<%= String(btn.disabled) %>"
+  <%- btn.action ? `data-action="${btn.action}"` : "" %>
+  <%= btn.disabled ? "disabled" : "" %>
 >
-  <%= buttonLabel %>
+  <%= btn.label %>
 </button>
 
-<% if (buttonStandalone) { %>
+<% if (btn.standalone) { %>
   <script type="module" src="<%= asset('./button.js') %>"></script>
 <% } %>

@@ -1,64 +1,51 @@
 <%
-  const {
-    inputLabel,
-    inputName,
-    inputPlaceholder,
-    inputHelper,
-    inputType,
-    inputValue,
-    inputId,
-    inputAutocomplete,
-    inputToggleLabel,
-    inputRequired,
-    inputShowLabel,
-    inputStandalone
-  } = loadConfig("./text-input.config.js", { props });
+  const input = loadConfig("./text-input.config.js", { props });
 %>
 
-<% if (inputStandalone) { %>
+<% if (input.standalone) { %>
   <link rel="stylesheet" href="<%= asset('./text-input.css') %>" />
 <% } %>
 
 <label
   class="ui-field ui-text-input"
   data-component="text-input"
-  data-show-label="<%= String(inputShowLabel) %>"
-  data-has-toggle="<%= String(inputType === "password") %>"
+  data-show-label="<%= String(input.showLabel) %>"
+  data-has-toggle="<%= String(input.type === "password") %>"
 >
-  <% if (inputShowLabel && inputLabel) { %>
-    <span class="ui-field__label"><%= inputLabel %></span>
+  <% if (input.showLabel && input.label) { %>
+    <span class="ui-field__label"><%= input.label %></span>
   <% } %>
 
   <span class="ui-text-input__control-wrap">
     <input
       class="ui-text-input__control"
-      type="<%= inputType %>"
-      <%- inputId ? `id="${inputId}"` : "" %>
-      name="<%= inputName %>"
-      placeholder="<%= inputPlaceholder %>"
-      value="<%= inputValue %>"
-      <%- inputAutocomplete ? `autocomplete="${inputAutocomplete}"` : "" %>
-      <%= inputRequired ? "required" : "" %>
+      type="<%= input.type %>"
+      <%- input.id ? `id="${input.id}"` : "" %>
+      name="<%= input.name %>"
+      placeholder="<%= input.placeholder %>"
+      value="<%= input.value %>"
+      <%- input.autocomplete ? `autocomplete="${input.autocomplete}"` : "" %>
+      <%= input.required ? "required" : "" %>
     />
 
-    <% if (inputType === "password") { %>
+    <% if (input.type === "password") { %>
       <button
         class="ui-text-input__toggle"
         type="button"
         data-password-toggle
         aria-pressed="false"
-        aria-label="<%= inputToggleLabel %>"
+        aria-label="<%= input.toggleLabel %>"
       >
         Show
       </button>
     <% } %>
   </span>
 
-  <% if (inputHelper) { %>
-    <span class="ui-field__helper"><%= inputHelper %></span>
+  <% if (input.helper) { %>
+    <span class="ui-field__helper"><%= input.helper %></span>
   <% } %>
 </label>
 
-<% if (inputStandalone) { %>
+<% if (input.standalone) { %>
   <script type="module" src="<%= asset('./text-input.js') %>"></script>
 <% } %>

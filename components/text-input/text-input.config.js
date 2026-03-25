@@ -4,20 +4,20 @@ function textOr(value, fallback, requireValue = false) {
 
 module.exports = ({ props }) => {
   const inputProps = props && typeof props === "object" ? props : {};
-  const inputLabel = textOr(inputProps.label, "");
+  const label = textOr(inputProps.label, "");
 
   return {
-    inputLabel,
-    inputName: textOr(inputProps.name, "textInput", true),
-    inputPlaceholder: textOr(inputProps.placeholder, ""),
-    inputHelper: textOr(inputProps.helper, ""),
-    inputType: textOr(inputProps.type, "text", true),
-    inputValue: textOr(inputProps.value, ""),
-    inputId: textOr(inputProps.id, ""),
-    inputAutocomplete: textOr(inputProps.autocomplete, ""),
-    inputToggleLabel: textOr(inputProps.toggleLabel, "Show password"),
-    inputRequired: inputProps.required === true,
-    inputShowLabel: inputProps.showLabel !== false && Boolean(inputLabel),
-    inputStandalone: inputProps.standalone === true
+    label,
+    name: textOr(inputProps.name, "textInput", true),
+    placeholder: textOr(inputProps.placeholder, ""),
+    helper: textOr(inputProps.helper, ""),
+    type: textOr(inputProps.type, "text", true),
+    value: textOr(inputProps.value, ""),
+    id: textOr(inputProps.id, ""),
+    autocomplete: textOr(inputProps.autocomplete, ""),
+    toggleLabel: textOr(inputProps.toggleLabel, "Show password"),
+    required: inputProps.required === true,
+    showLabel: inputProps.showLabel !== false && Boolean(label),
+    standalone: inputProps.standalone === true,
   };
 };

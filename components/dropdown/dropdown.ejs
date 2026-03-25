@@ -1,64 +1,48 @@
 <%
-  const {
-    dropdownLabel,
-    dropdownName,
-    dropdownPlaceholder,
-    dropdownSearchPlaceholder,
-    dropdownEmptyText,
-    dropdownHelper,
-    dropdownMode,
-    dropdownSearchable,
-    dropdownShowLabel,
-    dropdownStandalone,
-    dropdownOptions,
-    dropdownSelected,
-    dropdownSummary
-  } = loadConfig("./dropdown.config.js", { props });
+  const dropdown = loadConfig("./dropdown.config.js", { props });
 %>
 
-<% if (dropdownStandalone) { %>
+<% if (dropdown.standalone) { %>
   <link rel="stylesheet" href="<%= asset('./dropdown.css') %>" />
 <% } %>
 
 <div
   class="ui-field ui-dropdown"
   data-component="dropdown"
-  data-name="<%= dropdownName %>"
-  data-mode="<%= dropdownMode %>"
-  data-placeholder="<%= dropdownPlaceholder %>"
-  data-show-label="<%= String(dropdownShowLabel) %>"
-  data-searchable="<%= String(dropdownSearchable) %>"
-  data-empty-text="<%= dropdownEmptyText %>"
-  data-has-options="<%= String(dropdownOptions.length > 0) %>"
+  data-name="<%= dropdown.name %>"
+  data-mode="<%= dropdown.mode %>"
+  data-placeholder="<%= dropdown.placeholder %>"
+  data-show-label="<%= String(dropdown.showLabel) %>"
+  data-searchable="<%= String(dropdown.searchable) %>"
+  data-empty-text="<%= dropdown.emptyText %>"
+  data-has-options="<%= String(dropdown.options.length > 0) %>"
 >
-  <% if (dropdownShowLabel && dropdownLabel) { %>
-    <span class="ui-field__label"><%= dropdownLabel %></span>
+  <% if (dropdown.showLabel && dropdown.label) { %>
+    <span class="ui-field__label"><%= dropdown.label %></span>
   <% } %>
 
   <div class="ui-dropdown__frame">
-    <script type="application/json" data-dropdown-options><%- JSON.stringify(dropdownOptions) %></script>
-    <script type="application/json" data-dropdown-selected><%- JSON.stringify(dropdownSelected) %></script>
+    <script type="application/json" data-dropdown-options><%- JSON.stringify(dropdown.options) %></script>
+    <script type="application/json" data-dropdown-selected><%- JSON.stringify(dropdown.selected) %></script>
 
     <button type="button" class="ui-dropdown__trigger" aria-expanded="false" data-dropdown-trigger>
-      <span class="ui-dropdown__summary" data-dropdown-summary><%= dropdownSummary %></span>
+      <span class="ui-dropdown__summary" data-dropdown-summary><%= dropdown.summary %></span>
       <span class="ui-dropdown__chevron" aria-hidden="true">+</span>
     </button>
 
     <div class="ui-dropdown__panel" data-dropdown-panel hidden>
-      <% if (dropdownSearchable && dropdownOptions.length > 0) { %>
-        <!-- search -->
+      <% if (dropdown.searchable && dropdown.options.length > 0) { %>
         <div class="ui-dropdown__search-wrap">
           <input
             type="search"
             class="ui-dropdown__search"
-            placeholder="<%= dropdownSearchPlaceholder %>"
+            placeholder="<%= dropdown.searchPlaceholder %>"
             data-dropdown-search
           />
         </div>
       <% } %>
 
-      <% if (dropdownMode === "multiple") { %>
-        <!-- multiple -->
+      <% if (dropdown.mode === "multiple") { %>
         <div class="ui-dropdown__tags" data-dropdown-tags></div>
       <% } %>
 
@@ -67,11 +51,11 @@
     </div>
   </div>
 
-  <% if (dropdownHelper) { %>
-    <span class="ui-field__helper"><%= dropdownHelper %></span>
+  <% if (dropdown.helper) { %>
+    <span class="ui-field__helper"><%= dropdown.helper %></span>
   <% } %>
 </div>
 
-<% if (dropdownStandalone) { %>
+<% if (dropdown.standalone) { %>
   <script type="module" src="<%= asset('./dropdown.js') %>"></script>
 <% } %>

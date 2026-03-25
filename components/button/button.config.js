@@ -6,12 +6,12 @@ module.exports = ({ props }) => {
   const buttonProps = props && typeof props === "object" ? props : {};
 
   return {
-    buttonLabel: textOr(buttonProps.label, "Button", true),
-    buttonVariant: textOr(buttonProps.variant, "primary", true),
-    buttonSize: textOr(buttonProps.size, "md", true),
-    buttonType: textOr(buttonProps.type, "button", true),
-    buttonAction: textOr(buttonProps.action, ""),
-    buttonDisabled: buttonProps.disabled === true,
-    buttonStandalone: buttonProps.standalone === true
+    label: textOr(buttonProps.label, "Button", true),
+    variant: textOr(buttonProps.variant, "primary", true),
+    size: textOr(buttonProps.size, "md", true),
+    type: textOr(buttonProps.type, "button", true),
+    action: textOr(buttonProps.action, ""),
+    disabled: buttonProps.disabled === true,
+    standalone: buttonProps.standalone === true,
   };
 };
