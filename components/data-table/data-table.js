@@ -183,12 +183,10 @@ function initDataTable(element) {
   function renderInfo(total) {
     if (!infoEl) return;
     if (total === 0) {
-      infoEl.textContent = "No entries";
+      infoEl.textContent = "of 0";
       return;
     }
-    const start = (state.page - 1) * state.pageSize + 1;
-    const end = Math.min(state.page * state.pageSize, total);
-    infoEl.textContent = `Showing ${start} to ${end} of ${total} ${total === 1 ? "entry" : "entries"}`;
+    infoEl.textContent = `of ${total}`;
   }
 
   function renderSortHeaders() {
@@ -225,7 +223,7 @@ function initDataTable(element) {
     renderSelectAll(pageRows, processed.length);
   }
 
-  // ── search ──
+  // ──search ──
   searchInput?.addEventListener("input", () => {
     state.query = searchInput.value;
     state.page = 1;
@@ -251,7 +249,7 @@ function initDataTable(element) {
     if (state.page < total) { state.page++; render(); }
   });
 
-  // ── page number buttons  ──
+  // ── page number buttons ──
   pagesContainer?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-page]");
     if (!btn) return;
@@ -341,6 +339,7 @@ function initDataTable(element) {
     }));
   }
 
+  // ── public api ──
   element.getSelectedRows = () => {
     const processed = getProcessedRows();
     return [...state.selectedIds].map((i) => processed[i]).filter(Boolean);
