@@ -66,6 +66,63 @@
             }) %>
           </div>
 
+          <!-- data table -->
+          <%- include("../components/data-table/data-table.ejs", {
+            props: {
+              id: "demo-table",
+              searchable: true,
+              selectable: true,
+              exportable: true,
+              pageSize: 5,
+              pageSizeOptions: [5, 10, 25],
+              searchPlaceholder: "Search records…",
+              columns: [
+                { key: "application",  label: "Application #",       sortable: true,  type: "text"   },
+                { key: "dateCreated",  label: "Date Created",        sortable: true,  type: "text"   },
+                { key: "dateStart",    label: "Process Date Start",  sortable: true,  type: "text"   },
+                { key: "completion",   label: "Completion Date",     sortable: true,  type: "text"   },
+                { key: "dateClosed",   label: "Date Closed",         sortable: true,  type: "text"   },
+                {
+                  key: "status",
+                  label: "Status",
+                  sortable: true,
+                  type: "badge",
+                  badgeMap: {
+                    "Completed": { label: "Completed", color: "green"  },
+                    "Closed":    { label: "Closed",    color: "blue"   },
+                    "Pending":   { label: "Pending",   color: "yellow" },
+                    "Rejected":  { label: "Rejected",  color: "red"    },
+                    "Draft":     { label: "Draft",     color: "gray"   }
+                  }
+                },
+                {
+                  key: "action",
+                  label: "Action",
+                  sortable: false,
+                  type: "action",
+                  action: { label: "View", event: "datatable:action" }
+                }
+              ],
+              rows: [
+                { application: "CE-2026-01-01123", dateCreated: "January 05, 2026",    dateStart: "January 07, 2026",    completion: "January 23, 2026",    dateClosed: "N/A",               status: "Completed" },
+                { application: "CE-2026-01-01126", dateCreated: "December 02, 2025",   dateStart: "December 04, 2025",   completion: "December 23, 2025",   dateClosed: "December 26, 2025", status: "Closed"    },
+                { application: "CE-2026-01-01130", dateCreated: "November 14, 2025",   dateStart: "November 16, 2025",   completion: "November 30, 2025",   dateClosed: "December 03, 2025", status: "Closed"    },
+                { application: "CE-2026-01-01141", dateCreated: "October 20, 2025",    dateStart: "October 22, 2025",    completion: "November 05, 2025",   dateClosed: "November 08, 2025", status: "Closed"    },
+                { application: "CE-2026-01-01155", dateCreated: "October 01, 2025",    dateStart: "October 03, 2025",    completion: "October 17, 2025",    dateClosed: "October 20, 2025",  status: "Closed"    },
+                { application: "CE-2026-02-00201", dateCreated: "September 10, 2025",  dateStart: "September 12, 2025",  completion: "September 28, 2025",  dateClosed: "October 01, 2025",  status: "Completed" },
+                { application: "CE-2026-02-00210", dateCreated: "August 22, 2025",     dateStart: "August 24, 2025",     completion: "September 09, 2025",  dateClosed: "N/A",               status: "Pending"   },
+                { application: "CE-2026-02-00218", dateCreated: "August 05, 2025",     dateStart: "August 07, 2025",     completion: "August 24, 2025",     dateClosed: "August 27, 2025",   status: "Closed"    },
+                { application: "CE-2026-03-00305", dateCreated: "July 18, 2025",       dateStart: "July 20, 2025",       completion: "August 03, 2025",     dateClosed: "N/A",               status: "Pending"   },
+                { application: "CE-2026-03-00312", dateCreated: "July 02, 2025",       dateStart: "July 04, 2025",       completion: "July 19, 2025",       dateClosed: "July 22, 2025",     status: "Rejected"  },
+                { application: "CE-2026-03-00320", dateCreated: "June 15, 2025",       dateStart: "June 17, 2025",       completion: "July 02, 2025",       dateClosed: "July 05, 2025",     status: "Closed"    },
+                { application: "CE-2026-04-00401", dateCreated: "May 28, 2025",        dateStart: "May 30, 2025",        completion: "June 15, 2025",       dateClosed: "June 18, 2025",     status: "Completed" },
+                { application: "CE-2026-04-00409", dateCreated: "May 10, 2025",        dateStart: "May 12, 2025",        completion: "May 28, 2025",        dateClosed: "N/A",               status: "Draft"     },
+                { application: "CE-2026-04-00415", dateCreated: "April 22, 2025",      dateStart: "April 24, 2025",      completion: "May 09, 2025",        dateClosed: "May 12, 2025",      status: "Closed"    },
+                { application: "CE-2026-05-00502", dateCreated: "April 05, 2025",      dateStart: "April 07, 2025",      completion: "April 22, 2025",      dateClosed: "April 25, 2025",    status: "Completed" }
+              ]
+            }
+          }) %>
+
           <!-- for testing only -->
           <section class="form-output" aria-live="polite">
             <div class="form-output__header">
@@ -78,7 +135,7 @@
           <div class="form-actions">
             <%- include("../components/button/button.ejs", {
               props: {
-                label: "Close",
+                label: "Reset",
                 variant: "secondary",
                 type: "button",
                 action: "reset-form"
@@ -103,6 +160,7 @@
           
         </form>
       </section>
+
     </main>
 
     <!-- modal -->

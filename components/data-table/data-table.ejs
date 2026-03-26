@@ -1,0 +1,127 @@
+<%
+  const table = loadConfig("./data-table.config.js", { props });
+%>
+
+<% if (table.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./data-table.css') %>" />
+<% } %>
+
+<div
+  class="ui-data-table"
+  data-component="data-table"
+  id="<%= table.id %>"
+  data-page-size="<%= table.pageSize %>"
+  data-searchable="<%= String(table.searchable) %>"
+  data-selectable="<%= String(table.selectable) %>"
+  data-exportable="<%= String(table.exportable) %>"
+  data-empty-text="<%= table.emptyText %>"
+>
+
+  <script type="application/json" data-table-columns>
+    <%- JSON.stringify(table.columns) %>
+  </script>
+  <script type="application/json" data-table-rows>
+    <%- JSON.stringify(table.rows) %>
+  </script>
+  <script type="application/json" data-table-page-size-options>
+    <%- JSON.stringify(table.pageSizeOptions) %>
+  </script>
+
+  <!-- toolbar -->
+  <div class="ui-data-table__toolbar">
+    <div class="ui-data-table__toolbar-left">
+      <div class="ui-data-table__page-size-wrap">
+        <select class="ui-data-table__page-size-select" data-table-page-size aria-label="Rows per page">
+          <% table.pageSizeOptions.forEach(function(opt) { %>
+            <option value="<%= opt %>" <%= opt === table.pageSize ? "selected" : "" %>><%= opt %></option>
+          <% }); %>
+        </select>
+        <span class="ui-data-table__page-size-label">Entries</span>
+      </div>
+
+      <% if (table.searchable) { %>
+        <div class="ui-data-table__search-wrap">
+          <span class="ui-data-table__search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </span>
+          <input
+            class="ui-data-table__search"
+            type="search"
+            placeholder="<%= table.searchPlaceholder %>"
+            data-table-search
+            aria-label="Search table"
+          />
+        </div>
+      <% } %>
+    </div>
+
+    <div class="ui-data-table__toolbar-right">
+      <% if (table.exportable) { %>
+        <button class="ui-data-table__toolbar-btn" type="button" data-table-export aria-label="Export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <%= table.exportLabel %>
+        </button>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="ui-data-table__scroll">
+    <table class="ui-data-table__table" role="grid"<% if (table.caption) { %> aria-label="<%= table.caption %>"<% } %>>
+      <thead class="ui-data-table__thead">
+        <tr>
+          <% if (table.selectable) { %>
+            <th class="ui-data-table__th ui-data-table__th--check" scope="col">
+              <input type="checkbox" class="ui-data-table__check" data-table-select-all aria-label="Select all rows" />
+            </th>
+          <% } %>
+          <% table.columns.forEach(function(col) { %>
+            <th
+              class="ui-data-table__th<% if (col.sortable && col.type !== 'action') { %> ui-data-table__th--sortable<% } %>"
+              scope="col"
+              data-col-key="<%= col.key %>"
+              <% if (col.sortable && col.type !== 'action') { %>
+                data-table-sort="<%= col.key %>"
+                aria-sort="none"
+                tabindex="0"
+                role="columnheader"
+              <% } %>
+            >
+              <span class="ui-data-table__th-inner">
+                <%= col.label %>
+                <% if (col.sortable && col.type !== 'action') { %>
+                  <span class="ui-data-table__sort-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M8 3l3.5 4h-7L8 3zm0 10L4.5 9h7L8 13z"/>
+                    </svg>
+                  </span>
+                <% } %>
+              </span>
+            </th>
+          <% }); %>
+        </tr>
+      </thead>
+      <tbody class="ui-data-table__tbody" data-table-body>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- footer -->
+  <div class="ui-data-table__footer">
+    <span class="ui-data-table__info" data-table-info aria-live="polite"></span>
+    <nav class="ui-data-table__pagination" aria-label="Table pagination">
+      <button class="ui-data-table__page-btn" type="button" data-table-prev aria-label="Previous page">Previous</button>
+      <div class="ui-data-table__pages" data-table-pages></div>
+      <button class="ui-data-table__page-btn" type="button" data-table-next aria-label="Next page">Next</button>
+    </nav>
+  </div>
+
+</div>
+
+<% if (table.standalone) { %>
+  <script type="module" src="<%= asset('./data-table.js') %>"></script>
+<% } %>

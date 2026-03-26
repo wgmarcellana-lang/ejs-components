@@ -3,6 +3,7 @@
 @import "../components/dropdown/dropdown.css";
 @import "../components/calendar/calendar.css";
 @import "../components/modal/modal.css";
+@import "../components/data-table/data-table.css";
 
 :root {
   --page-bg: #592a81;
@@ -76,6 +77,8 @@ textarea {
   width: min(1100px, calc(100% - 32px));
   margin: 0 auto;
   padding: 40px 0 56px;
+  display: grid;
+  gap: 32px;
 }
 
 .demo-card {
@@ -115,6 +118,20 @@ textarea {
   font-size: clamp(2.2rem, 4vw, 3rem);
   line-height: 1.02;
   letter-spacing: -0.05em;
+}
+
+.demo-card__subtitle {
+  margin: 0;
+  color: var(--heading);
+  font-size: 1.3rem;
+  font-weight: 760;
+  letter-spacing: -0.03em;
+}
+
+.demo-card__body {
+  position: relative;
+  z-index: 1;
+  padding: 24px 30px 30px;
 }
 
 .component-form {
@@ -198,6 +215,7 @@ textarea {
   .page-shell {
     width: min(100% - 20px, 1100px);
     padding: 18px 0 28px;
+    gap: 20px;
   }
 
   .demo-card {
@@ -206,6 +224,10 @@ textarea {
 
   .demo-card__header {
     padding: 26px 20px 0;
+  }
+
+  .demo-card__body {
+    padding: 18px 16px 20px;
   }
 
   .component-form {

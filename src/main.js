@@ -3,6 +3,7 @@ import { initTextInputs } from "../components/text-input/text-input.js";
 import { initDropdowns } from "../components/dropdown/dropdown.js";
 import { initCalendars } from "../components/calendar/calendar.js";
 import { initModals } from "../components/modal/modal.js";
+import { initDataTables } from "../components/data-table/data-table.js";
 
 function buildInitialFormState(form) {
   const payload = {};
@@ -206,11 +207,28 @@ function setupDemoForm() {
   resetState();
 }
 
+// data table demo
+function setupDataTableDemo() {
+  document.addEventListener("datatable:action", (event) => {
+    console.log("[data-table] View clicked:", event.detail);
+  });
+
+  document.addEventListener("datatable:selectionchange", (event) => {
+    console.log("[data-table] Selection changed:", event.detail);
+  });
+
+  document.addEventListener("datatable:export", (event) => {
+    console.log("[data-table] Export triggered:", event.detail);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initButtons();
   initTextInputs();
   initDropdowns();
   initCalendars();
   initModals();
+  initDataTables();
   setupDemoForm();
+  setupDataTableDemo();
 });
