@@ -75,16 +75,42 @@
               selectable: true,
               exportable: true,
               filterable: true,
+              // filter configs
+              filterLabel: "Filter",
+              filterPanelTitle: "Filter Records",
+              filterPanelDescription: "Adjust the criteria below to refine the results.",
+              filterCloseLabel: "Close filter panel",
+              filterResetLabel: "Reset All",
+              filterCancelLabel: "Cancel",
+              filterApplyLabel: "Apply Filters",
               filters: [
                 {
-                  key: "status",
-                  label: "Status",
+                  key: "birthday",
+                  type: "date-range",
+                  label: "Birthday",
+                  helper: "Filter celebrities by birthday range."
+                },
+                {
+                  key: "gender",
+                  type: "toggle-group",
+                  label: "Gender",
+                  allowMultiple: true,
                   options: [
-                    { label: "Completed", value: "Completed" },
-                    { label: "Closed",    value: "Closed"    },
-                    { label: "Pending",   value: "Pending"   },
-                    { label: "Rejected",  value: "Rejected"  },
-                    { label: "Draft",     value: "Draft"     }
+                    { label: "Female", value: "Female", color: "red"  },
+                    { label: "Male",   value: "Male",   color: "blue" }
+                  ]
+                },
+                {
+                  key: "status",
+                  type: "toggle-group",
+                  label: "Filter by Status",
+                  allowMultiple: true,
+                  options: [
+                    { label: "Booked",     value: "Booked",     color: "green"  },
+                    { label: "Trending",   value: "Trending",   color: "blue"   },
+                    { label: "On Hold",    value: "On Hold",    color: "yellow" },
+                    { label: "Cancelled",  value: "Cancelled",  color: "red"    },
+                    { label: "Rumored",    value: "Rumored",    color: "gray"   }
                   ]
                 }
               ],
@@ -92,22 +118,21 @@
               pageSizeOptions: [5, 10, 25],
               searchPlaceholder: "Search records…",
               columns: [
-                { key: "application",  label: "Application #",       sortable: true,  type: "text"   },
-                { key: "dateCreated",  label: "Date Created",        sortable: true,  type: "text"   },
-                { key: "dateStart",    label: "Process Date Start",  sortable: true,  type: "text"   },
-                { key: "completion",   label: "Completion Date",     sortable: true,  type: "text"   },
-                { key: "dateClosed",   label: "Date Closed",         sortable: true,  type: "text"   },
+                { key: "application",  label: "Application Number",  sortable: true,  type: "text"   },
+                { key: "name",         label: "Name",                sortable: true,  type: "text"   },
+                { key: "gender",       label: "Gender",              sortable: true,  type: "text"   },
+                { key: "birthday",     label: "Birthday",            sortable: true,  type: "text"   },
                 {
                   key: "status",
                   label: "Status",
                   sortable: true,
                   type: "badge",
                   badgeMap: {
-                    "Completed": { label: "Completed", color: "green"  },
-                    "Closed":    { label: "Closed",    color: "blue"   },
-                    "Pending":   { label: "Pending",   color: "yellow" },
-                    "Rejected":  { label: "Rejected",  color: "red"    },
-                    "Draft":     { label: "Draft",     color: "gray"   }
+                    "Booked":    { label: "Booked",    color: "green"  },
+                    "Trending":  { label: "Trending",  color: "blue"   },
+                    "On Hold":   { label: "On Hold",   color: "yellow" },
+                    "Cancelled": { label: "Cancelled", color: "red"    },
+                    "Rumored":   { label: "Rumored",   color: "gray"   }
                   }
                 },
                 {
@@ -119,21 +144,21 @@
                 }
               ],
               rows: [
-                { application: "CE-2026-01-01123", dateCreated: "January 05, 2026",    dateStart: "January 07, 2026",    completion: "January 23, 2026",    dateClosed: "N/A",               status: "Completed" },
-                { application: "CE-2026-01-01126", dateCreated: "December 02, 2025",   dateStart: "December 04, 2025",   completion: "December 23, 2025",   dateClosed: "December 26, 2025", status: "Closed"    },
-                { application: "CE-2026-01-01130", dateCreated: "November 14, 2025",   dateStart: "November 16, 2025",   completion: "November 30, 2025",   dateClosed: "December 03, 2025", status: "Closed"    },
-                { application: "CE-2026-01-01141", dateCreated: "October 20, 2025",    dateStart: "October 22, 2025",    completion: "November 05, 2025",   dateClosed: "November 08, 2025", status: "Closed"    },
-                { application: "CE-2026-01-01155", dateCreated: "October 01, 2025",    dateStart: "October 03, 2025",    completion: "October 17, 2025",    dateClosed: "October 20, 2025",  status: "Closed"    },
-                { application: "CE-2026-02-00201", dateCreated: "September 10, 2025",  dateStart: "September 12, 2025",  completion: "September 28, 2025",  dateClosed: "October 01, 2025",  status: "Completed" },
-                { application: "CE-2026-02-00210", dateCreated: "August 22, 2025",     dateStart: "August 24, 2025",     completion: "September 09, 2025",  dateClosed: "N/A",               status: "Pending"   },
-                { application: "CE-2026-02-00218", dateCreated: "August 05, 2025",     dateStart: "August 07, 2025",     completion: "August 24, 2025",     dateClosed: "August 27, 2025",   status: "Closed"    },
-                { application: "CE-2026-03-00305", dateCreated: "July 18, 2025",       dateStart: "July 20, 2025",       completion: "August 03, 2025",     dateClosed: "N/A",               status: "Pending"   },
-                { application: "CE-2026-03-00312", dateCreated: "July 02, 2025",       dateStart: "July 04, 2025",       completion: "July 19, 2025",       dateClosed: "July 22, 2025",     status: "Rejected"  },
-                { application: "CE-2026-03-00320", dateCreated: "June 15, 2025",       dateStart: "June 17, 2025",       completion: "July 02, 2025",       dateClosed: "July 05, 2025",     status: "Closed"    },
-                { application: "CE-2026-04-00401", dateCreated: "May 28, 2025",        dateStart: "May 30, 2025",        completion: "June 15, 2025",       dateClosed: "June 18, 2025",     status: "Completed" },
-                { application: "CE-2026-04-00409", dateCreated: "May 10, 2025",        dateStart: "May 12, 2025",        completion: "May 28, 2025",        dateClosed: "N/A",               status: "Draft"     },
-                { application: "CE-2026-04-00415", dateCreated: "April 22, 2025",      dateStart: "April 24, 2025",      completion: "May 09, 2025",        dateClosed: "May 12, 2025",      status: "Closed"    },
-                { application: "CE-2026-05-00502", dateCreated: "April 05, 2025",      dateStart: "April 07, 2025",      completion: "April 22, 2025",      dateClosed: "April 25, 2025",    status: "Completed" }
+                { application: "GENZ-2026-0001", name: "Zendaya",            gender: "Female", birthday: "September 01, 1996", status: "Booked"    },
+                { application: "GENZ-2026-0002", name: "Tom Holland",        gender: "Male",   birthday: "June 01, 1996",      status: "Trending"  },
+                { application: "GENZ-2026-0003", name: "Olivia Rodrigo",     gender: "Female", birthday: "February 20, 2003",  status: "Booked"    },
+                { application: "GENZ-2026-0004", name: "Jenna Ortega",       gender: "Female", birthday: "September 27, 2002", status: "Trending"  },
+                { application: "GENZ-2026-0005", name: "Billie Eilish",      gender: "Female", birthday: "December 18, 2001",  status: "On Hold"   },
+                { application: "GENZ-2026-0006", name: "Timothee Chalamet",  gender: "Male",   birthday: "December 27, 1995",  status: "Booked"    },
+                { application: "GENZ-2026-0007", name: "Millie Bobby Brown", gender: "Female", birthday: "February 19, 2004",  status: "Rumored"   },
+                { application: "GENZ-2026-0008", name: "JoJo Siwa",          gender: "Female", birthday: "May 19, 2003",       status: "Cancelled" },
+                { application: "GENZ-2026-0009", name: "Lil Nas X",          gender: "Male",   birthday: "April 09, 1999",     status: "Trending"  },
+                { application: "GENZ-2026-0010", name: "Noah Schnapp",       gender: "Male",   birthday: "October 03, 2004",   status: "On Hold"   },
+                { application: "GENZ-2026-0011", name: "Emma Chamberlain",   gender: "Female", birthday: "May 22, 2001",       status: "Rumored"   },
+                { application: "GENZ-2026-0012", name: "Charli D'Amelio",    gender: "Female", birthday: "May 01, 2004",       status: "Trending"  },
+                { application: "GENZ-2026-0013", name: "Iann Dior",          gender: "Male",   birthday: "March 25, 1999",     status: "Cancelled" },
+                { application: "GENZ-2026-0014", name: "Dove Cameron",       gender: "Female", birthday: "January 15, 1996",   status: "Booked"    },
+                { application: "GENZ-2026-0015", name: "Loren Gray",         gender: "Female", birthday: "April 19, 2002",     status: "On Hold"   }
               ]
             }
           }) %>

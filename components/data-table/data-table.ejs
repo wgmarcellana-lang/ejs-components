@@ -62,27 +62,101 @@
             <span class="ui-data-table__filter-badge" data-filter-badge hidden>0</span>
           </button>
           <div class="ui-data-table__filter-panel" data-table-filter-panel hidden>
+            <div class="ui-data-table__filter-panel-header">
+              <div>
+                <h3 class="ui-data-table__filter-panel-title"><%= table.filterPanelTitle %></h3>
+                <% if (table.filterPanelDescription) { %>
+                  <p class="ui-data-table__filter-panel-copy"><%= table.filterPanelDescription %></p>
+                <% } %>
+              </div>
+              <button class="ui-data-table__filter-close" type="button" data-table-filter-close aria-label="<%= table.filterCloseLabel %>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
             <% table.filters.forEach(function(filter) { %>
               <div class="ui-data-table__filter-group">
-                <span class="ui-data-table__filter-group-label"><%= filter.label %></span>
-                <div class="ui-data-table__filter-options">
-                  <% filter.options.forEach(function(opt) { %>
-                    <label class="ui-data-table__filter-option">
-                      <input
-                        type="checkbox"
-                        class="ui-data-table__filter-check"
-                        data-filter-key="<%= filter.key %>"
-                        data-filter-value="<%= opt.value %>"
-                        checked
-                      />
-                      <span><%= opt.label %></span>
-                    </label>
-                  <% }); %>
+                <div class="ui-data-table__filter-group-head">
+                  <span class="ui-data-table__filter-group-label"><%= filter.label %></span>
+                  <% if (filter.helper) { %>
+                    <span class="ui-data-table__filter-group-helper"><%= filter.helper %></span>
+                  <% } %>
                 </div>
+
+                <% if (filter.type === "date-range") { %>
+                  <div
+                    class="ui-data-table__filter-date-grid"
+                    data-filter-type="date-range"
+                    data-filter-key="<%= filter.key %>"
+                  >
+                    <label class="ui-data-table__filter-date-field">
+                      <span class="ui-data-table__sr-only"><%= filter.fromLabel %></span>
+                      <input
+                        type="date"
+                        class="ui-data-table__filter-date-input"
+                        data-filter-date-from
+                        data-filter-key="<%= filter.key %>"
+                        placeholder="<%= filter.fromPlaceholder %>"
+                      />
+                    </label>
+                    <label class="ui-data-table__filter-date-field">
+                      <span class="ui-data-table__sr-only"><%= filter.toLabel %></span>
+                      <input
+                        type="date"
+                        class="ui-data-table__filter-date-input"
+                        data-filter-date-to
+                        data-filter-key="<%= filter.key %>"
+                        placeholder="<%= filter.toPlaceholder %>"
+                      />
+                    </label>
+                  </div>
+                <% } else { %>
+                  <div
+                    class="ui-data-table__filter-options<% if (filter.type === 'toggle-group') { %> ui-data-table__filter-options--pill<% } %>"
+                    data-filter-type="<%= filter.type %>"
+                    data-filter-key="<%= filter.key %>"
+                    data-filter-multiple="<%= String(filter.allowMultiple) %>"
+                  >
+                    <% filter.options.forEach(function(opt) { %>
+                      <% if (filter.type === "toggle-group") { %>
+                        <button
+                          class="ui-data-table__filter-pill is-selected"
+                          type="button"
+                          data-filter-pill
+                          data-filter-key="<%= filter.key %>"
+                          data-filter-value="<%= opt.value %>"
+                          aria-pressed="true"
+                        >
+                          <% if (opt.color) { %>
+                            <span class="ui-data-table__filter-pill-dot ui-data-table__filter-pill-dot--<%= opt.color %>" aria-hidden="true"></span>
+                          <% } %>
+                          <span><%= opt.label %></span>
+                        </button>
+                      <% } else { %>
+                        <label class="ui-data-table__filter-option">
+                          <input
+                            type="checkbox"
+                            class="ui-data-table__filter-check"
+                            data-filter-key="<%= filter.key %>"
+                            data-filter-value="<%= opt.value %>"
+                            checked
+                          />
+                          <span><%= opt.label %></span>
+                        </label>
+                      <% } %>
+                    <% }); %>
+                  </div>
+                <% } %>
               </div>
             <% }); %>
             <div class="ui-data-table__filter-actions">
-              <button class="ui-data-table__filter-clear" type="button" data-table-filter-clear>Clear all</button>
+              <button class="ui-data-table__filter-reset" type="button" data-table-filter-clear><%= table.filterResetLabel %></button>
+              <div class="ui-data-table__filter-actions-right">
+                <button class="ui-data-table__filter-cancel" type="button" data-table-filter-cancel><%= table.filterCancelLabel %></button>
+                <button class="ui-data-table__filter-apply" type="button" data-table-filter-apply><%= table.filterApplyLabel %></button>
+              </div>
             </div>
           </div>
         </div>

@@ -61,7 +61,77 @@ function sortRows(rows, key, direction) {
   });
 }
 
-function filterRows(rows, columns, query, activeFilters) {
+function parseDateValue(value) {
+  if (typeof value !== "string" || !value.trim()) return null;
+
+  const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+    return Date.UTC(Number(year), Number(month) - 1, Number(day));
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+}
+
+function createDefaultFilterState(filters) {
+  const state = {};
+
+  filters.forEach((filter) => {
+    if (filter.type === "date-range") {
+      state[filter.key] = { from: "", to: "" };
+      return;
+    }
+
+    state[filter.key] = new Set(filter.options.map((option) => String(option.value)));
+  });
+
+  return state;
+}
+
+function cloneFilterState(source, filters) {
+  const next = createDefaultFilterState(filters);
+
+  filters.forEach((filter) => {
+    const currentValue = source?.[filter.key];
+
+    if (filter.type === "date-range") {
+      next[filter.key] = {
+        from: typeof currentValue?.from === "string" ? currentValue.from : "",
+        to: typeof currentValue?.to === "string" ? currentValue.to : "",
+      };
+      return;
+    }
+
+    if (currentValue instanceof Set) {
+      next[filter.key] = new Set(currentValue);
+      return;
+    }
+
+    if (Array.isArray(currentValue)) {
+      next[filter.key] = new Set(currentValue.map(String));
+    }
+  });
+
+  return next;
+}
+
+function countActiveFilterGroups(filters, appliedFilters) {
+  return filters.reduce((count, filter) => {
+    const currentValue = appliedFilters[filter.key];
+
+    if (filter.type === "date-range") {
+      return currentValue?.from || currentValue?.to ? count + 1 : count;
+    }
+
+    const selectedCount = currentValue instanceof Set ? currentValue.size : filter.options.length;
+    return selectedCount > 0 && selectedCount < filter.options.length ? count + 1 : count;
+  }, 0);
+}
+
+function filterRows(rows, columns, query, filters, appliedFilters) {
   const q = query.trim().toLowerCase();
 
   return rows.filter((row) => {
@@ -74,9 +144,30 @@ function filterRows(rows, columns, query, activeFilters) {
       if (!matchesQuery) return false;
     }
 
-    for (const [key, allowedValues] of Object.entries(activeFilters)) {
-      if (allowedValues.size === 0) continue;
-      const val = String(getNestedValue(row, key) ?? "");
+    for (const filter of filters) {
+      const currentValue = appliedFilters[filter.key];
+
+      if (filter.type === "date-range") {
+        const fromValue = currentValue?.from || "";
+        const toValue = currentValue?.to || "";
+
+        if (!fromValue && !toValue) continue;
+
+        const rowDate = parseDateValue(String(getNestedValue(row, filter.key) ?? ""));
+        if (rowDate == null) return false;
+
+        const fromDate = parseDateValue(fromValue);
+        const toDate = parseDateValue(toValue);
+
+        if (fromDate != null && rowDate < fromDate) return false;
+        if (toDate != null && rowDate > toDate) return false;
+        continue;
+      }
+
+      const allowedValues = currentValue instanceof Set ? currentValue : new Set(filter.options.map((option) => option.value));
+      if (allowedValues.size === 0 || allowedValues.size === filter.options.length) continue;
+
+      const val = String(getNestedValue(row, filter.key) ?? "");
       if (!allowedValues.has(val)) return false;
     }
 
@@ -101,12 +192,36 @@ function buildPageNumbers(current, total) {
   return result;
 }
 
+function serializeAppliedFilters(filters, appliedFilters) {
+  return filters.map((filter) => {
+    const value = appliedFilters[filter.key];
+
+    if (filter.type === "date-range") {
+      return {
+        key: filter.key,
+        type: filter.type,
+        value: {
+          from: value?.from || "",
+          to: value?.to || "",
+        },
+      };
+    }
+
+    return {
+      key: filter.key,
+      type: filter.type,
+      value: value instanceof Set ? [...value] : [],
+    };
+  });
+}
+
 function initDataTable(element) {
   if (element.dataset.datatableInitialized === "true") return;
 
   const columns = parseJsonScript(element, "[data-table-columns]", []);
   const allRows = parseJsonScript(element, "[data-table-rows]", []);
-  const pageSizeOptions = parseJsonScript(element, "[data-table-page-size-options]", [10]);
+  parseJsonScript(element, "[data-table-page-size-options]", [10]);
+  const filters = parseJsonScript(element, "[data-table-filters]", []);
   const emptyText = element.dataset.emptyText || "No records found.";
   const selectable = element.dataset.selectable === "true";
 
@@ -120,9 +235,14 @@ function initDataTable(element) {
   const exportBtn = element.querySelector("[data-table-export]");
   const filterBtn = element.querySelector("[data-table-filter-btn]");
   const filterPanel = element.querySelector("[data-table-filter-panel]");
+  const filterCloseBtn = element.querySelector("[data-table-filter-close]");
   const filterClearBtn = element.querySelector("[data-table-filter-clear]");
+  const filterCancelBtn = element.querySelector("[data-table-filter-cancel]");
+  const filterApplyBtn = element.querySelector("[data-table-filter-apply]");
   const filterBadge = element.querySelector("[data-filter-badge]");
   const filterChecks = element.querySelectorAll(".ui-data-table__filter-check");
+  const filterPills = element.querySelectorAll("[data-filter-pill]");
+  const filterDateInputs = element.querySelectorAll(".ui-data-table__filter-date-input");
   const selectAllCheck = element.querySelector("[data-table-select-all]");
   const sortHeaders = element.querySelectorAll("[data-table-sort]");
 
@@ -135,11 +255,12 @@ function initDataTable(element) {
     page: 1,
     pageSize: parseInt(element.dataset.pageSize, 10) || 10,
     selectedIds: new Set(),
-    activeFilters: {},
+    appliedFilters: createDefaultFilterState(filters),
+    draftFilters: createDefaultFilterState(filters),
   };
 
   function getProcessedRows() {
-    let rows = filterRows(allRows, columns, state.query, state.activeFilters);
+    let rows = filterRows(allRows, columns, state.query, filters, state.appliedFilters);
     if (state.sortKey) {
       rows = sortRows(rows, state.sortKey, state.sortDir);
     }
@@ -151,7 +272,7 @@ function initDataTable(element) {
     return processed.slice(start, start + state.pageSize);
   }
 
-  function renderRows(pageRows, processedTotal) {
+  function renderRows(pageRows) {
     if (!pageRows.length) {
       tbody.innerHTML = `<tr><td class="ui-data-table__empty" colspan="${columns.length + (selectable ? 1 : 0)}">${escapeHtml(emptyText)}</td></tr>`;
       return;
@@ -233,14 +354,101 @@ function initDataTable(element) {
 
     const pageRows = getPageRows(processed);
 
-    renderRows(pageRows, processed.length);
+    renderRows(pageRows);
     renderPagination(processed.length);
     renderInfo(processed.length);
     renderSortHeaders();
     renderSelectAll(pageRows, processed.length);
   }
 
-  // ──search ──
+  function updateFilterBadge() {
+    if (!filterBadge || !filterBtn) return;
+
+    const activeCount = countActiveFilterGroups(filters, state.appliedFilters);
+
+    if (activeCount > 0) {
+      filterBadge.textContent = String(activeCount);
+      filterBadge.hidden = false;
+      filterBtn.classList.add("is-active");
+    } else {
+      filterBadge.hidden = true;
+      filterBtn.classList.remove("is-active");
+    }
+  }
+
+  function syncFilterControlsFromDraft() {
+    filterChecks.forEach((check) => {
+      const key = check.dataset.filterKey;
+      const value = check.dataset.filterValue || "";
+      const selectedValues = state.draftFilters[key];
+      check.checked = selectedValues instanceof Set ? selectedValues.has(value) : true;
+    });
+
+    filterPills.forEach((pill) => {
+      const key = pill.dataset.filterKey;
+      const value = pill.dataset.filterValue || "";
+      const selectedValues = state.draftFilters[key];
+      const isSelected = selectedValues instanceof Set ? selectedValues.has(value) : true;
+
+      pill.classList.toggle("is-selected", isSelected);
+      pill.setAttribute("aria-pressed", String(isSelected));
+    });
+
+    filterDateInputs.forEach((input) => {
+      const key = input.dataset.filterKey;
+      const dateState = state.draftFilters[key];
+
+      if (input.hasAttribute("data-filter-date-from")) {
+        input.value = dateState?.from || "";
+      } else {
+        input.value = dateState?.to || "";
+      }
+    });
+  }
+
+  function resetDraftFilters() {
+    state.draftFilters = createDefaultFilterState(filters);
+    syncFilterControlsFromDraft();
+  }
+
+  function closeFilterPanel({ resetDraft = true } = {}) {
+    if (resetDraft) {
+      state.draftFilters = cloneFilterState(state.appliedFilters, filters);
+      syncFilterControlsFromDraft();
+    }
+
+    if (filterPanel) filterPanel.hidden = true;
+    filterBtn?.setAttribute("aria-expanded", "false");
+  }
+
+  function openFilterPanel() {
+    state.draftFilters = cloneFilterState(state.appliedFilters, filters);
+    syncFilterControlsFromDraft();
+    if (filterPanel) filterPanel.hidden = false;
+    filterBtn?.setAttribute("aria-expanded", "true");
+  }
+
+  function emitFilterChange() {
+    element.dispatchEvent(new CustomEvent("datatable:filter", {
+      bubbles: true,
+      detail: {
+        component: "data-table",
+        id: element.id,
+        filters: serializeAppliedFilters(filters, state.appliedFilters),
+      }
+    }));
+  }
+
+  function applyDraftFilters() {
+    state.appliedFilters = cloneFilterState(state.draftFilters, filters);
+    state.page = 1;
+    state.selectedIds.clear();
+    updateFilterBadge();
+    render();
+    closeFilterPanel({ resetDraft: false });
+    emitFilterChange();
+  }
+
   searchInput?.addEventListener("input", () => {
     state.query = searchInput.value;
     state.page = 1;
@@ -248,7 +456,6 @@ function initDataTable(element) {
     render();
   });
 
-  // ── page size ──
   pageSizeSelect?.addEventListener("change", () => {
     state.pageSize = parseInt(pageSizeSelect.value, 10) || 10;
     state.page = 1;
@@ -256,17 +463,21 @@ function initDataTable(element) {
     render();
   });
 
-  // ── prev/next ──
   prevBtn?.addEventListener("click", () => {
-    if (state.page > 1) { state.page--; render(); }
+    if (state.page > 1) {
+      state.page--;
+      render();
+    }
   });
 
   nextBtn?.addEventListener("click", () => {
     const total = Math.max(1, Math.ceil(getProcessedRows().length / state.pageSize));
-    if (state.page < total) { state.page++; render(); }
+    if (state.page < total) {
+      state.page++;
+      render();
+    }
   });
 
-  // ── page number buttons ──
   pagesContainer?.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-page]");
     if (!btn) return;
@@ -274,7 +485,6 @@ function initDataTable(element) {
     render();
   });
 
-  // ── sort headers ──
   sortHeaders.forEach((th) => {
     function doSort() {
       const key = th.dataset.tableSort;
@@ -287,13 +497,16 @@ function initDataTable(element) {
       state.page = 1;
       render();
     }
+
     th.addEventListener("click", doSort);
     th.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); doSort(); }
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        doSort();
+      }
     });
   });
 
-  // ── row selection ──
   tbody.addEventListener("change", (e) => {
     const check = e.target.closest(".ui-data-table__check[data-row-index]");
     if (!check) return;
@@ -309,7 +522,6 @@ function initDataTable(element) {
     emitSelectionChange();
   });
 
-  // ── select all ──
   selectAllCheck?.addEventListener("change", () => {
     const processed = getProcessedRows();
     const start = (state.page - 1) * state.pageSize;
@@ -325,82 +537,122 @@ function initDataTable(element) {
     emitSelectionChange();
   });
 
-  // ── action buttons ──
   tbody.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-action-event]");
     if (!btn) return;
     const eventName = btn.dataset.actionEvent;
     let payload = {};
-    try { payload = JSON.parse(btn.dataset.actionPayload || "{}"); } catch (_error) {}
+    try {
+      payload = JSON.parse(btn.dataset.actionPayload || "{}");
+    } catch (_error) {}
     element.dispatchEvent(new CustomEvent(eventName, {
       bubbles: true,
       detail: { component: "data-table", id: element.id, row: payload }
     }));
   });
 
-  // ── filter badge: shows number of checked (selected) options ──
-  function updateFilterBadge() {
-    if (!filterBadge || !filterBtn) return;
-    const checkedCount = [...filterChecks].filter((c) => c.checked).length;
-    const totalCount = filterChecks.length;
-    const hasRestriction = checkedCount < totalCount;
-
-    if (hasRestriction) {
-      filterBadge.textContent = checkedCount;
-      filterBadge.hidden = false;
-      filterBtn.classList.add("is-active");
-    } else {
-      filterBadge.hidden = true;
-      filterBtn.classList.remove("is-active");
-    }
-  }
-
-  // ── filter panel toggle ──
   filterBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
     const isOpen = filterPanel && !filterPanel.hidden;
-    if (filterPanel) filterPanel.hidden = isOpen;
-    filterBtn.setAttribute("aria-expanded", String(!isOpen));
-  });
-
-  // ── close panel on outside click ──
-  document.addEventListener("click", (e) => {
-    if (filterPanel && !filterPanel.hidden && !element.contains(e.target)) {
-      filterPanel.hidden = true;
-      filterBtn?.setAttribute("aria-expanded", "false");
+    if (isOpen) {
+      closeFilterPanel();
+    } else {
+      openFilterPanel();
     }
   });
 
-  // ── filter checkbox changes ──
+  filterCloseBtn?.addEventListener("click", () => {
+    closeFilterPanel();
+  });
+
+  filterCancelBtn?.addEventListener("click", () => {
+    closeFilterPanel();
+  });
+
+  filterClearBtn?.addEventListener("click", () => {
+    resetDraftFilters();
+  });
+
+  filterApplyBtn?.addEventListener("click", () => {
+    applyDraftFilters();
+  });
+
   filterChecks.forEach((check) => {
     check.addEventListener("change", () => {
       const key = check.dataset.filterKey;
+      if (!key) return;
 
-      // rebuild the allowed set for this key from all checked options
-      state.activeFilters[key] = new Set(
-        [...filterChecks]
-          .filter((c) => c.dataset.filterKey === key && c.checked)
-          .map((c) => c.dataset.filterValue)
-      );
+      const selectedValues = state.draftFilters[key];
+      if (!(selectedValues instanceof Set)) return;
 
-      state.page = 1;
-      state.selectedIds.clear();
-      updateFilterBadge();
-      render();
+      const filterConfig = filters.find((filter) => filter.key === key);
+      const allowMultiple = filterConfig?.allowMultiple !== false;
+      const value = check.dataset.filterValue || "";
+
+      if (!allowMultiple) {
+        selectedValues.clear();
+      }
+
+      if (check.checked) {
+        selectedValues.add(value);
+      } else {
+        selectedValues.delete(value);
+      }
+
+      syncFilterControlsFromDraft();
     });
   });
 
-  // ── clear all filters ──
-  filterClearBtn?.addEventListener("click", () => {
-    state.activeFilters = {};
-    filterChecks.forEach((c) => { c.checked = true; });
-    state.page = 1;
-    state.selectedIds.clear();
-    updateFilterBadge();
-    render();
+  filterPills.forEach((pill) => {
+    pill.addEventListener("click", () => {
+      const key = pill.dataset.filterKey;
+      const value = pill.dataset.filterValue || "";
+      const selectedValues = state.draftFilters[key];
+      const filterConfig = filters.find((filter) => filter.key === key);
+
+      if (!(selectedValues instanceof Set) || !filterConfig) return;
+
+      if (filterConfig.allowMultiple === false) {
+        selectedValues.clear();
+        selectedValues.add(value);
+      } else if (selectedValues.has(value)) {
+        selectedValues.delete(value);
+      } else {
+        selectedValues.add(value);
+      }
+
+      syncFilterControlsFromDraft();
+    });
   });
 
-  // ── export ──
+  filterDateInputs.forEach((input) => {
+    input.addEventListener("input", () => {
+      const key = input.dataset.filterKey;
+      if (!key) return;
+
+      const currentDateRange = state.draftFilters[key];
+      if (!currentDateRange || typeof currentDateRange !== "object" || currentDateRange instanceof Set) return;
+
+      if (input.hasAttribute("data-filter-date-from")) {
+        currentDateRange.from = input.value;
+      } else {
+        currentDateRange.to = input.value;
+      }
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (filterPanel && !filterPanel.hidden && !element.contains(e.target)) {
+      closeFilterPanel();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && filterPanel && !filterPanel.hidden) {
+      closeFilterPanel();
+    }
+  });
+
   exportBtn?.addEventListener("click", () => {
     const processed = getProcessedRows();
     element.dispatchEvent(new CustomEvent("datatable:export", {
@@ -418,7 +670,6 @@ function initDataTable(element) {
     }));
   }
 
-  // ── public api ──
   element.getSelectedRows = () => {
     const processed = getProcessedRows();
     return [...state.selectedIds].map((i) => processed[i]).filter(Boolean);
@@ -430,15 +681,18 @@ function initDataTable(element) {
     state.sortDir = "asc";
     state.page = 1;
     state.selectedIds.clear();
-    state.activeFilters = {};
+    state.appliedFilters = createDefaultFilterState(filters);
+    state.draftFilters = createDefaultFilterState(filters);
     if (searchInput) searchInput.value = "";
     if (pageSizeSelect) pageSizeSelect.value = String(parseInt(element.dataset.pageSize, 10) || 10);
-    filterChecks.forEach((c) => { c.checked = true; });
+    syncFilterControlsFromDraft();
     updateFilterBadge();
+    closeFilterPanel({ resetDraft: false });
     render();
   };
 
   element.dataset.datatableInitialized = "true";
+  updateFilterBadge();
   render();
 }
 

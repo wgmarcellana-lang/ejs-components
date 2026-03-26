@@ -2,6 +2,10 @@ function textOr(value, fallback, requireValue = false) {
   return typeof value === "string" && (!requireValue || value) ? value : fallback;
 }
 
+function booleanOr(value, fallback) {
+  return typeof value === "boolean" ? value : fallback;
+}
+
 function requiredText(value, propName) {
   if (typeof value === "string" && value) {
     return value;
@@ -54,17 +58,37 @@ module.exports = ({ props }) => {
     exportLabel: textOr(tableProps.exportLabel, "Export"),
     filterable: tableProps.filterable === true,
     filterLabel: textOr(tableProps.filterLabel, "Filter"),
+    filterPanelTitle: textOr(tableProps.filterPanelTitle, "Filter Data"),
+    filterPanelDescription: textOr(tableProps.filterPanelDescription, "Refine your search results"),
+    filterCloseLabel: textOr(tableProps.filterCloseLabel, "Close filters"),
+    filterResetLabel: textOr(tableProps.filterResetLabel, "Reset All"),
+    filterCancelLabel: textOr(tableProps.filterCancelLabel, "Cancel"),
+    filterApplyLabel: textOr(tableProps.filterApplyLabel, "Apply Filters"),
     filters: Array.isArray(tableProps.filters)
-      ? tableProps.filters.map((f) => ({
-          key: requiredText(f.key, "filters[].key"),
-          label: textOr(f.label, f.key, true),
-          options: Array.isArray(f.options)
-            ? f.options.map((o) => ({
-                label: textOr(o.label, String(o.value), true),
-                value: String(o.value),
-              }))
-            : [],
-        }))
+      ? tableProps.filters.map((f) => {
+          const normalizedType = ["checkbox-group", "toggle-group", "date-range"].includes(f.type)
+            ? f.type
+            : "checkbox-group";
+
+          return {
+            key: requiredText(f.key, "filters[].key"),
+            type: normalizedType,
+            label: textOr(f.label, f.key, true),
+            helper: textOr(f.helper, ""),
+            fromLabel: textOr(f.fromLabel, "From"),
+            toLabel: textOr(f.toLabel, "To"),
+            fromPlaceholder: textOr(f.fromPlaceholder, "dd/mm/yyyy"),
+            toPlaceholder: textOr(f.toPlaceholder, "dd/mm/yyyy"),
+            allowMultiple: booleanOr(f.allowMultiple, normalizedType !== "toggle-group"),
+            options: Array.isArray(f.options)
+              ? f.options.map((o) => ({
+                  label: textOr(o.label, String(o.value), true),
+                  value: String(o.value),
+                  color: textOr(o.color, ""),
+                }))
+              : [],
+          };
+        })
       : [],
     emptyText: textOr(tableProps.emptyText, "No records found."),
     standalone: tableProps.standalone === true,
