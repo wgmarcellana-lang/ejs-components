@@ -14,12 +14,14 @@
   data-searchable="<%= String(table.searchable) %>"
   data-selectable="<%= String(table.selectable) %>"
   data-exportable="<%= String(table.exportable) %>"
+  data-filterable="<%= String(table.filterable) %>"
   data-empty-text="<%= table.emptyText %>"
 >
 
   <script type="application/json" data-table-columns><%- JSON.stringify(table.columns) %></script>
   <script type="application/json" data-table-rows><%- JSON.stringify(table.rows) %></script>
   <script type="application/json" data-table-page-size-options><%- JSON.stringify(table.pageSizeOptions) %></script>
+  <script type="application/json" data-table-filters><%- JSON.stringify(table.filters) %></script>
 
   <!-- title -->
   <% if (table.title) { %>
@@ -50,6 +52,41 @@
     </div>
 
     <div class="ui-data-table__toolbar-right">
+      <% if (table.filterable && table.filters.length) { %>
+        <div class="ui-data-table__filter-wrap">
+          <button class="ui-data-table__toolbar-btn" type="button" data-table-filter-btn aria-expanded="false" aria-label="Filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            <%= table.filterLabel %>
+            <span class="ui-data-table__filter-badge" data-filter-badge hidden>0</span>
+          </button>
+          <div class="ui-data-table__filter-panel" data-table-filter-panel hidden>
+            <% table.filters.forEach(function(filter) { %>
+              <div class="ui-data-table__filter-group">
+                <span class="ui-data-table__filter-group-label"><%= filter.label %></span>
+                <div class="ui-data-table__filter-options">
+                  <% filter.options.forEach(function(opt) { %>
+                    <label class="ui-data-table__filter-option">
+                      <input
+                        type="checkbox"
+                        class="ui-data-table__filter-check"
+                        data-filter-key="<%= filter.key %>"
+                        data-filter-value="<%= opt.value %>"
+                        checked
+                      />
+                      <span><%= opt.label %></span>
+                    </label>
+                  <% }); %>
+                </div>
+              </div>
+            <% }); %>
+            <div class="ui-data-table__filter-actions">
+              <button class="ui-data-table__filter-clear" type="button" data-table-filter-clear>Clear all</button>
+            </div>
+          </div>
+        </div>
+      <% } %>
       <% if (table.exportable) { %>
         <button class="ui-data-table__toolbar-btn" type="button" data-table-export aria-label="Export">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

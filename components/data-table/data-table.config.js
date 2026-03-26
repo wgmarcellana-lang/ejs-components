@@ -52,6 +52,20 @@ module.exports = ({ props }) => {
     selectable: tableProps.selectable === true,
     exportable: tableProps.exportable !== false,
     exportLabel: textOr(tableProps.exportLabel, "Export"),
+    filterable: tableProps.filterable === true,
+    filterLabel: textOr(tableProps.filterLabel, "Filter"),
+    filters: Array.isArray(tableProps.filters)
+      ? tableProps.filters.map((f) => ({
+          key: requiredText(f.key, "filters[].key"),
+          label: textOr(f.label, f.key, true),
+          options: Array.isArray(f.options)
+            ? f.options.map((o) => ({
+                label: textOr(o.label, String(o.value), true),
+                value: String(o.value),
+              }))
+            : [],
+        }))
+      : [],
     emptyText: textOr(tableProps.emptyText, "No records found."),
     standalone: tableProps.standalone === true,
     caption: textOr(tableProps.caption, ""),

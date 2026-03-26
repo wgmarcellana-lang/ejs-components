@@ -220,6 +220,10 @@ function setupDataTableDemo() {
   document.addEventListener("datatable:export", (event) => {
     console.log("[data-table] Export triggered:", event.detail);
   });
+
+  document.addEventListener("datatable:filter", (event) => {
+    console.log("[data-table] Filter triggered:", event.detail);
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -18,7 +18,8 @@
   box-shadow:
     0 20px 48px rgba(24, 18, 37, 0.08),
     0 4px 14px rgba(15, 23, 42, 0.04);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 /* ── header (title above toolbar) ── */
@@ -152,6 +153,7 @@
 /* ── scroll wrapper ── */
 .ui-data-table__scroll {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -315,6 +317,129 @@
   background: #f8fafc;
   color: #64748b;
   border-color: rgba(100, 116, 139, 0.16);
+}
+
+/* ── filter wrap & panel ── */
+.ui-data-table__filter-wrap {
+  position: relative;
+}
+
+.ui-data-table__toolbar-btn.is-active {
+  border-color: rgba(111, 73, 215, 0.3);
+  background: #f4efff;
+  color: #6f49d7;
+}
+
+.ui-data-table__filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  background: #6f49d7;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ui-data-table__filter-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 50;
+  min-width: 220px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid var(--dt-border);
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow:
+    0 16px 40px rgba(24, 18, 37, 0.12),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.ui-data-table__filter-panel[hidden] {
+  display: none;
+}
+
+.ui-data-table__filter-group {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-data-table__filter-group + .ui-data-table__filter-group {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dt-border);
+}
+
+.ui-data-table__filter-group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9188a8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ui-data-table__filter-options {
+  display: grid;
+  gap: 2px;
+}
+
+.ui-data-table__filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: #3d3754;
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.5rem;
+  transition: background-color 100ms ease;
+}
+
+.ui-data-table__filter-option:hover {
+  background: #f4efff;
+}
+
+.ui-data-table__filter-check {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #6f49d7;
+  cursor: pointer;
+}
+
+.ui-data-table__filter-actions {
+  position: sticky;
+  bottom: 0;
+  margin: 10px -1rem -1rem;
+  padding: 8px 1rem 10px;
+  border-top: 1px solid var(--dt-border);
+  background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ui-data-table__filter-clear {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6f49d7;
+  cursor: pointer;
+  border-radius: 0.4rem;
+  transition: background-color 100ms ease;
+}
+
+.ui-data-table__filter-clear:hover {
+  background: #f4efff;
 }
 
 /* ── action button ── */

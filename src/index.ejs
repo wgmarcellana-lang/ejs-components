@@ -74,6 +74,20 @@
               searchable: true,
               selectable: true,
               exportable: true,
+              filterable: true,
+              filters: [
+                {
+                  key: "status",
+                  label: "Status",
+                  options: [
+                    { label: "Completed", value: "Completed" },
+                    { label: "Closed",    value: "Closed"    },
+                    { label: "Pending",   value: "Pending"   },
+                    { label: "Rejected",  value: "Rejected"  },
+                    { label: "Draft",     value: "Draft"     }
+                  ]
+                }
+              ],
               pageSize: 5,
               pageSizeOptions: [5, 10, 25],
               searchPlaceholder: "Search records…",

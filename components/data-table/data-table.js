@@ -61,16 +61,27 @@ function sortRows(rows, key, direction) {
   });
 }
 
-function filterRows(rows, columns, query) {
+function filterRows(rows, columns, query, activeFilters) {
   const q = query.trim().toLowerCase();
-  if (!q) return rows;
-  return rows.filter((row) =>
-    columns.some((col) => {
-      if (col.type === "action") return false;
-      const val = String(getNestedValue(row, col.key) ?? "").toLowerCase();
-      return val.includes(q);
-    })
-  );
+
+  return rows.filter((row) => {
+    if (q) {
+      const matchesQuery = columns.some((col) => {
+        if (col.type === "action") return false;
+        const val = String(getNestedValue(row, col.key) ?? "").toLowerCase();
+        return val.includes(q);
+      });
+      if (!matchesQuery) return false;
+    }
+
+    for (const [key, allowedValues] of Object.entries(activeFilters)) {
+      if (allowedValues.size === 0) continue;
+      const val = String(getNestedValue(row, key) ?? "");
+      if (!allowedValues.has(val)) return false;
+    }
+
+    return true;
+  });
 }
 
 function buildPageNumbers(current, total) {
@@ -107,6 +118,11 @@ function initDataTable(element) {
   const pagesContainer = element.querySelector("[data-table-pages]");
   const infoEl = element.querySelector("[data-table-info]");
   const exportBtn = element.querySelector("[data-table-export]");
+  const filterBtn = element.querySelector("[data-table-filter-btn]");
+  const filterPanel = element.querySelector("[data-table-filter-panel]");
+  const filterClearBtn = element.querySelector("[data-table-filter-clear]");
+  const filterBadge = element.querySelector("[data-filter-badge]");
+  const filterChecks = element.querySelectorAll(".ui-data-table__filter-check");
   const selectAllCheck = element.querySelector("[data-table-select-all]");
   const sortHeaders = element.querySelectorAll("[data-table-sort]");
 
@@ -118,11 +134,12 @@ function initDataTable(element) {
     sortDir: "asc",
     page: 1,
     pageSize: parseInt(element.dataset.pageSize, 10) || 10,
-    selectedIds: new Set(), // tracks row indices in filtered+sorted set
+    selectedIds: new Set(),
+    activeFilters: {},
   };
 
   function getProcessedRows() {
-    let rows = filterRows(allRows, columns, state.query);
+    let rows = filterRows(allRows, columns, state.query, state.activeFilters);
     if (state.sortKey) {
       rows = sortRows(rows, state.sortKey, state.sortDir);
     }
@@ -321,6 +338,68 @@ function initDataTable(element) {
     }));
   });
 
+  // ── filter badge: shows number of checked (selected) options ──
+  function updateFilterBadge() {
+    if (!filterBadge || !filterBtn) return;
+    const checkedCount = [...filterChecks].filter((c) => c.checked).length;
+    const totalCount = filterChecks.length;
+    const hasRestriction = checkedCount < totalCount;
+
+    if (hasRestriction) {
+      filterBadge.textContent = checkedCount;
+      filterBadge.hidden = false;
+      filterBtn.classList.add("is-active");
+    } else {
+      filterBadge.hidden = true;
+      filterBtn.classList.remove("is-active");
+    }
+  }
+
+  // ── filter panel toggle ──
+  filterBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = filterPanel && !filterPanel.hidden;
+    if (filterPanel) filterPanel.hidden = isOpen;
+    filterBtn.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  // ── close panel on outside click ──
+  document.addEventListener("click", (e) => {
+    if (filterPanel && !filterPanel.hidden && !element.contains(e.target)) {
+      filterPanel.hidden = true;
+      filterBtn?.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // ── filter checkbox changes ──
+  filterChecks.forEach((check) => {
+    check.addEventListener("change", () => {
+      const key = check.dataset.filterKey;
+
+      // rebuild the allowed set for this key from all checked options
+      state.activeFilters[key] = new Set(
+        [...filterChecks]
+          .filter((c) => c.dataset.filterKey === key && c.checked)
+          .map((c) => c.dataset.filterValue)
+      );
+
+      state.page = 1;
+      state.selectedIds.clear();
+      updateFilterBadge();
+      render();
+    });
+  });
+
+  // ── clear all filters ──
+  filterClearBtn?.addEventListener("click", () => {
+    state.activeFilters = {};
+    filterChecks.forEach((c) => { c.checked = true; });
+    state.page = 1;
+    state.selectedIds.clear();
+    updateFilterBadge();
+    render();
+  });
+
   // ── export ──
   exportBtn?.addEventListener("click", () => {
     const processed = getProcessedRows();
@@ -351,8 +430,11 @@ function initDataTable(element) {
     state.sortDir = "asc";
     state.page = 1;
     state.selectedIds.clear();
+    state.activeFilters = {};
     if (searchInput) searchInput.value = "";
     if (pageSizeSelect) pageSizeSelect.value = String(parseInt(element.dataset.pageSize, 10) || 10);
+    filterChecks.forEach((c) => { c.checked = true; });
+    updateFilterBadge();
     render();
   };
 
