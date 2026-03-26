@@ -23,11 +23,11 @@
 
 /* ── header (title above toolbar) ── */
 .ui-data-table__header {
-  padding: 16px 20px 0;
+  padding: 16px 38px 0;
 }
 
 .ui-data-table__title {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #1f1830;
   letter-spacing: -0.01em;
@@ -39,7 +39,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 14px 22px 16px;
+  padding: 14px 38px 16px;
   border-bottom: 1px solid var(--dt-border);
   background: #ffffff;
 }
@@ -362,7 +362,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
-  padding: 14px 22px;
+  padding: 14px 38px;
   border-top: 1px solid var(--dt-border);
   background: #ffffff;
 }
@@ -506,14 +506,14 @@
 
 @media (max-width: 640px) {
   .ui-data-table__header {
-    padding: 14px 14px 0;
+    padding: 14px 20px 0;
   }
 
   .ui-data-table__toolbar {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
-    padding: 12px 14px 14px;
+    padding: 12px 20px 14px;
   }
 
   .ui-data-table__toolbar-left,
@@ -536,21 +536,17 @@
 
   .ui-data-table__th--check,
   .ui-data-table__td--check {
-    padding-inline: 1rem 0.55rem;
+    padding-inline: 0.9rem 0.5rem;
   }
 
   .ui-data-table__footer {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    padding: 12px 14px;
+    padding: 12px 20px;
   }
 
   .ui-data-table__pagination {
     justify-content: center;
-  }
-
-  :root {
-    --dt-badge-width: 6.5rem;
   }
 }
