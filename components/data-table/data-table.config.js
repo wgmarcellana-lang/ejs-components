@@ -50,7 +50,7 @@ module.exports = ({ props }) => {
 
   return {
     id: requiredText(tableProps.id, "id"),
-    title: textOr(tableProps.title, ""),
+    title: textOr(tableProps.label, textOr(tableProps.title, "")),
     columns: normalizedColumns,
     rows,
     pageSize,

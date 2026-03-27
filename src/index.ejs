@@ -66,13 +66,12 @@
                 allowModeSwitch: true,
               }
             }) %>
-          </div>
 
           <!-- data table -->
           <%- include("../components/data-table/data-table.ejs", {
             props: {
               id: "demo-table",
-              title: "Data Table Component",
+              label: "Data Table Component",
               searchable: true,
               selectable: true,
               exportable: true,
@@ -169,76 +168,51 @@
             }
           }) %>
 
-          <!-- media -->
-          <section class="media-demo">
-            <article class="media-demo__card">
-              <div class="media-demo__header">
-                <h2>Image Preview Component</h2>
-              </div>
+          <!-- image preview -->
+          <%- include("../components/image-preview/image-preview.ejs", {
+            props: {
+              id: "profile-preview",
+              label: "Image Preview Component",
+              size: "medium",
+              shape: "circle",
+              alt: "Selected profile image preview",
+              enlargeOnClick: true
+            }
+          }) %>
 
-              <div class="media-demo__panel media-demo__panel--preview">
-                <!-- image preview -->
-                <%- include("../components/image-preview/image-preview.ejs", {
-                  props: {
-                    id: "profile-preview",
-                    label: "Image Preview Component",
-                    size: "medium",
-                    shape: "circle",
-                    alt: "Selected profile image preview",
-                    enlargeOnClick: true
-                  }
-                }) %>
-              </div>
-            </article>
+          <!-- file upload -->
+          <%- include("../components/file-upload/file-upload.ejs", {
+            props: {
+              id: "profile-upload",
+              name: "profileUpload",
+              label: "File Upload Component",
+              accept: "image/*,.webp,.png,.jpg,.jpeg",
+              helper: "Drag a file here.",
+              buttonLabel: "Choose image",
+              dropLabel: "Drop image here",
+              previewTarget: "#profile-preview",
+              maxFileSize: 5242880
+            }
+          }) %>
 
-            <article class="media-demo__card">
-              <div class="media-demo__header">
-                <h2>File Upload Component</h2>
-              </div>
-
-              <div class="media-demo__panel">
-                <!-- file upload -->
-                <%- include("../components/file-upload/file-upload.ejs", {
-                  props: {
-                    id: "profile-upload",
-                    name: "profileUpload",
-                    label: "Upload Image",
-                    accept: "image/*,.webp,.png,.jpg,.jpeg",
-                    helper: "Drag a file here.",
-                    buttonLabel: "Choose image",
-                    dropLabel: "Drop image here",
-                    previewTarget: "#profile-preview",
-                    maxFileSize: 5242880
-                  }
-                }) %>
-              </div>
-            </article>
-
-            <article class="media-demo__card">
-              <div class="media-demo__header">
-                <h2>Download Button Component</h2>
-              </div>
-
-              <div class="media-demo__actions">
-                <%- include("../components/button/button.ejs", {
-                  props: {
-                    label: "Download Current Image",
-                    variant: "secondary",
-                    size: "md",
-                    action: "download",
-                    icon: "download",
-                    href: "/src/assets/no-user.webp",
-                    download: {
-                      fileName: "no-user.webp",
-                      targetPreview: "#profile-preview",
-                      fallbackHref: "/src/assets/no-user.webp",
-                      fallbackFileName: "no-user.webp"
-                    }
-                  }
-                }) %>
-              </div>
-            </article>
-          </section>
+          <!-- download button -->
+          <%- include("../components/button/button.ejs", {
+            props: {
+              label: "Download Button Component",
+              variant: "secondary",
+              size: "md",
+              action: "download",
+              icon: "download",
+              href: "/src/assets/no-user.webp",
+              download: {
+                fileName: "no-user.webp",
+                targetPreview: "#profile-preview",
+                fallbackHref: "/src/assets/no-user.webp",
+                fallbackFileName: "no-user.webp"
+              }
+            }
+          }) %>
+        </div>
 
           <!-- for testing only -->
           <section class="form-output" aria-live="polite">
