@@ -336,7 +336,42 @@
   position: relative;
 }
 
-.ui-data-table__toolbar-btn.is-active {
+.ui-data-table__filter-modal {
+  position: relative;
+  width: min(34rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+}
+
+.ui-data-table__filter-modal[hidden] {
+  display: none;
+}
+
+.ui-data-table__filter-modal--popup {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 50;
+}
+
+.ui-data-table__filter-modal--popup .ui-data-table__filter-backdrop {
+  display: none;
+}
+
+.ui-data-table__filter-modal--modal {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  max-width: none;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+
+.ui-data-table__toolbar-btn.is-active,
+.ui-data-table__toolbar-btn.is-open {
   border-color: rgba(111, 73, 215, 0.3);
   background: #f4efff;
   color: #6f49d7;
@@ -356,26 +391,44 @@
   line-height: 1;
 }
 
-.ui-data-table__filter-panel {
+.ui-data-table__filter-backdrop {
   position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  z-index: 50;
-  width: min(34rem, calc(100vw - 2rem));
-  max-width: calc(100vw - 2rem);
-  overflow: hidden;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.2), transparent 24%),
+    radial-gradient(circle at 80% 85%, rgba(111, 73, 215, 0.12), transparent 28%),
+    rgba(28, 20, 48, 0.28);
+  backdrop-filter: blur(12px) saturate(0.96);
+}
+
+.ui-data-table__filter-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, auto);
   border: 1px solid rgba(109, 89, 156, 0.12);
   border-radius: 1.35rem;
   background:
     radial-gradient(circle at top left, rgba(111, 73, 215, 0.05), transparent 30%),
     linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
+}
+
+.ui-data-table__filter-modal--popup .ui-data-table__filter-panel {
+  overflow: hidden;
   box-shadow:
     0 22px 46px rgba(41, 27, 74, 0.1),
     0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
-.ui-data-table__filter-panel[hidden] {
-  display: none;
+.ui-data-table__filter-modal--modal .ui-data-table__filter-panel {
+  margin: auto;
+  width: min(100%, 580px);
+  max-height: min(100vh - 48px, 44rem);
+  overflow: hidden auto;
+  box-shadow:
+    0 36px 90px rgba(31, 22, 52, 0.22),
+    0 14px 30px rgba(31, 22, 52, 0.08);
 }
 
 .ui-data-table__filter-panel-header {
@@ -727,6 +780,10 @@
   box-shadow: 0 0 0 4px rgba(111, 73, 215, 0.12);
 }
 
+body.ui-data-table-filter-open {
+  overflow: hidden;
+}
+
 /* ── action button ── */
 .ui-data-table__action-btn {
   display: inline-flex;
@@ -936,10 +993,21 @@
     width: 100%;
   }
 
-  .ui-data-table__filter-panel {
-    left: 0;
-    right: auto;
+  .ui-data-table__filter-modal {
     width: min(100%, 32rem);
+  }
+
+  .ui-data-table__filter-modal--modal {
+    padding: 16px;
+  }
+
+  .ui-data-table__filter-panel {
+    width: 100%;
+  }
+
+  .ui-data-table__filter-modal--modal .ui-data-table__filter-panel {
+    width: 100%;
+    max-height: min(100vh - 32px, 44rem);
   }
 
   .ui-data-table__filter-date-grid,

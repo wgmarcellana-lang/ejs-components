@@ -6,6 +6,10 @@ function booleanOr(value, fallback) {
   return typeof value === "boolean" ? value : fallback;
 }
 
+function oneOf(value, allowed, fallback) {
+  return allowed.includes(value) ? value : fallback;
+}
+
 function requiredText(value, propName) {
   if (typeof value === "string" && value) {
     return value;
@@ -57,6 +61,7 @@ module.exports = ({ props }) => {
     exportable: tableProps.exportable !== false,
     exportLabel: textOr(tableProps.exportLabel, "Export"),
     filterable: tableProps.filterable === true,
+    filterPresentation: oneOf(tableProps.filterPresentation, ["popup", "modal"], "popup"),
     filterLabel: textOr(tableProps.filterLabel, "Filter"),
     filterPanelTitle: textOr(tableProps.filterPanelTitle, "Filter Data"),
     filterPanelDescription: textOr(tableProps.filterPanelDescription, "Refine your search results"),

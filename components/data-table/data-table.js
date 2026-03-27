@@ -215,6 +215,16 @@ function serializeAppliedFilters(filters, appliedFilters) {
   });
 }
 
+function getFocusableElements(container) {
+  if (!(container instanceof HTMLElement)) return [];
+
+  return Array.from(
+    container.querySelectorAll(
+      "button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"
+    )
+  ).filter((element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true");
+}
+
 function initDataTable(element) {
   if (element.dataset.datatableInitialized === "true") return;
 
@@ -224,6 +234,8 @@ function initDataTable(element) {
   const filters = parseJsonScript(element, "[data-table-filters]", []);
   const emptyText = element.dataset.emptyText || "No records found.";
   const selectable = element.dataset.selectable === "true";
+  const filterPresentation = element.dataset.filterPresentation === "modal" ? "modal" : "popup";
+  const usesModalFilter = filterPresentation === "modal";
 
   const tbody = element.querySelector("[data-table-body]");
   const searchInput = element.querySelector("[data-table-search]");
@@ -234,8 +246,9 @@ function initDataTable(element) {
   const infoEl = element.querySelector("[data-table-info]");
   const exportBtn = element.querySelector("[data-table-export]");
   const filterBtn = element.querySelector("[data-table-filter-btn]");
-  const filterPanel = element.querySelector("[data-table-filter-panel]");
-  const filterCloseBtn = element.querySelector("[data-table-filter-close]");
+  const filterModal = element.querySelector("[data-table-filter-panel]");
+  const filterDialog = element.querySelector(".ui-data-table__filter-panel");
+  const filterCloseBtns = element.querySelectorAll("[data-table-filter-close]");
   const filterClearBtn = element.querySelector("[data-table-filter-clear]");
   const filterCancelBtn = element.querySelector("[data-table-filter-cancel]");
   const filterApplyBtn = element.querySelector("[data-table-filter-apply]");
@@ -258,6 +271,11 @@ function initDataTable(element) {
     appliedFilters: createDefaultFilterState(filters),
     draftFilters: createDefaultFilterState(filters),
   };
+  let previousFocusedElement = null;
+
+  if (usesModalFilter && filterModal && filterModal.parentElement !== document.body) {
+    document.body.appendChild(filterModal);
+  }
 
   function getProcessedRows() {
     let rows = filterRows(allRows, columns, state.query, filters, state.appliedFilters);
@@ -417,15 +435,43 @@ function initDataTable(element) {
       syncFilterControlsFromDraft();
     }
 
-    if (filterPanel) filterPanel.hidden = true;
+    if (filterModal) filterModal.hidden = true;
     filterBtn?.setAttribute("aria-expanded", "false");
+    if (usesModalFilter) {
+      filterBtn?.classList.remove("is-open");
+    }
+
+    if (usesModalFilter && !document.querySelector(".ui-data-table__filter-modal--modal:not([hidden])")) {
+      document.body.classList.remove("ui-data-table-filter-open");
+    }
+
+    if (usesModalFilter) {
+      previousFocusedElement?.focus?.();
+      previousFocusedElement = null;
+    }
   }
 
   function openFilterPanel() {
     state.draftFilters = cloneFilterState(state.appliedFilters, filters);
     syncFilterControlsFromDraft();
-    if (filterPanel) filterPanel.hidden = false;
+    if (usesModalFilter) {
+      previousFocusedElement =
+        document.activeElement instanceof HTMLElement ? document.activeElement : filterBtn;
+    }
+
+    if (filterModal) filterModal.hidden = false;
     filterBtn?.setAttribute("aria-expanded", "true");
+    if (usesModalFilter) {
+      filterBtn?.classList.add("is-open");
+      document.body.classList.add("ui-data-table-filter-open");
+    }
+
+    if (usesModalFilter) {
+      window.requestAnimationFrame(() => {
+        const focusTarget = filterCloseBtns[0] || getFocusableElements(filterDialog)[0] || filterDialog;
+        focusTarget?.focus?.();
+      });
+    }
   }
 
   function emitFilterChange() {
@@ -553,7 +599,7 @@ function initDataTable(element) {
 
   filterBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
-    const isOpen = filterPanel && !filterPanel.hidden;
+    const isOpen = filterModal && !filterModal.hidden;
     if (isOpen) {
       closeFilterPanel();
     } else {
@@ -561,8 +607,10 @@ function initDataTable(element) {
     }
   });
 
-  filterCloseBtn?.addEventListener("click", () => {
-    closeFilterPanel();
+  filterCloseBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      closeFilterPanel();
+    });
   });
 
   filterCancelBtn?.addEventListener("click", () => {
@@ -641,15 +689,45 @@ function initDataTable(element) {
     });
   });
 
-  document.addEventListener("click", (e) => {
-    if (filterPanel && !filterPanel.hidden && !element.contains(e.target)) {
-      closeFilterPanel();
-    }
-  });
+  if (usesModalFilter) {
+    filterModal?.addEventListener("click", (e) => {
+      if (e.target === filterModal) {
+        closeFilterPanel();
+      }
+    });
+  } else {
+    document.addEventListener("click", (e) => {
+      if (filterModal && !filterModal.hidden && !element.contains(e.target)) {
+        closeFilterPanel();
+      }
+    });
+  }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && filterPanel && !filterPanel.hidden) {
+    if (e.key === "Escape" && filterModal && !filterModal.hidden) {
       closeFilterPanel();
+      return;
+    }
+
+    if (usesModalFilter && e.key === "Tab" && filterModal && !filterModal.hidden && filterDialog) {
+      const focusable = getFocusableElements(filterDialog);
+
+      if (!focusable.length) {
+        e.preventDefault();
+        filterDialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 

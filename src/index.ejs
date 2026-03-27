@@ -74,8 +74,9 @@
               searchable: true,
               selectable: true,
               exportable: true,
-              filterable: true,
               // filter configs
+              filterable: true,
+              filterPresentation: "modal", // or popup like yung dati
               filterLabel: "Filter",
               filterPanelTitle: "Filter Records",
               filterPanelDescription: "Adjust the criteria below to refine the results.",
@@ -84,12 +85,14 @@
               filterCancelLabel: "Cancel",
               filterApplyLabel: "Apply Filters",
               filters: [
+                // bday filter
                 {
                   key: "birthday",
                   type: "date-range",
                   label: "Birthday",
                   helper: "Filter celebrities by birthday range."
                 },
+                // gender filter
                 {
                   key: "gender",
                   type: "toggle-group",
@@ -100,6 +103,7 @@
                     { label: "Male",   value: "Male",   color: "blue" }
                   ]
                 },
+                // status filter
                 {
                   key: "status",
                   type: "toggle-group",
