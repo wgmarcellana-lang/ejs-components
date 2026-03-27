@@ -44,13 +44,17 @@ function initFileUpload(element) {
   }
 
   const config = {
+    previewTarget: element.dataset.previewTarget || "",
     accept: element.dataset.accept || "*",
     invalidTypeText: element.dataset.invalidTypeText || "This file type is not allowed.",
+    invalidSizeText: element.dataset.invalidSizeText || "This file is too large.",
     emptyLabel: element.dataset.emptyLabel || "No file selected.",
     selectedPrefix: element.dataset.selectedPrefix || "Selected file",
+    maxFileSize: Number(element.dataset.maxFileSize || 0),
     multiple: toBoolean(element.dataset.multiple),
     disabled: toBoolean(element.dataset.disabled),
   };
+  const preview = config.previewTarget ? document.querySelector(config.previewTarget) : null;
 
   function setState(state, message = "") {
     element.dataset.state = state;
@@ -87,21 +91,58 @@ function initFileUpload(element) {
     );
   }
 
+  function updatePreview(files) {
+    const [firstFile] = files;
+    const previewApi = preview?.imagePreview;
+
+    if (!previewApi) {
+      return;
+    }
+
+    if (!firstFile) {
+      previewApi.reset?.();
+      return;
+    }
+
+    if (firstFile.type.startsWith("image/")) {
+      previewApi.showFile?.(firstFile);
+      return;
+    }
+
+    previewApi.reset?.();
+  }
+
   function applyFiles(files) {
     const picked = Array.from(files || []);
-    const invalidFile = picked.find((file) => !fileMatchesAccept(file, config.accept));
+    const normalized = config.multiple ? picked : picked.slice(0, 1);
+    const invalidFile = normalized.find((file) => !fileMatchesAccept(file, config.accept));
+
+    if (!invalidFile && config.maxFileSize > 0) {
+      const oversizedFile = normalized.find((file) => file.size > config.maxFileSize);
+
+      if (oversizedFile) {
+        input.value = "";
+        writeFileMeta([]);
+        updatePreview([]);
+        setState("invalid", `${config.invalidSizeText} (${oversizedFile.name})`);
+        emitChange([]);
+        return;
+      }
+    }
 
     if (invalidFile) {
       input.value = "";
       writeFileMeta([]);
+      updatePreview([]);
       setState("invalid", `${config.invalidTypeText} (${invalidFile.name})`);
       emitChange([]);
       return;
     }
 
-    writeFileMeta(picked);
-    setState(picked.length ? "ready" : "idle", picked.length ? "" : "");
-    emitChange(picked);
+    writeFileMeta(normalized);
+    updatePreview(normalized);
+    setState(normalized.length ? "ready" : "idle", normalized.length ? "" : "");
+    emitChange(normalized);
   }
 
   ["dragenter", "dragover"].forEach((eventName) => {
@@ -135,7 +176,7 @@ function initFileUpload(element) {
     }
 
     const transfer = new DataTransfer();
-    files.forEach((file) => transfer.items.add(file));
+    (config.multiple ? files : files.slice(0, 1)).forEach((file) => transfer.items.add(file));
     input.files = transfer.files;
     applyFiles(input.files);
   });
@@ -147,6 +188,7 @@ function initFileUpload(element) {
   element.resetComponent = () => {
     input.value = "";
     writeFileMeta([]);
+    updatePreview([]);
     setState("idle", "");
     emitChange([]);
   };

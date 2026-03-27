@@ -25,7 +25,11 @@ module.exports = ({ props }) => {
     dropLabel: textOr(uploadProps.dropLabel, "Drop files here"),
     emptyLabel: textOr(uploadProps.emptyLabel, "No file selected."),
     invalidTypeText: textOr(uploadProps.invalidTypeText, "This file type is not allowed."),
+    invalidSizeText: textOr(uploadProps.invalidSizeText, "This file is too large."),
     selectedPrefix: textOr(uploadProps.selectedPrefix, "Selected file"),
+    maxFileSize: typeof uploadProps.maxFileSize === "number" && uploadProps.maxFileSize > 0
+      ? uploadProps.maxFileSize
+      : 0,
     multiple: uploadProps.multiple === true,
     disabled: uploadProps.disabled === true,
     previewTarget: textOr(uploadProps.previewTarget, ""),

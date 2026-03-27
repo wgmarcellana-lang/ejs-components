@@ -208,11 +208,11 @@
         <section class="media-demo">
           <article class="media-demo__card">
             <div class="media-demo__header">
-              <h2>File &amp; Media Components</h2>
-              <p>Shared building blocks for image preview, drag-and-drop upload, and file downloads.</p>
             </div>
-
+            
+            <h2>File and Media Components</h2>
             <div class="media-demo__grid">
+              <!-- image preview -->
               <%- include("../components/image-preview/image-preview.ejs", {
                 props: {
                   id: "profile-preview",
@@ -220,12 +220,12 @@
                   size: "medium",
                   shape: "circle",
                   alt: "Selected profile image preview",
-                  enlargeOnClick: true,
-                  previewInput: "profile-upload-input"
+                  enlargeOnClick: true
                 }
               }) %>
-
+              
               <div class="media-demo__stack">
+                <!-- file upload -->
                 <%- include("../components/file-upload/file-upload.ejs", {
                   props: {
                     id: "profile-upload",
@@ -234,16 +234,22 @@
                     accept: "image/*,.webp,.png,.jpg,.jpeg",
                     helper: "Supports image uploads for avatar or media use cases. Drag a file here or browse to preview it instantly.",
                     buttonLabel: "Choose image",
-                    dropLabel: "Drop image here"
+                    dropLabel: "Drop image here",
+                    previewTarget: "#profile-preview",
+                    maxFileSize: 5242880
                   }
                 }) %>
 
                 <div class="media-demo__actions">
+                  <!-- download -->
                   <%- include("../components/download-button/download-button.ejs", {
                     props: {
-                      label: "Download Placeholder",
+                      label: "Download Current Image",
                       href: "/src/assets/no-user.webp",
                       fileName: "no-user.webp",
+                      targetPreview: "#profile-preview",
+                      fallbackHref: "/src/assets/no-user.webp",
+                      fallbackFileName: "no-user.webp",
                       variant: "secondary",
                       size: "md"
                     }

@@ -25,6 +25,10 @@ function findLinkedInput(root, selector) {
 
 function createStateApi(element, config, refs) {
   let objectUrl = "";
+  let currentSource = "";
+  let currentFileName = "";
+  let currentKind = "placeholder";
+  let requestId = 0;
 
   function setStatus(message) {
     if (refs.status) {
@@ -57,24 +61,87 @@ function createStateApi(element, config, refs) {
     refs.action.disabled = false;
   }
 
+  function finalizeState(source, statusMessage = "") {
+    currentSource = source;
+    currentKind = currentFileName ? "uploaded" : "remote";
+    applyImageSource(source, "ready", statusMessage);
+    emitPreviewChange();
+  }
+
+  function loadResolvedSource(source, onSuccess, onError) {
+    const image = new Image();
+    image.onload = () => onSuccess(source);
+    image.onerror = () => onError();
+    image.src = source;
+  }
+
+  function emitPreviewChange() {
+    element.dispatchEvent(
+      new CustomEvent("component:change", {
+        bubbles: true,
+        detail: {
+          component: "image-preview",
+          id: element.id || "",
+          source: currentSource,
+          fileName: currentFileName,
+          kind: currentKind,
+          downloadable: currentKind === "uploaded" || currentKind === "remote",
+        }
+      })
+    );
+  }
+
   function showPlaceholder() {
     cleanupObjectUrl();
+    currentSource = config.placeholderImage;
+    currentFileName = "";
+    currentKind = "placeholder";
     applyImageSource(config.placeholderImage, "empty", config.placeholderText);
+    emitPreviewChange();
   }
 
   function showError() {
     cleanupObjectUrl();
+    currentSource = config.fallbackImage;
+    currentFileName = "";
+    currentKind = "fallback";
     applyImageSource(config.fallbackImage, "error", config.fallbackText);
+    emitPreviewChange();
   }
 
   function showLoading() {
     setState("loading");
     setStatus(config.loadingText);
+    refs.image.dataset.renderState = "loading";
     refs.action.dataset.clickable = "false";
   }
 
-  function showResolved(source, statusMessage = "") {
-    applyImageSource(source, "ready", statusMessage);
+  function showSource(source, fileName = "") {
+    const nextRequestId = ++requestId;
+    refs.image.dataset.fileName = fileName;
+    currentFileName = fileName;
+    currentKind = fileName ? "remote" : "placeholder";
+    showLoading();
+    loadResolvedSource(
+      source || config.placeholderImage,
+      (resolvedSource) => {
+        if (nextRequestId !== requestId) {
+          return;
+        }
+
+        if (!fileName && resolvedSource === config.placeholderImage) {
+          showPlaceholder();
+          return;
+        }
+
+        finalizeState(resolvedSource, fileName ? `Previewing ${fileName}` : "");
+      },
+      () => {
+        if (nextRequestId === requestId) {
+          showError();
+        }
+      }
+    );
   }
 
   function showFile(file) {
@@ -92,17 +159,32 @@ function createStateApi(element, config, refs) {
     cleanupObjectUrl();
     objectUrl = URL.createObjectURL(file);
     refs.image.dataset.fileName = file.name;
+    currentFileName = file.name;
     showLoading();
-    refs.image.src = objectUrl;
+    const nextRequestId = ++requestId;
+
+    loadResolvedSource(
+      objectUrl,
+      (resolvedSource) => {
+        if (nextRequestId === requestId) {
+          finalizeState(resolvedSource, `Previewing ${file.name}`);
+        }
+      },
+      () => {
+        if (nextRequestId === requestId) {
+          showError();
+        }
+      }
+    );
   }
 
   function reset() {
     refs.image.dataset.fileName = "";
+    currentFileName = "";
 
     if (config.src) {
       cleanupObjectUrl();
-      showLoading();
-      refs.image.src = config.src;
+      showSource(config.src);
       return;
     }
 
@@ -117,30 +199,131 @@ function createStateApi(element, config, refs) {
     showPlaceholder,
     showError,
     showLoading,
-    showResolved,
     showFile,
+    showSource,
     reset,
     destroy,
+    getValue() {
+      return {
+        source: currentSource,
+        fileName: currentFileName,
+        kind: currentKind,
+        isInteractive: currentKind === "uploaded" || currentKind === "remote",
+      };
+    },
   };
 }
 
-function openLightbox(config, refs) {
-  if (!config.enlargeOnClick || !window.uiModal || !refs.image?.src || refs.image.src === config.placeholderImage) {
-    return;
-  }
-
-  window.uiModal.custom({
-    target: config.modalTarget,
-    title: config.label || "Image preview",
-    bodyHtml: `
+function buildInlineLightboxMarkup(config, refs) {
+  return `
+    <div class="ui-image-preview__lightbox-shell">
       <img
         class="ui-image-preview__modal-image"
         src="${escapeHtml(refs.image.src)}"
         alt="${escapeHtml(refs.image.alt || config.alt || "Image preview")}"
       />
-    `,
-    buttons: [{ label: "Close", variant: "secondary", close: true }]
+    </div>
+  `;
+}
+
+function closeInlineLightbox() {
+  const overlay = document.querySelector("[data-image-preview-lightbox]");
+  const dialog = overlay?.querySelector(".ui-image-preview__lightbox-dialog");
+  const selector = dialog?.dataset.previousFocusSelector || "";
+
+  if (overlay) {
+    overlay.hidden = true;
+  }
+
+  document.body.classList.remove("modal-open");
+
+  if (selector) {
+    document.querySelector(selector)?.focus?.();
+  }
+}
+
+function ensureInlineLightbox() {
+  let overlay = document.querySelector("[data-image-preview-lightbox]");
+
+  if (overlay) {
+    return overlay;
+  }
+
+  overlay = document.createElement("div");
+  overlay.className = "ui-image-preview__lightbox";
+  overlay.setAttribute("data-image-preview-lightbox", "");
+  overlay.setAttribute("hidden", "");
+  overlay.innerHTML = `
+    <div class="ui-image-preview__lightbox-backdrop" data-image-preview-lightbox-close></div>
+    <div class="ui-image-preview__lightbox-dialog" role="dialog" aria-modal="true" aria-labelledby="image-preview-lightbox-title" tabindex="-1">
+      <h2 class="ui-image-preview__lightbox-title" id="image-preview-lightbox-title">Image preview</h2>
+      <button class="ui-image-preview__lightbox-close" type="button" data-image-preview-lightbox-close aria-label="Close image preview">&times;</button>
+      <div class="ui-image-preview__lightbox-body" data-image-preview-lightbox-body></div>
+    </div>
+  `;
+
+  const closeTargets = overlay.querySelectorAll("[data-image-preview-lightbox-close]");
+  closeTargets.forEach((target) => {
+    target.addEventListener("click", () => {
+      closeInlineLightbox();
+    });
   });
+
+  overlay.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeInlineLightbox();
+    }
+  });
+
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function openLightbox(config, refs) {
+  if (
+    !config.enlargeOnClick ||
+    !refs.image?.src ||
+    refs.image.src === config.placeholderImage ||
+    refs.image.dataset.renderState !== "ready"
+  ) {
+    return;
+  }
+
+  if (config.modalTarget && window.uiModal) {
+    window.uiModal.custom({
+      target: config.modalTarget,
+      title: config.label || "Image preview",
+      bodyHtml: buildInlineLightboxMarkup(config, refs),
+      buttons: [{ label: "Close", variant: "secondary", close: true }]
+    });
+    return;
+  }
+
+  const overlay = ensureInlineLightbox();
+  const body = overlay.querySelector("[data-image-preview-lightbox-body]");
+  const title = overlay.querySelector("#image-preview-lightbox-title");
+  const dialog = overlay.querySelector(".ui-image-preview__lightbox-dialog");
+  const previousActiveElement =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+  if (!body || !dialog) {
+    return;
+  }
+
+  if (title) {
+    title.textContent = config.label || "Image preview";
+  }
+
+  body.innerHTML = buildInlineLightboxMarkup(config, refs);
+  overlay.hidden = false;
+  document.body.classList.add("modal-open");
+  dialog.dataset.previousFocusSelector = "";
+
+  if (previousActiveElement?.id) {
+    dialog.dataset.previousFocusSelector = `#${previousActiveElement.id}`;
+  }
+
+  dialog.focus();
 }
 
 function initImagePreview(element) {
@@ -166,10 +349,11 @@ function initImagePreview(element) {
     placeholderText: element.dataset.placeholderText || "No image selected.",
     fallbackText: element.dataset.fallbackText || "Image unavailable.",
     loadingText: element.dataset.loadingText || "Loading preview...",
+    enlargeLabel: element.dataset.enlargeLabel || "View larger",
     previewInput: element.dataset.previewInput || "",
     enlargeOnClick: toBoolean(element.dataset.enlargeOnClick),
     label: element.querySelector(".ui-image-preview__label")?.textContent?.trim() || "",
-    modalTarget: "#generic-modal",
+    modalTarget: element.dataset.modalTarget || "#generic-modal",
   };
 
   refs.image.style.objectFit = element.dataset.objectFit || "cover";
@@ -177,29 +361,20 @@ function initImagePreview(element) {
   const api = createStateApi(element, config, refs);
   const linkedInput = findLinkedInput(document, config.previewInput);
 
-  refs.image.addEventListener("load", () => {
-    const fileName = refs.image.dataset.fileName;
-    const renderState = refs.image.dataset.renderState;
-
-    if (renderState === "empty") {
-      refs.action.dataset.clickable = "false";
-      return;
-    }
-
-    if (renderState === "error") {
-      refs.action.dataset.clickable = "false";
-      return;
-    }
-
-    api.showResolved(refs.image.src, fileName ? `Previewing ${fileName}` : "");
-  });
-
-  refs.image.addEventListener("error", () => {
-    api.showError();
-  });
-
   refs.action.addEventListener("click", () => {
     openLightbox(config, refs);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const overlay = document.querySelector("[data-image-preview-lightbox]");
+
+    if (!overlay || overlay.hidden) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeInlineLightbox();
+    }
   });
 
   if (linkedInput) {
@@ -218,12 +393,9 @@ function initImagePreview(element) {
 
   element.imagePreview = {
     showFile: api.showFile,
-    showSource(source) {
-      api.showLoading();
-      refs.image.dataset.fileName = "";
-      refs.image.src = source || config.placeholderImage;
-    },
+    showSource: api.showSource,
     reset: api.reset,
+    getValue: api.getValue,
   };
 
   api.reset();

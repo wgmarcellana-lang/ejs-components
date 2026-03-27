@@ -33,8 +33,10 @@ module.exports = ({ props }) => {
     placeholderText: textOr(previewProps.placeholderText, "No image selected."),
     fallbackText: textOr(previewProps.fallbackText, "Image unavailable."),
     loadingText: textOr(previewProps.loadingText, "Loading preview..."),
+    enlargeLabel: textOr(previewProps.enlargeLabel, "View larger"),
     enlargeOnClick: previewProps.enlargeOnClick === true,
     previewInput: textOr(previewProps.previewInput, ""),
+    modalTarget: textOr(previewProps.modalTarget, "#generic-modal"),
     accept: textOr(previewProps.accept, "image/*"),
     standalone: previewProps.standalone === true,
   };

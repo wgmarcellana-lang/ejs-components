@@ -20,7 +20,9 @@
   data-placeholder-text="<%= preview.placeholderText %>"
   data-fallback-text="<%= preview.fallbackText %>"
   data-loading-text="<%= preview.loadingText %>"
+  data-enlarge-label="<%= preview.enlargeLabel %>"
   data-preview-input="<%= preview.previewInput %>"
+  data-modal-target="<%= preview.modalTarget %>"
   data-accept="<%= preview.accept %>"
   data-enlarge-on-click="<%= String(preview.enlargeOnClick) %>"
   data-show-label="<%= String(preview.showLabel) %>"
@@ -36,7 +38,7 @@
       class="ui-image-preview__action"
       type="button"
       data-image-preview-trigger
-      aria-label="Open image preview"
+      aria-label="<%= preview.enlargeLabel %>"
     >
       <img class="ui-image-preview__image" data-image-preview-image alt="<%= preview.alt %>" />
       <div class="ui-image-preview__overlay" data-image-preview-overlay>
@@ -48,7 +50,7 @@
             <path d="M3 21l7-7"/>
           </svg>
         </span>
-        <span class="ui-image-preview__overlay-text">View larger</span>
+        <span class="ui-image-preview__overlay-text"><%= preview.enlargeLabel %></span>
       </div>
     </button>
 

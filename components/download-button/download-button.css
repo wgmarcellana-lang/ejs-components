@@ -52,9 +52,9 @@
     0 18px 32px rgba(89, 42, 129, 0.2);
 }
 
-.ui-download-button[data-disabled="true"] {
+.ui-download-button[data-disabled="true"],
+.ui-download-button[aria-disabled="true"] {
   opacity: 0.6;
-  pointer-events: none;
   box-shadow: none;
 }
 
