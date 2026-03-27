@@ -25,7 +25,7 @@
             <!-- input -->
             <%- include("../components/text-input/text-input.ejs", {
               props: {
-                label: "Text Input",
+                label: "Text Input Component",
                 name: "textTest",
                 placeholder: "Enter text",
                 type: "text",
@@ -36,7 +36,7 @@
             <!-- dropdown -->
             <%- include("../components/dropdown/dropdown.ejs", {
               props: {
-                label: "Dropdown",
+                label: "Dropdown Component",
                 name: "dropdownTest",
                 placeholder: "Select options",
                 searchPlaceholder: "Search options",
@@ -55,7 +55,7 @@
             <!-- calendar -->
             <%- include("../components/calendar/calendar.ejs", {
               props: {
-                label: "Calendar",
+                label: "Calendar Component",
                 name: "testDate",
                 singleLabel: "Date",
                 startLabel: "Start Date",
@@ -72,7 +72,7 @@
           <%- include("../components/data-table/data-table.ejs", {
             props: {
               id: "demo-table",
-              title: "Certificate of Compliance (CoC-CE)",
+              title: "Data Table Component",
               searchable: true,
               selectable: true,
               exportable: true,
@@ -173,56 +173,69 @@
           <section class="media-demo">
             <article class="media-demo__card">
               <div class="media-demo__header">
-                <h2>File and Media Components</h2>
+                <h2>Image Preview Component</h2>
               </div>
 
-              <div class="media-demo__grid">
-                <div class="media-demo__panel media-demo__panel--preview">
-                  <!-- image preview -->
-                  <%- include("../components/image-preview/image-preview.ejs", {
-                    props: {
-                      id: "profile-preview",
-                      label: "Image Preview",
-                      size: "medium",
-                      shape: "circle",
-                      alt: "Selected profile image preview",
-                      enlargeOnClick: true
-                    }
-                  }) %>
-                </div>
-                
-                <div class="media-demo__panel media-demo__panel--upload media-demo__stack">
-                  <!-- file upload -->
-                  <%- include("../components/file-upload/file-upload.ejs", {
-                    props: {
-                      id: "profile-upload",
-                      name: "profileUpload",
-                      label: "Upload Image",
-                      accept: "image/*,.webp,.png,.jpg,.jpeg",
-                      helper: "Drag a file here.",
-                      buttonLabel: "Choose image",
-                      dropLabel: "Drop image here",
-                      previewTarget: "#profile-preview",
-                      maxFileSize: 5242880
-                    }
-                  }) %>
+              <div class="media-demo__panel media-demo__panel--preview">
+                <!-- image preview -->
+                <%- include("../components/image-preview/image-preview.ejs", {
+                  props: {
+                    id: "profile-preview",
+                    label: "Image Preview Component",
+                    size: "medium",
+                    shape: "circle",
+                    alt: "Selected profile image preview",
+                    enlargeOnClick: true
+                  }
+                }) %>
+              </div>
+            </article>
 
-                  <div class="media-demo__actions">
-                    <!-- download -->
-                    <%- include("../components/download-button/download-button.ejs", {
-                      props: {
-                        label: "Download Current Image",
-                        href: "/src/assets/no-user.webp",
-                        fileName: "no-user.webp",
-                        targetPreview: "#profile-preview",
-                        fallbackHref: "/src/assets/no-user.webp",
-                        fallbackFileName: "no-user.webp",
-                        variant: "secondary",
-                        size: "md"
-                      }
-                    }) %>
-                  </div>
-                </div>
+            <article class="media-demo__card">
+              <div class="media-demo__header">
+                <h2>File Upload Component</h2>
+              </div>
+
+              <div class="media-demo__panel">
+                <!-- file upload -->
+                <%- include("../components/file-upload/file-upload.ejs", {
+                  props: {
+                    id: "profile-upload",
+                    name: "profileUpload",
+                    label: "Upload Image",
+                    accept: "image/*,.webp,.png,.jpg,.jpeg",
+                    helper: "Drag a file here.",
+                    buttonLabel: "Choose image",
+                    dropLabel: "Drop image here",
+                    previewTarget: "#profile-preview",
+                    maxFileSize: 5242880
+                  }
+                }) %>
+              </div>
+            </article>
+
+            <article class="media-demo__card">
+              <div class="media-demo__header">
+                <h2>Download Button Component</h2>
+              </div>
+
+              <div class="media-demo__actions">
+                <%- include("../components/button/button.ejs", {
+                  props: {
+                    label: "Download Current Image",
+                    variant: "secondary",
+                    size: "md",
+                    action: "download",
+                    icon: "download",
+                    href: "/src/assets/no-user.webp",
+                    download: {
+                      fileName: "no-user.webp",
+                      targetPreview: "#profile-preview",
+                      fallbackHref: "/src/assets/no-user.webp",
+                      fallbackFileName: "no-user.webp"
+                    }
+                  }
+                }) %>
               </div>
             </article>
           </section>

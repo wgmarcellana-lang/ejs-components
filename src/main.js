@@ -6,7 +6,6 @@ import { initModals } from "../components/modal/modal.js";
 import { initDataTables } from "../components/data-table/data-table.js";
 import { initImagePreviews } from "../components/image-preview/image-preview.js";
 import { initFileUploads } from "../components/file-upload/file-upload.js";
-import { initDownloadButtons } from "../components/download-button/download-button.js";
 
 function buildInitialFormState(form) {
   const payload = {};
@@ -256,7 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initDataTables();
   initImagePreviews();
   initFileUploads();
-  initDownloadButtons();
   setupDemoForm();
   setupDataTableDemo();
 });

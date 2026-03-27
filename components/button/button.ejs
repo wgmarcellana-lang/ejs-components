@@ -1,25 +1,71 @@
 <%
   const btn = loadConfig("./button.config.js", { props });
+  const iconMarkupByName = {
+    download: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v11"/>
+        <path d="M7 10l5 5 5-5"/>
+        <path d="M5 21h14"/>
+      </svg>
+    `
+  };
+  const iconMarkup = iconMarkupByName[btn.icon] || "";
+  const sharedAttributes = [
+    `class="ui-button ui-button--${btn.variant} ui-button--${btn.size}${btn.icon ? " ui-button--with-icon" : ""}"`,
+    `data-component="button"`,
+    `data-label="${btn.label}"`,
+    `data-type="${btn.type}"`,
+    `data-variant="${btn.variant}"`,
+    `data-size="${btn.size}"`,
+    `data-disabled="${String(btn.disabled)}"`,
+    btn.action ? `data-action="${btn.action}"` : "",
+    btn.icon ? `data-icon="${btn.icon}"` : "",
+    btn.icon ? `data-icon-position="${btn.iconPosition}"` : "",
+    btn.action === "download" ? `data-href="${btn.href}"` : "",
+    btn.action === "download" ? `data-file-name="${btn.download.fileName}"` : "",
+    btn.action === "download" ? `data-target-preview="${btn.download.targetPreview}"` : "",
+    btn.action === "download" ? `data-fallback-href="${btn.download.fallbackHref}"` : "",
+    btn.action === "download" ? `data-fallback-file-name="${btn.download.fallbackFileName}"` : ""
+  ].filter(Boolean).join(" ");
 %>
 
 <% if (btn.standalone) { %>
   <link rel="stylesheet" href="<%= asset('./button.css') %>" />
 <% } %>
 
-<button
-  type="<%= btn.type %>"
-  class="ui-button ui-button--<%= btn.variant %> ui-button--<%= btn.size %>"
-  data-component="button"
-  data-label="<%= btn.label %>"
-  data-type="<%= btn.type %>"
-  data-variant="<%= btn.variant %>"
-  data-size="<%= btn.size %>"
-  data-disabled="<%= String(btn.disabled) %>"
-  <%- btn.action ? `data-action="${btn.action}"` : "" %>
-  <%= btn.disabled ? "disabled" : "" %>
->
-  <%= btn.label %>
-</button>
+<% if (btn.isLink) { %>
+  <a
+    <%- sharedAttributes %>
+    href="<%= btn.disabled ? "#" : (btn.href || btn.download.fallbackHref || "#") %>"
+    <%- btn.target ? `target="${btn.target}"` : "" %>
+    <%- btn.rel ? `rel="${btn.rel}"` : "" %>
+    <%- btn.action === "download" ? (btn.download.fileName || btn.download.fallbackFileName ? `download="${btn.download.fileName || btn.download.fallbackFileName}"` : "download") : "" %>
+    aria-disabled="<%= String(btn.disabled) %>"
+    <%= btn.disabled ? 'tabindex="-1"' : "" %>
+  >
+    <% if (btn.icon && btn.iconPosition === "start" && iconMarkup) { %>
+      <span class="ui-button__icon" aria-hidden="true"><%- iconMarkup %></span>
+    <% } %>
+    <span class="ui-button__label"><%= btn.label %></span>
+    <% if (btn.icon && btn.iconPosition === "end" && iconMarkup) { %>
+      <span class="ui-button__icon" aria-hidden="true"><%- iconMarkup %></span>
+    <% } %>
+  </a>
+<% } else { %>
+  <button
+    type="<%= btn.type %>"
+    <%- sharedAttributes %>
+    <%= btn.disabled ? "disabled" : "" %>
+  >
+    <% if (btn.icon && btn.iconPosition === "start" && iconMarkup) { %>
+      <span class="ui-button__icon" aria-hidden="true"><%- iconMarkup %></span>
+    <% } %>
+    <span class="ui-button__label"><%= btn.label %></span>
+    <% if (btn.icon && btn.iconPosition === "end" && iconMarkup) { %>
+      <span class="ui-button__icon" aria-hidden="true"><%- iconMarkup %></span>
+    <% } %>
+  </button>
+<% } %>
 
 <% if (btn.standalone) { %>
   <script type="module" src="<%= asset('./button.js') %>"></script>

@@ -6,7 +6,6 @@
 @import "../components/data-table/data-table.css";
 @import "../components/image-preview/image-preview.css";
 @import "../components/file-upload/file-upload.css";
-@import "../components/download-button/download-button.css";
 
 :root {
   --page-bg: #592a81;
@@ -246,6 +245,7 @@ textarea {
   display: grid;
   gap: 24px;
   padding: 0;
+  grid-template-columns: 1fr;
 }
 
 .media-demo__card {
@@ -282,13 +282,6 @@ textarea {
   line-height: 1.6;
 }
 
-.media-demo__grid {
-  display: grid;
-  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
-}
-
 .media-demo__panel {
   display: grid;
   gap: 18px;
@@ -309,6 +302,8 @@ textarea {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 @media (max-width: 640px) {
@@ -349,17 +344,7 @@ textarea {
     border-radius: 22px;
   }
 
-  .media-demo__grid {
-    grid-template-columns: 1fr;
-  }
-
   .form-actions {
     justify-content: stretch;
-  }
-}
-
-@media (max-width: 960px) {
-  .media-demo__grid {
-    grid-template-columns: 1fr;
   }
 }
