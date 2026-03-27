@@ -61,6 +61,7 @@ function initFileUpload(element) {
     zone.dataset.invalid = String(state === "invalid");
     zone.dataset.disabled = String(config.disabled);
     status.textContent = message;
+    input.setAttribute("aria-invalid", String(state === "invalid"));
   }
 
   function writeFileMeta(files) {

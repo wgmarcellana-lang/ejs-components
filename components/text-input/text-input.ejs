@@ -1,5 +1,7 @@
 <%
   const input = loadConfig("./text-input.config.js", { props });
+  const inputId = input.id || `${input.name}-input`;
+  const helperId = input.helper ? `${inputId}-helper` : "";
 %>
 
 <% if (input.standalone) { %>
@@ -20,12 +22,13 @@
     <input
       class="ui-text-input__control"
       type="<%= input.type %>"
-      <%- input.id ? `id="${input.id}"` : "" %>
+      id="<%= inputId %>"
       name="<%= input.name %>"
       placeholder="<%= input.placeholder %>"
       value="<%= input.value %>"
       <%- input.autocomplete ? `autocomplete="${input.autocomplete}"` : "" %>
       <%= input.required ? "required" : "" %>
+      <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
     />
 
     <% if (input.type === "password") { %>
@@ -42,7 +45,7 @@
   </span>
 
   <% if (input.helper) { %>
-    <span class="ui-field__helper"><%= input.helper %></span>
+    <span class="ui-field__helper" id="<%= helperId %>"><%= input.helper %></span>
   <% } %>
 </label>
 

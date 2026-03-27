@@ -54,22 +54,23 @@ function formatDisplayDate(date) {
   return `${month}/${day}/${year}`;
 }
 
-function formatMonthTitle(date) {
+function formatDayLabel(date) {
   return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
     month: "long",
+    day: "numeric",
     year: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   }).format(date);
 }
 
-// month choose
 function getMonthOptions() {
   return Array.from({ length: 12 }, (_value, index) => ({
     value: String(index),
     label: new Intl.DateTimeFormat("en-US", {
       month: "long",
-      timeZone: "UTC"
-    }).format(createUtcDate(2024, index, 1))
+      timeZone: "UTC",
+    }).format(createUtcDate(2024, index, 1)),
   }));
 }
 
@@ -82,6 +83,10 @@ function getYearOptions(baseYear) {
 
 function addMonths(date, delta) {
   return createUtcDate(date.getUTCFullYear(), date.getUTCMonth() + delta, 1);
+}
+
+function addDays(date, delta) {
+  return createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + delta);
 }
 
 function getTodayUtc() {
@@ -150,7 +155,7 @@ function initCalendar(element) {
     singleLabel: element.dataset.singleLabel || "",
     startLabel: element.dataset.startLabel || "",
     endLabel: element.dataset.endLabel || "",
-    required: toBoolean(element.dataset.required)
+    required: toBoolean(element.dataset.required),
   };
 
   const modeInputs = element.querySelectorAll("[data-calendar-mode]");
@@ -167,7 +172,6 @@ function initCalendar(element) {
   const startDisplay = element.querySelector("[data-calendar-start-display]");
   const endDisplay = element.querySelector("[data-calendar-end-display]");
   const panel = element.querySelector("[data-calendar-panel]");
-  const title = element.querySelector("[data-calendar-title]");
   const grid = element.querySelector("[data-calendar-grid]");
   const prevButton = element.querySelector("[data-calendar-prev]");
   const nextButton = element.querySelector("[data-calendar-next]");
@@ -200,7 +204,7 @@ function initCalendar(element) {
     mode: config.mode,
     singleValue: singleInput.value,
     startValue: startInput.value,
-    endValue: endInput.value
+    endValue: endInput.value,
   };
 
   const state = {
@@ -210,25 +214,32 @@ function initCalendar(element) {
     singleDate: parseIsoDate(singleInput.value),
     rangeStart: parseIsoDate(startInput.value),
     rangeEnd: parseIsoDate(endInput.value),
+    focusDate:
+      parseIsoDate(startInput.value) ||
+      parseIsoDate(endInput.value) ||
+      parseIsoDate(singleInput.value) ||
+      getTodayUtc(),
     viewDate:
       parseIsoDate(startInput.value) ||
       parseIsoDate(endInput.value) ||
       parseIsoDate(singleInput.value) ||
-      getTodayUtc()
+      getTodayUtc(),
   };
 
   const monthOptions = getMonthOptions();
 
   function syncTriggerStates() {
-    singleTrigger.dataset.panelOpen = String(state.isOpen && state.mode === "single");
-    startTrigger.dataset.panelOpen = String(state.isOpen && state.mode === "range");
-    endTrigger.dataset.panelOpen = String(state.isOpen && state.mode === "range");
-    startTrigger.dataset.activeBoundary = String(
-      state.isOpen && state.mode === "range" && state.activeBoundary === "start"
-    );
-    endTrigger.dataset.activeBoundary = String(
-      state.isOpen && state.mode === "range" && state.activeBoundary === "end"
-    );
+    const singleOpen = state.isOpen && state.mode === "single";
+    const rangeOpen = state.isOpen && state.mode === "range";
+
+    singleTrigger.dataset.panelOpen = String(singleOpen);
+    startTrigger.dataset.panelOpen = String(rangeOpen);
+    endTrigger.dataset.panelOpen = String(rangeOpen);
+    singleTrigger.setAttribute("aria-expanded", String(singleOpen));
+    startTrigger.setAttribute("aria-expanded", String(rangeOpen));
+    endTrigger.setAttribute("aria-expanded", String(rangeOpen));
+    startTrigger.dataset.activeBoundary = String(rangeOpen && state.activeBoundary === "start");
+    endTrigger.dataset.activeBoundary = String(rangeOpen && state.activeBoundary === "end");
   }
 
   function syncSingleState() {
@@ -251,20 +262,18 @@ function initCalendar(element) {
   }
 
   function emitChange() {
-    const detail = {
-      component: "calendar",
-      mode: state.mode,
-      values: {
-        [config.name]: state.mode === "single" ? formatIsoDate(state.singleDate) : "",
-        [config.startName]: state.mode === "range" ? formatIsoDate(state.rangeStart) : "",
-        [config.endName]: state.mode === "range" ? formatIsoDate(state.rangeEnd) : ""
-      }
-    };
-
     element.dispatchEvent(
       new CustomEvent("component:change", {
         bubbles: true,
-        detail
+        detail: {
+          component: "calendar",
+          mode: state.mode,
+          values: {
+            [config.name]: state.mode === "single" ? formatIsoDate(state.singleDate) : "",
+            [config.startName]: state.mode === "range" ? formatIsoDate(state.rangeStart) : "",
+            [config.endName]: state.mode === "range" ? formatIsoDate(state.rangeEnd) : "",
+          },
+        },
       })
     );
   }
@@ -290,6 +299,28 @@ function initCalendar(element) {
     yearSelect.value = String(viewYear);
   }
 
+  function setViewDate(date) {
+    if (!date) {
+      return;
+    }
+
+    state.viewDate = createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1);
+  }
+
+  function setFocusDate(date) {
+    if (!date) {
+      return;
+    }
+
+    state.focusDate = date;
+    setViewDate(date);
+  }
+
+  function focusCurrentDay() {
+    const focusedButton = grid.querySelector(`[data-calendar-day="${formatIsoDate(state.focusDate)}"]`);
+    focusedButton?.focus();
+  }
+
   function renderCalendar() {
     if (!state.isOpen) {
       panel.hidden = true;
@@ -306,7 +337,7 @@ function initCalendar(element) {
     grid.innerHTML = cells
       .map((date, index) => {
         if (!date) {
-          return '<div class="ui-calendar__cell ui-calendar__cell--empty"></div>';
+          return '<div class="ui-calendar__cell ui-calendar__cell--empty" role="presentation"></div>';
         }
 
         const isoDate = formatIsoDate(date);
@@ -314,6 +345,8 @@ function initCalendar(element) {
         const isEnd = isSameDay(date, state.rangeEnd);
         const isSingleSelected = state.mode === "single" && isSameDay(date, state.singleDate);
         const inRange = isBetween(date, state.rangeStart, state.rangeEnd);
+        const isSelected = state.mode === "single" ? isSingleSelected : isStart || isEnd;
+        const isFocused = isSameDay(date, state.focusDate);
         const classNames = [
           "ui-calendar__cell",
           state.mode === "range" && inRange ? "is-in-range" : "",
@@ -321,26 +354,21 @@ function initCalendar(element) {
           state.mode === "range" && isEnd ? "is-range-end" : "",
           isSingleSelected ? "is-single-selected" : "",
           index % 7 === 0 ? "is-week-start" : "",
-          index % 7 === 6 ? "is-week-end" : ""
+          index % 7 === 6 ? "is-week-end" : "",
         ]
           .filter(Boolean)
           .join(" ");
 
         return `
-          <div class="${classNames}">
+          <div class="${classNames}" role="presentation">
             <button
               class="ui-calendar__day"
               type="button"
+              role="gridcell"
               data-calendar-day="${escapeHtml(isoDate)}"
-              aria-pressed="${
-                state.mode === "single"
-                  ? isSingleSelected
-                    ? "true"
-                    : "false"
-                  : isStart || isEnd
-                    ? "true"
-                    : "false"
-              }"
+              aria-selected="${isSelected ? "true" : "false"}"
+              aria-label="${escapeHtml(formatDayLabel(date))}"
+              tabindex="${isFocused ? "0" : "-1"}"
             >
               ${date.getUTCDate()}
             </button>
@@ -359,14 +387,14 @@ function initCalendar(element) {
 
     if (isRange && !state.rangeStart) {
       state.rangeStart = state.singleDate;
-      setViewDate(state.rangeStart || state.rangeEnd || getTodayUtc());
+      setFocusDate(state.rangeStart || state.rangeEnd || getTodayUtc());
     }
 
     if (!isRange) {
       if (!state.singleDate && state.rangeStart) {
         state.singleDate = state.rangeStart;
       }
-      setViewDate(state.singleDate || getTodayUtc());
+      setFocusDate(state.singleDate || getTodayUtc());
     }
 
     singleInput.name = isRange ? "" : config.name;
@@ -388,31 +416,21 @@ function initCalendar(element) {
     emitChange();
   }
 
-  function setViewDate(date) {
-    if (!date) {
-      return;
-    }
-
-    state.viewDate = createUtcDate(date.getUTCFullYear(), date.getUTCMonth(), 1);
-  }
-
   function handleRangeSelection(nextDate) {
     if (!state.rangeStart || state.rangeEnd || state.activeBoundary === "start") {
       state.rangeStart = nextDate;
       state.rangeEnd = null;
       state.activeBoundary = "end";
+    } else if (compareDates(nextDate, state.rangeStart) < 0) {
+      state.rangeEnd = state.rangeStart;
+      state.rangeStart = nextDate;
+      state.activeBoundary = "start";
     } else {
-      if (compareDates(nextDate, state.rangeStart) < 0) {
-        state.rangeEnd = state.rangeStart;
-        state.rangeStart = nextDate;
-      } else {
-        state.rangeEnd = nextDate;
-      }
-
+      state.rangeEnd = nextDate;
       state.activeBoundary = "start";
     }
 
-    setViewDate(nextDate);
+    setFocusDate(nextDate);
     syncRangeState();
     renderCalendar();
     emitChange();
@@ -420,11 +438,12 @@ function initCalendar(element) {
 
   function handleSingleSelection(nextDate) {
     state.singleDate = nextDate;
-    setViewDate(nextDate);
+    setFocusDate(nextDate);
     syncSingleState();
     renderCalendar();
     emitChange();
     closePanel();
+    singleTrigger.focus();
   }
 
   function openPanel(boundary) {
@@ -435,16 +454,20 @@ function initCalendar(element) {
     }
 
     if (state.mode === "single") {
-      setViewDate(state.singleDate || getTodayUtc());
+      setFocusDate(state.singleDate || getTodayUtc());
     } else {
       const focusDate =
         state.activeBoundary === "end"
           ? state.rangeEnd || state.rangeStart || getTodayUtc()
           : state.rangeStart || state.rangeEnd || getTodayUtc();
-      setViewDate(focusDate);
+      setFocusDate(focusDate);
     }
 
     renderCalendar();
+
+    window.requestAnimationFrame(() => {
+      focusCurrentDay();
+    });
   }
 
   function closePanel() {
@@ -462,6 +485,12 @@ function initCalendar(element) {
     openPanel(boundary);
   }
 
+  function moveFocusByDays(delta) {
+    setFocusDate(addDays(state.focusDate, delta));
+    renderCalendar();
+    focusCurrentDay();
+  }
+
   modeInputs.forEach((input) => {
     input.addEventListener("change", () => {
       if (input.checked) {
@@ -470,38 +499,22 @@ function initCalendar(element) {
     });
   });
 
-  singleInput.addEventListener("input", () => {
-    state.singleDate = parseIsoDate(singleInput.value);
-    syncSingleState();
-  });
-
-  singleInput.addEventListener("change", () => {
-    state.singleDate = parseIsoDate(singleInput.value);
-    syncSingleState();
-  });
-
   singleTrigger.addEventListener("click", () => {
-    if (state.mode !== "single") {
-      return;
+    if (state.mode === "single") {
+      togglePanel("single");
     }
-
-    togglePanel("single");
   });
 
   startTrigger.addEventListener("click", () => {
-    if (state.mode !== "range") {
-      return;
+    if (state.mode === "range") {
+      togglePanel("start");
     }
-
-    togglePanel("start");
   });
 
   endTrigger.addEventListener("click", () => {
-    if (state.mode !== "range") {
-      return;
+    if (state.mode === "range") {
+      togglePanel("end");
     }
-
-    togglePanel("end");
   });
 
   panel.addEventListener("click", (event) => {
@@ -531,32 +544,109 @@ function initCalendar(element) {
     handleRangeSelection(nextDate);
   });
 
+  grid.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveFocusByDays(1);
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveFocusByDays(-1);
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveFocusByDays(7);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveFocusByDays(-7);
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      moveFocusByDays(-state.focusDate.getUTCDay());
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      moveFocusByDays(6 - state.focusDate.getUTCDay());
+      return;
+    }
+
+    if (event.key === "PageDown") {
+      event.preventDefault();
+      setFocusDate(addMonths(state.focusDate, 1));
+      renderCalendar();
+      focusCurrentDay();
+      return;
+    }
+
+    if (event.key === "PageUp") {
+      event.preventDefault();
+      setFocusDate(addMonths(state.focusDate, -1));
+      renderCalendar();
+      focusCurrentDay();
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+
+      if (state.mode === "single") {
+        handleSingleSelection(state.focusDate);
+      } else {
+        handleRangeSelection(state.focusDate);
+      }
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closePanel();
+      if (state.mode === "single") {
+        singleTrigger.focus();
+      } else if (state.activeBoundary === "end") {
+        endTrigger.focus();
+      } else {
+        startTrigger.focus();
+      }
+    }
+  });
+
   prevButton.addEventListener("click", () => {
-    state.viewDate = addMonths(state.viewDate, -1);
+    setFocusDate(addMonths(state.focusDate, -1));
     renderCalendar();
+    focusCurrentDay();
   });
 
   nextButton.addEventListener("click", () => {
-    state.viewDate = addMonths(state.viewDate, 1);
+    setFocusDate(addMonths(state.focusDate, 1));
     renderCalendar();
+    focusCurrentDay();
   });
 
   monthSelect.addEventListener("change", () => {
-    state.viewDate = createUtcDate(
-      state.viewDate.getUTCFullYear(),
-      Number(monthSelect.value),
-      1
+    setFocusDate(
+      createUtcDate(state.focusDate.getUTCFullYear(), Number(monthSelect.value), state.focusDate.getUTCDate())
     );
     renderCalendar();
+    focusCurrentDay();
   });
 
   yearSelect.addEventListener("change", () => {
-    state.viewDate = createUtcDate(
-      Number(yearSelect.value),
-      state.viewDate.getUTCMonth(),
-      1
+    setFocusDate(
+      createUtcDate(Number(yearSelect.value), state.focusDate.getUTCMonth(), state.focusDate.getUTCDate())
     );
     renderCalendar();
+    focusCurrentDay();
   });
 
   document.addEventListener("pointerdown", (event) => {
@@ -572,11 +662,7 @@ function initCalendar(element) {
     state.singleDate = parseIsoDate(initialValues.singleValue);
     state.rangeStart = parseIsoDate(initialValues.startValue);
     state.rangeEnd = parseIsoDate(initialValues.endValue);
-    state.viewDate =
-      state.rangeStart ||
-      state.rangeEnd ||
-      state.singleDate ||
-      getTodayUtc();
+    setFocusDate(state.rangeStart || state.rangeEnd || state.singleDate || getTodayUtc());
 
     singleInput.value = initialValues.singleValue;
     startInput.value = initialValues.startValue;

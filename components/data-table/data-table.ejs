@@ -185,7 +185,7 @@
 
   <!-- table -->
   <div class="ui-data-table__scroll">
-    <table class="ui-data-table__table" role="grid"<% if (table.caption) { %> aria-label="<%= table.caption %>"<% } %>>
+    <table class="ui-data-table__table"<% if (table.caption) { %> aria-label="<%= table.caption %>"<% } %>>
       <thead class="ui-data-table__thead">
         <tr>
           <% if (table.selectable) { %>
@@ -199,22 +199,30 @@
               scope="col"
               data-col-key="<%= col.key %>"
               <% if (col.sortable && col.type !== 'action') { %>
-                data-table-sort="<%= col.key %>"
                 aria-sort="none"
-                tabindex="0"
-                role="columnheader"
               <% } %>
             >
-              <span class="ui-data-table__th-inner">
-                <%= col.label %>
-                <% if (col.sortable && col.type !== 'action') { %>
-                  <span class="ui-data-table__sort-icon" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8 3l3.5 4h-7L8 3zm0 10L4.5 9h7L8 13z"/>
-                    </svg>
+              <% if (col.sortable && col.type !== 'action') { %>
+                <button
+                  class="ui-data-table__sort-button"
+                  type="button"
+                  data-table-sort="<%= col.key %>"
+                  aria-label="Sort by <%= col.label %>"
+                >
+                  <span class="ui-data-table__th-inner">
+                    <%= col.label %>
+                    <span class="ui-data-table__sort-icon" aria-hidden="true">
+                      <svg viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 3l3.5 4h-7L8 3zm0 10L4.5 9h7L8 13z"/>
+                      </svg>
+                    </span>
                   </span>
-                <% } %>
-              </span>
+                </button>
+              <% } else { %>
+                <span class="ui-data-table__th-inner">
+                  <%= col.label %>
+                </span>
+              <% } %>
             </th>
           <% }); %>
         </tr>

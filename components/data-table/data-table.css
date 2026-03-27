@@ -71,7 +71,7 @@
   place-items: center;
   width: 0.9rem;
   height: 0.9rem;
-  color: #b0a8c8;
+  color: #7a708f;
   pointer-events: none;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .ui-data-table__search::placeholder {
-  color: #b0a8c8;
+  color: #6f6784;
 }
 
 .ui-data-table__search:hover {
@@ -175,7 +175,7 @@
   text-align: left;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #9188a8;
+  color: #5f5675;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -189,14 +189,27 @@
 }
 
 .ui-data-table__th--sortable {
-  cursor: pointer;
+  padding: 0;
 }
 
 .ui-data-table__th--sortable:hover .ui-data-table__th-inner {
   color: #6f49d7;
 }
 
-.ui-data-table__th--sortable:focus-visible {
+.ui-data-table__sort-button {
+  width: 100%;
+  padding: 0.9rem var(--dt-cell-pad-x);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ui-data-table__sort-button:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px rgba(111, 73, 215, 0.25);
 }
@@ -285,25 +298,25 @@
 /* badge color variants */
 .ui-data-table__badge--green {
   background: #ecfdf5;
-  color: #059669;
+  color: #065f46;
   border-color: rgba(16, 185, 129, 0.18);
 }
 
 .ui-data-table__badge--blue {
   background: #eff6ff;
-  color: #2563eb;
+  color: #1d4ed8;
   border-color: rgba(59, 130, 246, 0.18);
 }
 
 .ui-data-table__badge--red {
   background: #fef2f2;
-  color: #dc2626;
+  color: #b91c1c;
   border-color: rgba(239, 68, 68, 0.18);
 }
 
 .ui-data-table__badge--yellow {
   background: #fffbeb;
-  color: #d97706;
+  color: #92400e;
   border-color: rgba(245, 158, 11, 0.18);
 }
 
@@ -315,7 +328,7 @@
 
 .ui-data-table__badge--gray {
   background: #f8fafc;
-  color: #64748b;
+  color: #475569;
   border-color: rgba(100, 116, 139, 0.16);
 }
 
@@ -471,7 +484,7 @@
 .ui-data-table__filter-panel-copy {
   margin: 0.22rem 0 0;
   font-size: 0.78rem;
-  color: #756c8d;
+  color: #5f5675;
 }
 
 .ui-data-table__filter-close {
@@ -530,7 +543,7 @@
 }
 
 .ui-data-table__filter-group-helper {
-  color: #756c8d;
+  color: #5f5675;
   font-size: 0.8rem;
   line-height: 1.45;
 }
@@ -818,7 +831,7 @@ body.ui-data-table-filter-open {
 .ui-data-table__empty {
   padding: 3.5rem 1rem;
   text-align: center;
-  color: #b0a8c8;
+  color: #5f5675;
   font-size: 0.88rem;
 }
 
@@ -843,7 +856,7 @@ body.ui-data-table-filter-open {
 
 .ui-data-table__showing-label {
   font-size: 0.82rem;
-  color: #9188a8;
+  color: #5f5675;
   font-weight: 500;
 }
 
@@ -879,7 +892,7 @@ body.ui-data-table-filter-open {
 
 .ui-data-table__info {
   font-size: 0.82rem;
-  color: #9188a8;
+  color: #5f5675;
 }
 
 .ui-data-table__pagination {

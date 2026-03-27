@@ -20,6 +20,7 @@ module.exports = ({ props }) => {
   const selectedOption = options.find((option) => option.value === selected[0]);
 
   return {
+    id: textOr(dropdownProps.id, ""),
     label,
     name: requiredText(dropdownProps.name, "name"),
     placeholder,

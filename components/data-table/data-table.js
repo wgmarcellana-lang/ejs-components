@@ -257,7 +257,7 @@ function initDataTable(element) {
   const filterPills = element.querySelectorAll("[data-filter-pill]");
   const filterDateInputs = element.querySelectorAll(".ui-data-table__filter-date-input");
   const selectAllCheck = element.querySelector("[data-table-select-all]");
-  const sortHeaders = element.querySelectorAll("[data-table-sort]");
+  const sortButtons = element.querySelectorAll("[data-table-sort]");
 
   if (!tbody) return;
 
@@ -346,12 +346,18 @@ function initDataTable(element) {
   }
 
   function renderSortHeaders() {
-    sortHeaders.forEach((th) => {
-      const key = th.dataset.tableSort;
+    sortButtons.forEach((button) => {
+      const key = button.dataset.tableSort;
+      const header = button.closest("th");
+
+      if (!header) {
+        return;
+      }
+
       if (key === state.sortKey) {
-        th.setAttribute("aria-sort", state.sortDir === "asc" ? "ascending" : "descending");
+        header.setAttribute("aria-sort", state.sortDir === "asc" ? "ascending" : "descending");
       } else {
-        th.setAttribute("aria-sort", "none");
+        header.setAttribute("aria-sort", "none");
       }
     });
   }
@@ -531,9 +537,9 @@ function initDataTable(element) {
     render();
   });
 
-  sortHeaders.forEach((th) => {
+  sortButtons.forEach((button) => {
     function doSort() {
-      const key = th.dataset.tableSort;
+      const key = button.dataset.tableSort;
       if (state.sortKey === key) {
         state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
       } else {
@@ -544,13 +550,7 @@ function initDataTable(element) {
       render();
     }
 
-    th.addEventListener("click", doSort);
-    th.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        doSort();
-      }
-    });
+    button.addEventListener("click", doSort);
   });
 
   tbody.addEventListener("change", (e) => {

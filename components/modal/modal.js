@@ -163,6 +163,34 @@ function renderFooter(modal, footer, buttons) {
   });
 }
 
+function getFocusableElements(container) {
+  if (!(container instanceof HTMLElement)) {
+    return [];
+  }
+
+  return Array.from(
+    container.querySelectorAll(
+      "button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"
+    )
+  ).filter((element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true");
+}
+
+function toggleBackgroundInert(modal, isInert) {
+  Array.from(document.body.children).forEach((child) => {
+    if (child === modal) {
+      return;
+    }
+
+    if (isInert) {
+      child.setAttribute("aria-hidden", "true");
+      child.inert = true;
+    } else {
+      child.removeAttribute("aria-hidden");
+      child.inert = false;
+    }
+  });
+}
+
 // controller
 function createModalController(modal) {
   const title = modal.querySelector("[data-modal-title]");
@@ -170,6 +198,7 @@ function createModalController(modal) {
   const footer = modal.querySelector("[data-modal-footer]");
   const dialog = modal.querySelector(".ui-modal__dialog");
   let previousActiveElement = null;
+  let keydownHandler = null;
 
   function open(config = {}) {
     const nextConfig = normalizeModalConfig(config);
@@ -187,12 +216,44 @@ function createModalController(modal) {
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
+    toggleBackgroundInert(modal, true);
+
+    keydownHandler = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        close();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialog) {
+        return;
+      }
+
+      const focusable = getFocusableElements(dialog);
+
+      if (!focusable.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", keydownHandler);
 
     window.requestAnimationFrame(() => {
       const focusTarget =
-        dialog?.querySelector(
-          "[data-modal-close], button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-        ) || dialog;
+        dialog ? getFocusableElements(dialog)[0] || dialog : null;
       focusTarget?.focus?.();
     });
   }
@@ -203,6 +264,15 @@ function createModalController(modal) {
 
     if (!document.querySelector(".ui-modal.is-open")) {
       document.body.classList.remove("modal-open");
+    }
+
+    if (keydownHandler) {
+      document.removeEventListener("keydown", keydownHandler);
+      keydownHandler = null;
+    }
+
+    if (!document.querySelector(".ui-modal.is-open")) {
+      toggleBackgroundInert(modal, false);
     }
 
     previousActiveElement?.focus?.();
@@ -230,12 +300,6 @@ function createModalController(modal) {
     }
   });
 
-  // close if esc
-  modal.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      close();
-    }
-  });
 }
 
 function resolveModal(target) {

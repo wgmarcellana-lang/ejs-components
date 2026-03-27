@@ -1,5 +1,8 @@
 <%
   const upload = loadConfig("./file-upload.config.js", { props });
+  const labelId = upload.showLabel ? `${upload.id}-label` : "";
+  const helperId = `${upload.id}-helper`;
+  const statusId = `${upload.id}-status`;
 %>
 
 <% if (upload.standalone) { %>
@@ -22,7 +25,7 @@
 >
   <% if (upload.showLabel) { %>
     <header class="ui-file-upload__header">
-      <span class="ui-file-upload__label"><%= upload.label %></span>
+      <span class="ui-file-upload__label" id="<%= labelId %>"><%= upload.label %></span>
     </header>
   <% } %>
 
@@ -39,6 +42,8 @@
       accept="<%= upload.accept %>"
       <%= upload.multiple ? "multiple" : "" %>
       <%= upload.disabled ? "disabled" : "" %>
+      <% if (upload.showLabel) { %>aria-labelledby="<%= labelId %>"<% } %>
+      aria-describedby="<%= helperId %> <%= statusId %>"
       data-file-upload-input
     />
 
@@ -51,13 +56,13 @@
     </span>
 
     <span class="ui-file-upload__headline" data-file-upload-headline><%= upload.dropLabel %></span>
-    <span class="ui-file-upload__helper"><%= upload.helper %></span>
+    <span class="ui-file-upload__helper" id="<%= helperId %>"><%= upload.helper %></span>
     <span class="ui-file-upload__button"><%= upload.buttonLabel %></span>
   </label>
 
   <div class="ui-file-upload__meta">
     <span class="ui-file-upload__file-name" data-file-upload-file-name><%= upload.emptyLabel %></span>
-    <span class="ui-file-upload__status" data-file-upload-status aria-live="polite"></span>
+    <span class="ui-file-upload__status" id="<%= statusId %>" data-file-upload-status aria-live="polite"></span>
   </div>
 </section>
 

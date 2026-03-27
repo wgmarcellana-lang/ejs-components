@@ -1,5 +1,12 @@
 <%
   const dropdown = loadConfig("./dropdown.config.js", { props });
+  const dropdownId = dropdown.id || `${dropdown.name}-dropdown`;
+  const labelId = `${dropdownId}-label`;
+  const triggerId = `${dropdownId}-trigger`;
+  const panelId = `${dropdownId}-panel`;
+  const optionsId = `${dropdownId}-options`;
+  const searchId = `${dropdownId}-search`;
+  const helperId = dropdown.helper ? `${dropdownId}-helper` : "";
 %>
 
 <% if (dropdown.standalone) { %>
@@ -8,6 +15,7 @@
 
 <div
   class="ui-field ui-dropdown"
+  id="<%= dropdownId %>"
   data-component="dropdown"
   data-name="<%= dropdown.name %>"
   data-mode="<%= dropdown.mode %>"
@@ -18,25 +26,43 @@
   data-has-options="<%= String(dropdown.options.length > 0) %>"
 >
   <% if (dropdown.showLabel && dropdown.label) { %>
-    <span class="ui-field__label"><%= dropdown.label %></span>
+    <span class="ui-field__label" id="<%= labelId %>"><%= dropdown.label %></span>
   <% } %>
 
   <div class="ui-dropdown__frame">
     <script type="application/json" data-dropdown-options><%- JSON.stringify(dropdown.options) %></script>
     <script type="application/json" data-dropdown-selected><%- JSON.stringify(dropdown.selected) %></script>
 
-    <button type="button" class="ui-dropdown__trigger" aria-expanded="false" data-dropdown-trigger>
+    <button
+      type="button"
+      id="<%= triggerId %>"
+      class="ui-dropdown__trigger"
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      aria-controls="<%= panelId %>"
+      aria-labelledby="<%= dropdown.showLabel && dropdown.label ? `${labelId} ${triggerId}` : triggerId %>"
+      <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
+      data-dropdown-trigger
+    >
       <span class="ui-dropdown__summary" data-dropdown-summary><%= dropdown.summary %></span>
       <span class="ui-dropdown__chevron" aria-hidden="true">+</span>
     </button>
 
-    <div class="ui-dropdown__panel" data-dropdown-panel hidden>
+    <div
+      class="ui-dropdown__panel"
+      id="<%= panelId %>"
+      data-dropdown-panel
+      hidden
+    >
       <% if (dropdown.searchable && dropdown.options.length > 0) { %>
         <div class="ui-dropdown__search-wrap">
+          <label class="ui-dropdown__sr-only" for="<%= searchId %>"><%= dropdown.searchPlaceholder %></label>
           <input
+            id="<%= searchId %>"
             type="search"
             class="ui-dropdown__search"
             placeholder="<%= dropdown.searchPlaceholder %>"
+            aria-controls="<%= optionsId %>"
             data-dropdown-search
           />
         </div>
@@ -46,13 +72,20 @@
         <div class="ui-dropdown__tags" data-dropdown-tags></div>
       <% } %>
 
-      <div class="ui-dropdown__options" data-dropdown-options-list></div>
+      <div
+        class="ui-dropdown__options"
+        id="<%= optionsId %>"
+        role="listbox"
+        <% if (dropdown.mode === "multiple") { %>aria-multiselectable="true"<% } %>
+        tabindex="-1"
+        data-dropdown-options-list
+      ></div>
       <div class="ui-dropdown__inputs" data-dropdown-inputs></div>
     </div>
   </div>
 
   <% if (dropdown.helper) { %>
-    <span class="ui-field__helper"><%= dropdown.helper %></span>
+    <span class="ui-field__helper" id="<%= helperId %>"><%= dropdown.helper %></span>
   <% } %>
 </div>
 

@@ -90,9 +90,16 @@ function renderOptions(list, searchValue, state, config) {
     ? filtered
         .map((option) => {
           const selected = selectedValues.has(option.value);
+          const optionId = `${config.optionIdPrefix}-${escapeHtml(option.value)}`;
 
           return `
-            <label class="ui-dropdown__option ${selected ? "is-selected" : ""}">
+            <label
+              class="ui-dropdown__option ${selected ? "is-selected" : ""}"
+              id="${optionId}"
+              role="option"
+              aria-selected="${selected ? "true" : "false"}"
+              tabindex="-1"
+            >
               <span class="ui-dropdown__option-main">
                 <input
                   class="ui-dropdown__control"
@@ -123,17 +130,19 @@ function initDropdown(element) {
   const config = {
     name,
     groupName: `${name}-selection`,
+    optionIdPrefix: `${element.id || name}-option`,
     placeholder: element.dataset.placeholder || "Select an option",
     emptyText: element.dataset.emptyText || "No matching options",
     showLabel: element.dataset.showLabel !== "false",
     mode: element.dataset.mode === "multiple" ? "multiple" : "single",
     searchable: toBoolean(element.dataset.searchable),
     hasOptions: toBoolean(element.dataset.hasOptions),
-    options
+    options,
   };
 
   const state = {
-    selectedValues: config.mode === "multiple" ? initialSelected : initialSelected.slice(0, 1)
+    selectedValues: config.mode === "multiple" ? initialSelected : initialSelected.slice(0, 1),
+    activeIndex: -1,
   };
 
   const trigger = element.querySelector("[data-dropdown-trigger]");
@@ -153,6 +162,10 @@ function initDropdown(element) {
     return config.options.filter((option) => state.selectedValues.includes(option.value));
   }
 
+  function getOptionElements() {
+    return Array.from(optionsList.querySelectorAll(".ui-dropdown__option[role='option']"));
+  }
+
   function emitChange() {
     const values = config.mode === "multiple" ? [...state.selectedValues] : state.selectedValues[0] || "";
 
@@ -162,20 +175,22 @@ function initDropdown(element) {
         detail: {
           component: "dropdown",
           name: config.name,
-          value: values
-        }
+          value: values,
+        },
       })
     );
   }
 
   function syncUi() {
     const pickedOptions = selectedOptions();
+
     summary.textContent = getSummary(config, pickedOptions);
     summary.dataset.hasSelection = String(pickedOptions.length > 0);
     element.dataset.hasSelection = String(pickedOptions.length > 0);
     renderTags(tags, pickedOptions);
     renderHiddenInputs(hiddenInputs, config, pickedOptions);
     renderOptions(optionsList, searchInput?.value || "", state, config);
+    state.activeIndex = -1;
 
     if (searchWrap) {
       searchWrap.hidden = !config.hasOptions;
@@ -185,6 +200,63 @@ function initDropdown(element) {
   function closePanel() {
     trigger.setAttribute("aria-expanded", "false");
     panel.hidden = true;
+    trigger.removeAttribute("aria-activedescendant");
+    state.activeIndex = -1;
+  }
+
+  function setActiveOption(index) {
+    const optionElements = getOptionElements();
+
+    if (!optionElements.length) {
+      state.activeIndex = -1;
+      trigger.removeAttribute("aria-activedescendant");
+      return;
+    }
+
+    const boundedIndex = Math.max(0, Math.min(index, optionElements.length - 1));
+    const activeOption = optionElements[boundedIndex];
+
+    state.activeIndex = boundedIndex;
+
+    if (activeOption?.id) {
+      trigger.setAttribute("aria-activedescendant", activeOption.id);
+    }
+
+    activeOption?.focus();
+    activeOption?.scrollIntoView({ block: "nearest" });
+  }
+
+  function moveActiveOption(delta) {
+    const optionElements = getOptionElements();
+
+    if (!optionElements.length) {
+      return;
+    }
+
+    const fallbackIndex = optionElements.findIndex((optionElement) =>
+      optionElement.classList.contains("is-selected")
+    );
+    const startIndex = state.activeIndex >= 0 ? state.activeIndex : Math.max(fallbackIndex, 0);
+
+    setActiveOption(startIndex + delta);
+  }
+
+  function activateFocusedOption() {
+    const optionElements = getOptionElements();
+    const activeOption = optionElements[state.activeIndex];
+    const activeControl = activeOption?.querySelector(".ui-dropdown__control[data-value]");
+
+    if (!activeControl) {
+      return;
+    }
+
+    if (config.mode === "multiple") {
+      activeControl.checked = !activeControl.checked;
+    } else {
+      activeControl.checked = true;
+    }
+
+    activeControl.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
   function openPanel() {
@@ -193,6 +265,9 @@ function initDropdown(element) {
 
     if (searchInput) {
       searchInput.focus();
+      setActiveOption(0);
+    } else {
+      setActiveOption(0);
     }
   }
 
@@ -203,6 +278,35 @@ function initDropdown(element) {
     }
 
     closePanel();
+  });
+
+  trigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+
+      if (panel.hidden) {
+        openPanel();
+      } else {
+        moveActiveOption(event.key === "ArrowDown" ? 1 : -1);
+      }
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+
+      if (panel.hidden) {
+        openPanel();
+      } else {
+        closePanel();
+      }
+      return;
+    }
+
+    if (event.key === "Escape" && !panel.hidden) {
+      event.preventDefault();
+      closePanel();
+    }
   });
 
   optionsList.addEventListener("change", (event) => {
@@ -221,14 +325,83 @@ function initDropdown(element) {
     } else {
       state.selectedValues = [value];
       closePanel();
+      trigger.focus();
     }
 
     syncUi();
     emitChange();
   });
 
+  optionsList.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveActiveOption(1);
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveActiveOption(-1);
+      return;
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      setActiveOption(0);
+      return;
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      setActiveOption(getOptionElements().length - 1);
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      activateFocusedOption();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closePanel();
+      trigger.focus();
+    }
+  });
+
+  optionsList.addEventListener("focusin", (event) => {
+    const focusedOption = event.target.closest(".ui-dropdown__option[role='option']");
+    const optionElements = getOptionElements();
+
+    if (!focusedOption) {
+      return;
+    }
+
+    state.activeIndex = optionElements.indexOf(focusedOption);
+
+    if (focusedOption.id) {
+      trigger.setAttribute("aria-activedescendant", focusedOption.id);
+    }
+  });
+
   searchInput?.addEventListener("input", () => {
     renderOptions(optionsList, searchInput.value, state, config);
+    setActiveOption(0);
+  });
+
+  searchInput?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveOption(0);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closePanel();
+      trigger.focus();
+    }
   });
 
   document.addEventListener("click", (event) => {

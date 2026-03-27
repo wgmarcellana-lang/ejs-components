@@ -17,6 +17,7 @@ module.exports = ({ props }) => {
   const isRange = mode === "range";
 
   return {
+    id: textOr(calendarProps.id, ""),
     label,
     name: requiredText(calendarProps.name, "name"),
     singleLabel: textOr(calendarProps.singleLabel, ""),

@@ -9,7 +9,8 @@
   </head>
 
   <body>
-    <main class="page-shell">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <main class="page-shell" id="main-content">
       <section class="demo-card">
         <div class="demo-card__header">
           <div>
@@ -17,7 +18,8 @@
           </div>
         </div>
 
-        <form class="component-form" data-demo-form novalidate>
+        <form class="component-form" data-demo-form>
+          <div class="form-feedback" data-form-feedback aria-live="assertive" hidden></div>
           <div class="component-grid">
 
             <!-- input -->

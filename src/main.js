@@ -75,6 +75,7 @@ function openConfiguredModal() {
 function setupDemoForm() {
   const form = document.querySelector("[data-demo-form]");
   const output = document.querySelector("[data-demo-output]");
+  const feedback = document.querySelector("[data-form-feedback]");
 
   if (!form) {
     return;
@@ -90,6 +91,15 @@ function setupDemoForm() {
     if (output) {
       output.textContent = value;
     }
+  }
+
+  function setFeedback(message = "") {
+    if (!feedback) {
+      return;
+    }
+
+    feedback.hidden = !message;
+    feedback.textContent = message;
   }
 
   form.addEventListener("component:change", (event) => {
@@ -129,7 +139,14 @@ function setupDemoForm() {
   });
 
   form.addEventListener("submit", async (event) => {
+    if (!form.reportValidity()) {
+      event.preventDefault();
+      setFeedback("Please correct the highlighted form fields before submitting.");
+      return;
+    }
+
     event.preventDefault();
+    setFeedback("");
 
     try {
       const response = await fetch("/api/demo-form", {
@@ -205,6 +222,7 @@ function setupDemoForm() {
 
     resetState();
     writeOutput("No submission yet.");
+    setFeedback("");
   });
 
   resetState();

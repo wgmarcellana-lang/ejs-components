@@ -226,20 +226,46 @@ function buildInlineLightboxMarkup(config, refs) {
   `;
 }
 
+function getFocusableElements(container) {
+  if (!(container instanceof HTMLElement)) {
+    return [];
+  }
+
+  return Array.from(
+    container.querySelectorAll(
+      "button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"
+    )
+  ).filter((element) => !element.hasAttribute("hidden") && element.getAttribute("aria-hidden") !== "true");
+}
+
+function toggleBackgroundInert(overlay, isInert) {
+  Array.from(document.body.children).forEach((child) => {
+    if (child === overlay) {
+      return;
+    }
+
+    if (isInert) {
+      child.setAttribute("aria-hidden", "true");
+      child.inert = true;
+    } else {
+      child.removeAttribute("aria-hidden");
+      child.inert = false;
+    }
+  });
+}
+
 function closeInlineLightbox() {
   const overlay = document.querySelector("[data-image-preview-lightbox]");
   const dialog = overlay?.querySelector(".ui-image-preview__lightbox-dialog");
-  const selector = dialog?.dataset.previousFocusSelector || "";
+  const previousFocus = overlay?._previousFocus || null;
 
   if (overlay) {
     overlay.hidden = true;
+    toggleBackgroundInert(overlay, false);
   }
 
   document.body.classList.remove("modal-open");
-
-  if (selector) {
-    document.querySelector(selector)?.focus?.();
-  }
+  previousFocus?.focus?.();
 }
 
 function ensureInlineLightbox() {
@@ -272,6 +298,29 @@ function ensureInlineLightbox() {
   overlay.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeInlineLightbox();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      const dialog = overlay.querySelector(".ui-image-preview__lightbox-dialog");
+      const focusable = getFocusableElements(dialog);
+
+      if (!focusable.length) {
+        event.preventDefault();
+        dialog?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   });
 
@@ -317,13 +366,11 @@ function openLightbox(config, refs) {
   body.innerHTML = buildInlineLightboxMarkup(config, refs);
   overlay.hidden = false;
   document.body.classList.add("modal-open");
-  dialog.dataset.previousFocusSelector = "";
+  overlay._previousFocus = previousActiveElement;
+  toggleBackgroundInert(overlay, true);
 
-  if (previousActiveElement?.id) {
-    dialog.dataset.previousFocusSelector = `#${previousActiveElement.id}`;
-  }
-
-  dialog.focus();
+  const focusable = getFocusableElements(dialog);
+  (focusable[0] || dialog)?.focus();
 }
 
 function initImagePreview(element) {

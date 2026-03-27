@@ -1,5 +1,10 @@
 <%
   const calendar = loadConfig("./calendar.config.js", { props });
+  const calendarId = calendar.id || `${calendar.name}-calendar`;
+  const labelId = `${calendarId}-label`;
+  const helperId = calendar.helper ? `${calendarId}-helper` : "";
+  const panelId = `${calendarId}-panel`;
+  const gridId = `${calendarId}-grid`;
 %>
 
 <% if (calendar.standalone) { %>
@@ -8,6 +13,7 @@
 
 <div
   class="ui-calendar"
+  id="<%= calendarId %>"
   data-component="calendar"
   data-mode="<%= calendar.mode %>"
   data-name="<%= calendar.name %>"
@@ -20,7 +26,7 @@
 >
   <div class="ui-calendar__frame">
     <% if (calendar.showLabel && calendar.label) { %>
-      <span class="ui-field__label"><%= calendar.label %></span>
+      <span class="ui-field__label" id="<%= labelId %>"><%= calendar.label %></span>
     <% } %>
 
     <% if (calendar.allowModeSwitch) { %>
@@ -46,7 +52,12 @@
             class="ui-calendar__control ui-calendar__display"
             type="button"
             data-calendar-single-trigger
+            aria-expanded="false"
+            aria-haspopup="dialog"
+            aria-controls="<%= panelId %>"
+            aria-labelledby="<%= calendar.showLabel && calendar.label ? `${labelId}` : "" %>"
             aria-label="<%= calendar.singleLabel || "Date" %>"
+            <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
           >
             <span class="ui-calendar__display-text" data-calendar-single-display>MM/DD/YYYY</span>
             <span class="ui-calendar__icon" aria-hidden="true">
@@ -77,7 +88,11 @@
                 class="ui-calendar__control ui-calendar__display"
                 type="button"
                 data-calendar-start-trigger
+                aria-expanded="false"
+                aria-haspopup="dialog"
+                aria-controls="<%= panelId %>"
                 aria-label="<%= calendar.startLabel || "Start Date" %>"
+                <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
               >
                 <span class="ui-calendar__display-text" data-calendar-start-display>MM/DD/YYYY</span>
                 <span class="ui-calendar__icon" aria-hidden="true">
@@ -105,7 +120,11 @@
                 class="ui-calendar__control ui-calendar__display"
                 type="button"
                 data-calendar-end-trigger
+                aria-expanded="false"
+                aria-haspopup="dialog"
+                aria-controls="<%= panelId %>"
                 aria-label="<%= calendar.endLabel || "End Date" %>"
+                <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
               >
                 <span class="ui-calendar__display-text" data-calendar-end-display>MM/DD/YYYY</span>
                 <span class="ui-calendar__icon" aria-hidden="true">
@@ -126,7 +145,15 @@
         </div>
       </div>
 
-      <div class="ui-calendar__panel" data-calendar-panel hidden>
+      <div
+        class="ui-calendar__panel"
+        id="<%= panelId %>"
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby="<%= calendar.showLabel && calendar.label ? labelId : "" %>"
+        data-calendar-panel
+        hidden
+      >
         <div class="ui-calendar__panel-header">
           <button class="ui-calendar__nav" type="button" data-calendar-prev aria-label="Previous month">&lt;</button>
           <div class="ui-calendar__title-group">
@@ -152,13 +179,19 @@
           <span>Sat</span>
         </div>
 
-        <div class="ui-calendar__grid" data-calendar-grid></div>
+        <div
+          class="ui-calendar__grid"
+          id="<%= gridId %>"
+          role="grid"
+          aria-label="<%= calendar.label || "Calendar" %>"
+          data-calendar-grid
+        ></div>
       </div>
     </div>
   </div>
 
   <% if (calendar.helper) { %>
-    <span class="ui-field__helper"><%= calendar.helper %></span>
+    <span class="ui-field__helper" id="<%= helperId %>"><%= calendar.helper %></span>
   <% } %>
 </div>
 
