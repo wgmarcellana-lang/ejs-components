@@ -245,7 +245,7 @@ textarea {
 .media-demo {
   display: grid;
   gap: 24px;
-  padding: 0 38px 38px;
+  padding: 0;
 }
 
 .media-demo__card {
@@ -284,9 +284,20 @@ textarea {
 
 .media-demo__grid {
   display: grid;
-  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
+}
+
+.media-demo__panel {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.media-demo__panel--preview {
+  align-content: start;
+  justify-items: center;
 }
 
 .media-demo__stack {
@@ -325,7 +336,7 @@ textarea {
   }
 
   .media-demo {
-    padding: 0 20px 24px;
+    padding: 0;
   }
 
   .component-grid > * {
@@ -344,5 +355,11 @@ textarea {
 
   .form-actions {
     justify-content: stretch;
+  }
+}
+
+@media (max-width: 960px) {
+  .media-demo__grid {
+    grid-template-columns: 1fr;
   }
 }

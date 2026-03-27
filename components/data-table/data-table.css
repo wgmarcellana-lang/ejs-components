@@ -845,6 +845,7 @@ body.ui-data-table-filter-open {
   padding: 14px 38px;
   border-top: 1px solid var(--dt-border);
   background: #ffffff;
+  border-radius: 0 0 var(--dt-radius) var(--dt-radius);
 }
 
 .ui-data-table__footer-left {

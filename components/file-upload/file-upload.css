@@ -1,6 +1,7 @@
 .ui-file-upload {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 
 .ui-file-upload__header {
@@ -21,6 +22,8 @@
   display: grid;
   justify-items: center;
   gap: 10px;
+  min-width: 0;
+  min-height: 228px;
   padding: 28px 22px;
   border: 1.5px dashed rgba(109, 89, 156, 0.26);
   border-radius: 28px;
@@ -89,7 +92,7 @@
 }
 
 .ui-file-upload__helper {
-  max-width: 28rem;
+  max-width: 32rem;
   color: #716884;
   font-size: 0.86rem;
   line-height: 1.65;
@@ -132,7 +135,12 @@
 
 @media (max-width: 640px) {
   .ui-file-upload__dropzone {
+    min-height: 0;
     padding: 24px 18px;
     border-radius: 22px;
+  }
+
+  .ui-file-upload__helper {
+    max-width: 100%;
   }
 }
