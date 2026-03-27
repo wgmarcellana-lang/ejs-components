@@ -1,0 +1,61 @@
+<%
+  const preview = loadConfig("./image-preview.config.js", { props });
+%>
+
+<% if (preview.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./image-preview.css') %>" />
+<% } %>
+
+<section
+  class="ui-image-preview ui-image-preview--<%= preview.size %> ui-image-preview--<%= preview.shape %>"
+  data-component="image-preview"
+  id="<%= preview.id %>"
+  data-src="<%= preview.src %>"
+  data-alt="<%= preview.alt %>"
+  data-size="<%= preview.size %>"
+  data-shape="<%= preview.shape %>"
+  data-object-fit="<%= preview.objectFit %>"
+  data-placeholder-image="<%= preview.placeholderImage %>"
+  data-fallback-image="<%= preview.fallbackImage %>"
+  data-placeholder-text="<%= preview.placeholderText %>"
+  data-fallback-text="<%= preview.fallbackText %>"
+  data-loading-text="<%= preview.loadingText %>"
+  data-preview-input="<%= preview.previewInput %>"
+  data-accept="<%= preview.accept %>"
+  data-enlarge-on-click="<%= String(preview.enlargeOnClick) %>"
+  data-show-label="<%= String(preview.showLabel) %>"
+>
+  <% if (preview.showLabel) { %>
+    <header class="ui-image-preview__header">
+      <span class="ui-image-preview__label"><%= preview.label %></span>
+    </header>
+  <% } %>
+
+  <div class="ui-image-preview__frame">
+    <button
+      class="ui-image-preview__action"
+      type="button"
+      data-image-preview-trigger
+      aria-label="Open image preview"
+    >
+      <img class="ui-image-preview__image" data-image-preview-image alt="<%= preview.alt %>" />
+      <div class="ui-image-preview__overlay" data-image-preview-overlay>
+        <span class="ui-image-preview__overlay-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v6"/>
+            <path d="M9 21H3v-6"/>
+            <path d="M21 3l-7 7"/>
+            <path d="M3 21l7-7"/>
+          </svg>
+        </span>
+        <span class="ui-image-preview__overlay-text">View larger</span>
+      </div>
+    </button>
+
+    <div class="ui-image-preview__status" data-image-preview-status aria-live="polite"></div>
+  </div>
+</section>
+
+<% if (preview.standalone) { %>
+  <script type="module" src="<%= asset('./image-preview.js') %>"></script>
+<% } %>

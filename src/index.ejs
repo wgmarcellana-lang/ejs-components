@@ -203,6 +203,56 @@
           </div>
           
         </form>
+
+        <!-- media -->
+        <section class="media-demo">
+          <article class="media-demo__card">
+            <div class="media-demo__header">
+              <h2>File &amp; Media Components</h2>
+              <p>Shared building blocks for image preview, drag-and-drop upload, and file downloads.</p>
+            </div>
+
+            <div class="media-demo__grid">
+              <%- include("../components/image-preview/image-preview.ejs", {
+                props: {
+                  id: "profile-preview",
+                  label: "Image Preview",
+                  size: "medium",
+                  shape: "circle",
+                  alt: "Selected profile image preview",
+                  enlargeOnClick: true,
+                  previewInput: "profile-upload-input"
+                }
+              }) %>
+
+              <div class="media-demo__stack">
+                <%- include("../components/file-upload/file-upload.ejs", {
+                  props: {
+                    id: "profile-upload",
+                    name: "profileUpload",
+                    label: "Upload Image",
+                    accept: "image/*,.webp,.png,.jpg,.jpeg",
+                    helper: "Supports image uploads for avatar or media use cases. Drag a file here or browse to preview it instantly.",
+                    buttonLabel: "Choose image",
+                    dropLabel: "Drop image here"
+                  }
+                }) %>
+
+                <div class="media-demo__actions">
+                  <%- include("../components/download-button/download-button.ejs", {
+                    props: {
+                      label: "Download Placeholder",
+                      href: "/src/assets/no-user.webp",
+                      fileName: "no-user.webp",
+                      variant: "secondary",
+                      size: "md"
+                    }
+                  }) %>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
       </section>
 
     </main>

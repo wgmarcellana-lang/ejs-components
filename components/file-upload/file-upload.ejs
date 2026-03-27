@@ -1,0 +1,64 @@
+<%
+  const upload = loadConfig("./file-upload.config.js", { props });
+%>
+
+<% if (upload.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./file-upload.css') %>" />
+<% } %>
+
+<section
+  class="ui-file-upload"
+  data-component="file-upload"
+  id="<%= upload.id %>"
+  data-preview-target="<%= upload.previewTarget %>"
+  data-accept="<%= upload.accept %>"
+  data-multiple="<%= String(upload.multiple) %>"
+  data-disabled="<%= String(upload.disabled) %>"
+  data-invalid-type-text="<%= upload.invalidTypeText %>"
+  data-empty-label="<%= upload.emptyLabel %>"
+  data-selected-prefix="<%= upload.selectedPrefix %>"
+>
+  <% if (upload.showLabel) { %>
+    <header class="ui-file-upload__header">
+      <span class="ui-file-upload__label"><%= upload.label %></span>
+    </header>
+  <% } %>
+
+  <label
+    class="ui-file-upload__dropzone"
+    data-file-upload-zone
+    for="<%= upload.id %>-input"
+  >
+    <input
+      class="ui-file-upload__input"
+      type="file"
+      id="<%= upload.id %>-input"
+      name="<%= upload.name %>"
+      accept="<%= upload.accept %>"
+      <%= upload.multiple ? "multiple" : "" %>
+      <%= upload.disabled ? "disabled" : "" %>
+      data-file-upload-input
+    />
+
+    <span class="ui-file-upload__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 16V4"/>
+        <path d="M7 9l5-5 5 5"/>
+        <path d="M20 16.5v1A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-1"/>
+      </svg>
+    </span>
+
+    <span class="ui-file-upload__headline" data-file-upload-headline><%= upload.dropLabel %></span>
+    <span class="ui-file-upload__helper"><%= upload.helper %></span>
+    <span class="ui-file-upload__button"><%= upload.buttonLabel %></span>
+  </label>
+
+  <div class="ui-file-upload__meta">
+    <span class="ui-file-upload__file-name" data-file-upload-file-name><%= upload.emptyLabel %></span>
+    <span class="ui-file-upload__status" data-file-upload-status aria-live="polite"></span>
+  </div>
+</section>
+
+<% if (upload.standalone) { %>
+  <script type="module" src="<%= asset('./file-upload.js') %>"></script>
+<% } %>
