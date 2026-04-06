@@ -1,0 +1,62 @@
+<%
+  const tabs = loadConfig("./tabs.config.js", { props });
+  const labelId = tabs.showLabel && tabs.label ? `${tabs.id}-label` : "";
+%>
+
+<% if (tabs.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./tabs.css') %>" />
+<% } %>
+
+<section
+  class="ui-tabs"
+  id="<%= tabs.id %>"
+  data-component="tabs"
+  data-variant="<%= tabs.variant %>"
+  data-default-active="<%= tabs.defaultActive %>"
+>
+  <% if (tabs.showLabel && tabs.label) { %>
+    <div class="ui-field__label ui-tabs__label" id="<%= labelId %>"><%= tabs.label %></div>
+  <% } %>
+
+  <div
+    class="ui-tabs__list"
+    role="tablist"
+    aria-label="<%= tabs.label || "Tabs" %>"
+    <% if (labelId) { %>aria-labelledby="<%= labelId %>"<% } %>
+  >
+    <% tabs.tabs.forEach((tab, index) => { %>
+      <button
+        type="button"
+        class="ui-tabs__tab"
+        id="<%= `${tabs.id}-tab-${tab.id}` %>"
+        role="tab"
+        aria-controls="<%= `${tabs.id}-panel-${tab.id}` %>"
+        aria-selected="<%= tab.id === tabs.defaultActive ? "true" : "false" %>"
+        tabindex="<%= tab.id === tabs.defaultActive ? "0" : "-1" %>"
+        data-tab-trigger
+        data-tab-id="<%= tab.id %>"
+        <%= tab.disabled ? "disabled" : "" %>
+      >
+        <span><%= tab.label %></span>
+      </button>
+    <% }) %>
+  </div>
+
+  <% tabs.tabs.forEach((tab) => { %>
+    <div
+      class="ui-tabs__panel"
+      id="<%= `${tabs.id}-panel-${tab.id}` %>"
+      role="tabpanel"
+      aria-labelledby="<%= `${tabs.id}-tab-${tab.id}` %>"
+      data-tab-panel
+      data-tab-id="<%= tab.id %>"
+      <%= tab.id === tabs.defaultActive ? "" : "hidden" %>
+    >
+      <%- tab.contentHtml %>
+    </div>
+  <% }) %>
+</section>
+
+<% if (tabs.standalone) { %>
+  <script type="module" src="<%= asset('./tabs.js') %>"></script>
+<% } %>

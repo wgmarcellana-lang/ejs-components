@@ -1,0 +1,60 @@
+<%
+  const group = loadConfig("./choice-group.config.js", { props });
+  const groupId = group.id || `${group.name}-choice-group`;
+  const labelId = group.showLabel && group.label ? `${groupId}-label` : "";
+  const helperId = group.helper ? `${groupId}-helper` : "";
+%>
+
+<% if (group.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./choice-group.css') %>" />
+<% } %>
+
+<fieldset
+  class="ui-field ui-choice-group"
+  id="<%= groupId %>"
+  data-component="choice-group"
+  data-name="<%= group.name %>"
+  data-type="<%= group.type %>"
+  data-disabled="<%= String(group.disabled) %>"
+  data-required="<%= String(group.required) %>"
+  data-orientation="<%= group.orientation %>"
+  <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
+>
+  <% if (group.showLabel && group.label) { %>
+    <legend class="ui-field__label ui-choice-group__legend" id="<%= labelId %>"><%= group.label %></legend>
+  <% } %>
+
+  <div
+    class="ui-choice-group__options"
+    role="<%= group.type === "radio" ? "radiogroup" : "group" %>"
+    <% if (labelId) { %>aria-labelledby="<%= labelId %>"<% } %>
+  >
+    <% group.options.forEach((option, index) => {
+      const optionId = option.id || `${groupId}-${index}`;
+      const isSelected = group.selected.includes(option.value);
+    %>
+      <label class="ui-choice-group__option <%= option.disabled || group.disabled ? "is-disabled" : "" %>">
+        <input
+          class="ui-choice-group__control"
+          type="<%= group.type %>"
+          id="<%= optionId %>"
+          name="<%= group.name %>"
+          value="<%= option.value %>"
+          <%= isSelected ? "checked" : "" %>
+          <%= group.required && group.type === "radio" && index === 0 ? "required" : "" %>
+          <%= option.disabled || group.disabled ? "disabled" : "" %>
+        />
+        <span class="ui-choice-group__indicator" aria-hidden="true"></span>
+        <span class="ui-choice-group__text"><%= option.label %></span>
+      </label>
+    <% }) %>
+  </div>
+
+  <% if (group.helper) { %>
+    <span class="ui-field__helper" id="<%= helperId %>"><%= group.helper %></span>
+  <% } %>
+</fieldset>
+
+<% if (group.standalone) { %>
+  <script type="module" src="<%= asset('./choice-group.js') %>"></script>
+<% } %>

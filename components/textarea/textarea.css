@@ -1,0 +1,56 @@
+.ui-textarea {
+  display: grid;
+  gap: 10px;
+}
+
+.ui-textarea__control {
+  width: 100%;
+  min-height: 7.5rem;
+  padding: 0.88rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--input-border);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfaff 100%);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #1f1830;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 8px 22px rgba(15, 23, 42, 0.05);
+  transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.ui-textarea[data-resize="none"] .ui-textarea__control {
+  resize: none;
+}
+
+.ui-textarea[data-resize="vertical"] .ui-textarea__control {
+  resize: vertical;
+}
+
+.ui-textarea[data-resize="horizontal"] .ui-textarea__control {
+  resize: horizontal;
+}
+
+.ui-textarea[data-resize="both"] .ui-textarea__control {
+  resize: both;
+}
+
+.ui-textarea__control:hover {
+  border-color: var(--input-border-strong);
+  background: #ffffff;
+}
+
+.ui-textarea__control:focus {
+  outline: none;
+  border-color: #7a55db;
+  box-shadow:
+    var(--focus-ring, 0 0 0 4px rgba(111, 73, 215, 0.12)),
+    inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.ui-textarea__control:disabled,
+.ui-textarea__control:read-only {
+  background: #f6f3fb;
+  color: #9a93ac;
+}

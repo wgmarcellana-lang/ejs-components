@@ -120,6 +120,7 @@ function initDownloadAction(button) {
   button.dataset.downloadButtonInitialized = "true";
 }
 
+// download
 export function initButtons(root = document) {
   root.querySelectorAll("[data-component='button']").forEach((button) => {
     applyButtonConfig(button);

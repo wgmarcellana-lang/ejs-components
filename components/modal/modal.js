@@ -1,4 +1,6 @@
 import { initTextInputs } from "../text-input/text-input.js";
+import { initTextareas } from "../textarea/textarea.js";
+import { initChoiceGroups } from "../choice-group/choice-group.js";
 
 function escapeHtml(value) {
   return String(value)
@@ -112,6 +114,8 @@ function renderBody(body, config) {
   if (config.bodyHtml) {
     body.innerHTML = config.bodyHtml;
     initTextInputs(body);
+    initTextareas(body);
+    initChoiceGroups(body);
     return;
   }
 

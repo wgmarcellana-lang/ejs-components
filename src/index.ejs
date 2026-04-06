@@ -33,6 +33,51 @@
               }
             }) %>
 
+            <!-- textarea -->
+            <%- include("../components/textarea/textarea.ejs", {
+              props: {
+                label: "Textarea Component",
+                name: "description",
+                placeholder: "Tell us a little more about your request",
+                helper: "This supports multiline input and follows the same field style as the text input.",
+                rows: 5,
+                resize: "vertical"
+              }
+            }) %>
+
+            <!-- choice group -->
+            <%- include("../components/choice-group/choice-group.ejs", {
+              props: {
+                label: "Checkbox Group Component",
+                name: "contactPreferences",
+                type: "checkbox",
+                helper: "Choose one or more preferred contact channels.",
+                orientation: "horizontal",
+                selected: ["email", "sms"],
+                options: [
+                  { label: "Email", value: "email" },
+                  { label: "SMS", value: "sms" },
+                  { label: "Phone Call", value: "phone" }
+                ]
+              }
+            }) %>
+
+            <!-- radio group -->
+            <%- include("../components/choice-group/choice-group.ejs", {
+              props: {
+                label: "Radio Group Component",
+                name: "contactPriority",
+                type: "radio",
+                helper: "Pick the primary channel your team should use first.",
+                value: "email",
+                options: [
+                  { label: "Email First", value: "email" },
+                  { label: "SMS First", value: "sms" },
+                  { label: "Call First", value: "call" }
+                ]
+              }
+            }) %>
+
             <!-- dropdown -->
             <%- include("../components/dropdown/dropdown.ejs", {
               props: {
@@ -210,6 +255,58 @@
                 fallbackHref: "/src/assets/no-user.webp",
                 fallbackFileName: "no-user.webp"
               }
+            }
+          }) %>
+
+          <!-- tabs -->
+          <%- include("../components/tabs/tabs.ejs", {
+            props: {
+              id: "demo-tabs",
+              label: "Tabs Component",
+              variant: "pill",
+              defaultActive: "profile",
+              tabs: [
+                {
+                  id: "profile",
+                  label: "Profile",
+                  contentHtml: include("../components/text-input/text-input.ejs", {
+                    props: {
+                      label: "Profile Name",
+                      name: "profileName",
+                      placeholder: "Enter profile name"
+                    }
+                  }) + include("../components/textarea/textarea.ejs", {
+                    props: {
+                      label: "Profile Notes",
+                      name: "profileNotes",
+                      placeholder: "Add profile notes",
+                      rows: 4
+                    }
+                  })
+                },
+                {
+                  id: "preferences",
+                  label: "Preferences",
+                  contentHtml: include("../components/choice-group/choice-group.ejs", {
+                    props: {
+                      label: "Notification Preferences",
+                      name: "tabNotifications",
+                      type: "checkbox",
+                      selected: ["mentions"],
+                      options: [
+                        { label: "Mentions", value: "mentions" },
+                        { label: "Status Updates", value: "updates" },
+                        { label: "Reminders", value: "reminders" }
+                      ]
+                    }
+                  })
+                },
+                {
+                  id: "summary",
+                  label: "Summary",
+                  contentHtml: "<p class=\"media-demo__header\">Tabs can also render lightweight informational content inside their panels.</p>"
+                }
+              ]
             }
           }) %>
         </div>

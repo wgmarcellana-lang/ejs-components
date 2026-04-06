@@ -1,11 +1,14 @@
 import { initButtons } from "../components/button/button.js";
 import { initTextInputs } from "../components/text-input/text-input.js";
+import { initTextareas } from "../components/textarea/textarea.js";
 import { initDropdowns } from "../components/dropdown/dropdown.js";
+import { initChoiceGroups } from "../components/choice-group/choice-group.js";
 import { initCalendars } from "../components/calendar/calendar.js";
 import { initModals } from "../components/modal/modal.js";
 import { initDataTables } from "../components/data-table/data-table.js";
 import { initImagePreviews } from "../components/image-preview/image-preview.js";
 import { initFileUploads } from "../components/file-upload/file-upload.js";
+import { initTabs } from "../components/tabs/tabs.js";
 
 function buildInitialFormState(form) {
   const payload = {};
@@ -62,6 +65,21 @@ function buildInitialFormState(form) {
     if (name) {
       payload[name] = element.querySelector("[data-calendar-single-input]")?.value || "";
     }
+  });
+
+  form.querySelectorAll("[data-component='choice-group']").forEach((element) => {
+    const name = element.dataset.name;
+    const type = element.dataset.type === "radio" ? "radio" : "checkbox";
+    const checkedControls = Array.from(element.querySelectorAll(".ui-choice-group__control:checked"));
+
+    if (!name) {
+      return;
+    }
+
+    payload[name] =
+      type === "radio"
+        ? checkedControls[0]?.value || ""
+        : checkedControls.map((control) => control.value);
   });
 
   return payload;
@@ -246,15 +264,20 @@ function setupDataTableDemo() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  initButtons();
-  initTextInputs();
-  initDropdowns();
-  initCalendars();
-  initModals();
-  initDataTables();
-  initImagePreviews();
-  initFileUploads();
-  setupDemoForm();
-  setupDataTableDemo();
-});
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    initButtons();
+    initTextInputs();
+    initTextareas();
+    initDropdowns();
+    initChoiceGroups();
+    initCalendars();
+    initModals();
+    initDataTables();
+    initImagePreviews();
+    initFileUploads();
+    initTabs();
+    setupDemoForm();
+    setupDataTableDemo();
+  });
+}

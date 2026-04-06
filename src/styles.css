@@ -1,11 +1,14 @@
 @import "../components/button/button.css";
 @import "../components/text-input/text-input.css";
+@import "../components/textarea/textarea.css";
 @import "../components/dropdown/dropdown.css";
+@import "../components/choice-group/choice-group.css";
 @import "../components/calendar/calendar.css";
 @import "../components/modal/modal.css";
 @import "../components/data-table/data-table.css";
 @import "../components/image-preview/image-preview.css";
 @import "../components/file-upload/file-upload.css";
+@import "../components/tabs/tabs.css";
 
 :root {
   --page-bg: #592a81;

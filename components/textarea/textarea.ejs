@@ -1,0 +1,40 @@
+<%
+  const textarea = loadConfig("./textarea.config.js", { props });
+  const textareaId = textarea.id || `${textarea.name}-textarea`;
+  const helperId = textarea.helper ? `${textareaId}-helper` : "";
+%>
+
+<% if (textarea.standalone) { %>
+  <link rel="stylesheet" href="<%= asset('./textarea.css') %>" />
+<% } %>
+
+<label
+  class="ui-field ui-textarea"
+  data-component="textarea"
+  data-resize="<%= textarea.resize %>"
+>
+  <% if (textarea.showLabel && textarea.label) { %>
+    <span class="ui-field__label"><%= textarea.label %></span>
+  <% } %>
+
+  <textarea
+    class="ui-textarea__control"
+    id="<%= textareaId %>"
+    name="<%= textarea.name %>"
+    placeholder="<%= textarea.placeholder %>"
+    rows="<%= textarea.rows %>"
+    <%= textarea.required ? "required" : "" %>
+    <%= textarea.disabled ? "disabled" : "" %>
+    <%= textarea.readonly ? "readonly" : "" %>
+    <% if (textarea.maxLength) { %>maxlength="<%= textarea.maxLength %>"<% } %>
+    <% if (helperId) { %>aria-describedby="<%= helperId %>"<% } %>
+  ><%= textarea.value %></textarea>
+
+  <% if (textarea.helper) { %>
+    <span class="ui-field__helper" id="<%= helperId %>"><%= textarea.helper %></span>
+  <% } %>
+</label>
+
+<% if (textarea.standalone) { %>
+  <script type="module" src="<%= asset('./textarea.js') %>"></script>
+<% } %>
